@@ -222,6 +222,7 @@ nav {
   cursor: pointer; transition: all .2s;
   position: relative; overflow: hidden;
   text-decoration: none; display: block;
+  color: var(--text);
 }
 .chapter-card::before {
   content: ''; position: absolute;
@@ -433,21 +434,21 @@ nav {
     <div class="section-title">全部培訓章節</div>
     <div class="chapter-grid">
 
-      <div class="chapter-card col-green" id="ch1">
+      <a class="chapter-card col-green" id="ch1" href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank">
         <div class="ch-label">Ch.1</div>
         <div class="ch-title">認識耶加</div>
         <div class="ch-desc">組織架構、跨部合作、打招呼文化、穿著規範</div>
         <div class="ch-tags"><span class="ch-tag new">新進必讀</span></div>
-      </div>
+      </a>
 
-      <div class="chapter-card col-purple" id="ch2">
+      <a class="chapter-card col-purple" id="ch2" href="https://drive.google.com/drive/u/0/folders/1WhcwQYZyDciYYU3rXHXGkw3UJ7p_Aj7Q" target="_blank">
         <div class="ch-label">Ch.2</div>
         <div class="ch-title">考勤制度與薪資結構</div>
         <div class="ch-desc">打卡系統、請假規則、各假別定義、GP 評鑑結構</div>
         <div class="ch-tags"><span class="ch-tag new">新進必讀</span></div>
-      </div>
+      </a>
 
-      <div class="chapter-card col-gold" id="ch3">
+      <a class="chapter-card col-gold" id="ch3" href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank">
         <div class="ch-label">Ch.3</div>
         <div class="ch-title">教學範疇</div>
         <div class="ch-group">
@@ -459,9 +460,9 @@ nav {
           <div class="ch-group-items">新生入班、請假管理、點名表/接送表/課表製作、晚餐記錄</div>
         </div>
         <div class="ch-tags"><span class="ch-tag all">教學部必讀</span></div>
-      </div>
+      </a>
 
-      <div class="chapter-card col-coral" id="ch4">
+      <a class="chapter-card col-coral" id="ch4" href="https://drive.google.com/drive/u/0/folders/1LGXf4CBm_C2IEGUMaf00exfu1U5UB-wd" target="_blank">
         <div class="ch-label">Ch.4</div>
         <div class="ch-title">跨部合作</div>
         <div class="ch-group">
@@ -473,35 +474,35 @@ nav {
           <div class="ch-group-items">財務請款、學費流程、繳費 APP、變動表</div>
         </div>
         <div class="ch-tags"><span class="ch-tag new">新進必讀</span></div>
-      </div>
+      </a>
 
-      <div class="chapter-card col-teal" id="ch5">
+      <a class="chapter-card col-teal" id="ch5" href="https://drive.google.com/drive/u/0/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER" target="_blank">
         <div class="ch-label">Ch.5</div>
         <div class="ch-title">校務與寒暑假</div>
         <div class="ch-group">
           <div class="ch-group-label">校務</div>
-          <div class="ch-group-items">代課交接流程</div>
+          <div class="ch-group-items">代課交接流程、早值流程</div>
         </div>
         <div class="ch-group">
           <div class="ch-group-label">寒暑假</div>
-          <div class="ch-group-items">早值流程、戶外教學秘笈、兩天一夜要點、寒暑假架構規劃</div>
+          <div class="ch-group-items">寒暑假架構規劃、戶外教學秘笈、兩天一夜要點</div>
         </div>
         <div class="ch-tags"><span class="ch-tag all">全體適用</span></div>
-      </div>
+      </a>
 
-      <div class="chapter-card col-blue" id="ch6">
+      <a class="chapter-card col-blue" id="ch6" href="https://drive.google.com/drive/u/0/folders/1opw7PPxz5LCHuJyUyVO5r_0y-Rlw7xoz" target="_blank">
         <div class="ch-label">Ch.6</div>
-        <div class="ch-title">教學部績效與季節目標</div>
-        <div class="ch-desc">P 值計算、三大貢獻類型、各年段培訓 SOP</div>
+        <div class="ch-title">教學部季節目標</div>
+        <div class="ch-desc">P 值計算、三大貢獻類型</div>
         <div class="ch-tags"><span class="ch-tag all">教學部</span></div>
-      </div>
+      </a>
 
-      <div class="chapter-card col-pink full-width" id="ch7">
+      <a class="chapter-card col-pink full-width" id="ch7" href="https://drive.google.com/drive/u/0/folders/1lcj7W9tRZcOqruAS8auXJEPgeDULM8X4" target="_blank">
         <div class="ch-label">Ch.7</div>
         <div class="ch-title">年度排程</div>
         <div class="ch-desc">全年重要時程與季節任務</div>
         <div class="ch-tags"><span class="ch-tag all">全體適用</span></div>
-      </div>
+      </a>
 
     </div>
 
@@ -540,7 +541,11 @@ nav {
         <i class="ti ti-alert-triangle"></i>
         <div>
           <strong>重要提醒</strong>
-          確認家長已繳費後才能發放書包、制服和教材。庫存不足需主動告知家長等待時間。若書包、制服、教材有遺失需要重新購買，皆需填寫變動表，由學務進行收費處理。
+          <ol style="padding-left:16px;margin:0;line-height:2;">
+            <li>確認家長已繳費後才能發放書包、制服和教材。</li>
+            <li>庫存不足需主動告知家長等待時間。</li>
+            <li>若書包、制服、教材有遺失需要重新購買，皆需填寫變動表，由學務進行收費處理。</li>
+          </ol>
         </div>
       </div>
     </div>
