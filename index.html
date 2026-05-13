@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1100">
 <title>A Plus 耶加 · 教師培訓手冊</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -28,12 +28,17 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html {
+  overflow-x: auto;
+}
+
 body {
   font-family: 'Noto Sans TC', sans-serif;
   background: var(--cream);
   color: var(--text);
   line-height: 1.7;
   font-size: 15px;
+  min-width: 1100px;
 }
 
 /* ── NAV ── */
@@ -43,6 +48,8 @@ nav {
   height: 56px;
   display: flex; align-items: center;
   padding: 0 32px; gap: 4px;
+  min-width: 1100px;
+  width: 100%;
 }
 .nav-logo {
   color: #fff; font-size: 14px; font-weight: 500;
@@ -68,6 +75,9 @@ nav {
   background: var(--green);
   padding: 48px 48px 40px;
   position: relative; overflow: hidden;
+  width: 100%;
+  min-width: 100%;
+  box-sizing: border-box;
 }
 .hero::before {
   content: '';
@@ -310,13 +320,8 @@ nav {
 .notice-box strong { display: block; margin-bottom: 4px; font-weight: 500; }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; }
-  .sidebar { display: none; }
-  .main { padding: 24px 20px 60px; }
-  .hero { padding: 36px 24px 32px; }
-  nav { padding: 0 16px; }
-  .nav-link { display: none; }
+@media (max-width: 768px) {
+  body { min-width: 900px; }
 }
 </style>
 </head>
