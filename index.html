@@ -48,14 +48,14 @@ nav {
   position: sticky; top: 0; z-index: 100;
   background: var(--green);
   height: 56px;
-  display: flex; align-items: center;
-  padding: 0 32px; gap: 4px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: nowrap;
+  padding: 0 32px; gap: 16px;
   width: 100%;
 }
 .nav-logo {
   color: #fff; font-size: 14px; font-weight: 500;
   display: flex; align-items: center; gap: 8px;
-  margin-right: auto;
 }
 .nav-logo-dot {
   width: 8px; height: 8px; border-radius: 50%;
@@ -92,6 +92,13 @@ nav {
   width: 200px; height: 200px; border-radius: 50%;
   background: rgba(246,224,94,0.06);
   pointer-events: none;
+}
+.hero-tagline {
+  position: absolute;
+  top: 24px; right: 40px;
+  color: rgba(255,255,255,0.45);
+  font-size: 13px; font-style: italic;
+  z-index: 1;
 }
 .hero-tag {
   display: inline-block;
@@ -131,7 +138,7 @@ nav, .hero, .layout, .page-header {
   display: grid;
   grid-template-columns: 240px 1fr;
   grid-template-rows: auto 1fr;
-  min-height: calc(100vh - 56px);
+  min-height: 100vh;
   width: 100%;
 }
 
@@ -158,8 +165,8 @@ nav, .hero, .layout, .page-header {
   background: var(--white);
   border-right: 1px solid var(--border-light);
   padding: 24px 16px;
-  position: sticky; top: 56px;
-  height: calc(100vh - 56px);
+  position: sticky; top: 0;
+  height: 100vh;
   overflow-y: auto;
 }
 .sidebar-label {
@@ -260,8 +267,10 @@ nav, .hero, .layout, .page-header {
   padding: 22px;
   cursor: pointer; transition: all .2s;
   position: relative; overflow: hidden;
-  text-decoration: none; display: block;
+  text-decoration: none;
   color: var(--text);
+  display: flex;
+  flex-direction: column;
 }
 .chapter-card::before {
   content: ''; position: absolute;
@@ -305,7 +314,8 @@ nav, .hero, .layout, .page-header {
 .ch-tag.all { background: var(--green-pale); color: #085041; border-color: rgba(45,106,79,0.2); }
 .ch-footer {
   display: flex; align-items: center; justify-content: space-between;
-  margin-top: 12px;
+  margin-top: auto;
+  padding-top: 12px;
 }
 .ch-view-btn {
   font-size: 12px; color: var(--green-mid);
@@ -369,6 +379,7 @@ nav, .hero, .layout, .page-header {
 @media (max-width: 768px) {
   body { min-width: 320px; }
   nav { padding: 0 16px; width: 100%; }
+  .hero-tagline { top: 16px; right: 20px; font-size: 11px; }
   .layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto 1fr;
@@ -419,20 +430,14 @@ nav, .hero, .layout, .page-header {
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-logo">
-    <span class="nav-logo-dot"></span>
-    A Plus 耶加 · 教師培訓手冊
-  </div>
-  <span style="color:rgba(255,255,255,0.5);font-size:13px;font-style:italic;margin-left:auto;">We don't just teach, we inspire.</span>
-</nav>
+
 
 <!-- LAYOUT: hero + sidebar + main all in one grid -->
 <div class="layout">
 
   <!-- HERO: spans full width -->
   <div class="hero">
+    <div class="hero-tagline">We don't just teach, we inspire.</div>
     <div class="hero-tag">Welcome to A Plus · 耶加教育機構</div>
     <h1>準備好在 <span>A Plus</span> 開啟<br>一段有意義的旅程了嗎？</h1>
     <div class="hero-sub">這是我們為你準備的「職涯加速包」。</div>
@@ -699,7 +704,7 @@ function scrollToSection(id) {
   const el = document.getElementById(id);
   if (!el) return;
 
-  const navHeight = 56;
+  const navHeight = 0;
   const top = el.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
   window.scrollTo({ top: top, behavior: 'smooth' });
 
