@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1100, initial-scale=0.35">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A Plus 耶加 · 教師培訓手冊</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -119,18 +119,38 @@ nav {
   max-width: 560px; position: relative; z-index: 1;
 }
 
-nav, .hero, .layout {
+nav, .hero, .layout, .page-header {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  display: block;
 }
 
 /* ── LAYOUT ── */
 .layout {
   display: grid;
   grid-template-columns: 240px 1fr;
+  grid-template-rows: auto 1fr;
   min-height: calc(100vh - 56px);
   width: 100%;
+}
+
+/* Hero spans both columns */
+.layout > .hero {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+/* Sidebar in second row, first column */
+.layout > .sidebar {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+/* Main in second row, second column */
+.layout > .main {
+  grid-column: 2;
+  grid-row: 2;
 }
 
 /* ── SIDEBAR ── */
@@ -171,7 +191,7 @@ nav, .hero, .layout {
 
 
 /* ── MAIN ── */
-.main { padding: 40px 48px 80px; }
+.main { padding: 40px 48px 80px; min-width: 0; }
 
 /* ── CHECKLIST ── */
 .checklist-card {
@@ -283,10 +303,6 @@ nav, .hero, .layout {
 }
 .ch-tag.new { background: #FEF9C3; color: #854D0E; border-color: #FDE68A; }
 .ch-tag.all { background: var(--green-pale); color: #085041; border-color: rgba(45,106,79,0.2); }
-.ch-anchor {
-  grid-column: 1 / -1;
-  height: 0; margin: 0; padding: 0;
-}
 .ch-footer {
   display: flex; align-items: center; justify-content: space-between;
   margin-top: 12px;
@@ -353,27 +369,26 @@ nav, .hero, .layout {
 @media (max-width: 768px) {
   body { min-width: 320px; }
   nav { padding: 0 16px; width: 100%; }
-  .hero { padding: 32px 20px 28px; width: 100%; }
-  .layout { grid-template-columns: 1fr; width: 100%; }
-  .sidebar { display: none; }
-  .main { padding: 28px 16px 60px; }
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    width: 100%;
+  }
+  .layout > .hero { grid-column: 1; grid-row: 1; padding: 32px 20px 28px; }
+  .layout > .sidebar { display: none; }
+  .layout > .main { grid-column: 1; grid-row: 2; padding: 28px 16px 60px; }
   .chapter-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .chapter-card.full-width { grid-column: 1 / -1; }
 }
 
 /* Mobile */
 @media (max-width: 480px) {
-  nav { padding: 0 14px; width: 100%; }
-  .hero { padding: 24px 14px 20px; width: 100%; }
-  .layout { grid-template-columns: 1fr; width: 100%; }
-  .sidebar { display: none; }
-  .main { padding: 16px 10px 60px; }
+  nav { padding: 0 14px; }
+  .layout > .hero { padding: 24px 14px 20px; }
+  .layout > .main { padding: 16px 10px 60px; }
 
   .chapter-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .chapter-card {
-    min-height: 120px;
-    padding: 14px 12px;
-  }
+  .chapter-card { min-height: 120px; padding: 14px 12px; }
   .chapter-card.full-width { grid-column: 1 / -1; }
   .ch-label { font-size: 9px; margin-bottom: 5px; }
   .ch-title { font-size: 14px; margin-bottom: 8px; }
@@ -384,7 +399,6 @@ nav, .hero, .layout {
   .ch-tag { font-size: 11px; padding: 2px 8px; }
   .ch-view-btn { font-size: 11px; padding: 4px 10px; }
   .ch-footer { margin-top: 8px; }
-
   .checklist-card { padding: 18px 14px; }
   .sop-card { padding: 18px 12px; }
   .hero h1 { font-size: 20px; }
@@ -414,16 +428,16 @@ nav, .hero, .layout {
   <span style="color:rgba(255,255,255,0.5);font-size:13px;font-style:italic;margin-left:auto;">We don't just teach, we inspire.</span>
 </nav>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-tag">Welcome to A Plus · 耶加教育機構</div>
-  <h1>準備好在 <span>A Plus</span> 開啟<br>一段有意義的旅程了嗎？</h1>
-  <div class="hero-sub">這是我們為你準備的「職涯加速包」。</div>
-  <div class="hero-body">好的教育，是老師與學生一起成長。我們把入職的起步清單與各階段的挑戰都整理在這裡，希望讓你在耶加的每一天，都不只是工作，而是不斷突破自我、發掘才能的過程。</div>
-</div>
-
-<!-- LAYOUT -->
+<!-- LAYOUT: hero + sidebar + main all in one grid -->
 <div class="layout">
+
+  <!-- HERO: spans full width -->
+  <div class="hero">
+    <div class="hero-tag">Welcome to A Plus · 耶加教育機構</div>
+    <h1>準備好在 <span>A Plus</span> 開啟<br>一段有意義的旅程了嗎？</h1>
+    <div class="hero-sub">這是我們為你準備的「職涯加速包」。</div>
+    <div class="hero-body">好的教育，是老師與學生一起成長。我們把入職的起步清單與各階段的挑戰都整理在這裡，希望讓你在耶加的每一天，都不只是工作，而是不斷突破自我、發掘才能的過程。</div>
+  </div>
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
