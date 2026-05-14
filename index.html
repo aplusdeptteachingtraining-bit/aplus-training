@@ -29,7 +29,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 body {
@@ -38,7 +38,9 @@ body {
   color: var(--text);
   line-height: 1.7;
   font-size: 15px;
-  min-width: 1100px;
+  min-width: 320px;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 /* ── NAV ── */
@@ -48,7 +50,7 @@ nav {
   height: 56px;
   display: flex; align-items: center;
   padding: 0 32px; gap: 4px;
-  width: 1100px;
+  width: 100%;
 }
 .nav-logo {
   color: #fff; font-size: 14px; font-weight: 500;
@@ -74,7 +76,7 @@ nav {
   background: var(--green);
   padding: 48px 48px 40px;
   position: relative; overflow: hidden;
-  width: 1100px;
+  width: 100%;
   box-sizing: border-box;
 }
 .hero::before {
@@ -117,11 +119,18 @@ nav {
   max-width: 560px; position: relative; z-index: 1;
 }
 
+nav, .hero, .layout {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 /* ── LAYOUT ── */
 .layout {
   display: grid;
   grid-template-columns: 240px 1fr;
   min-height: calc(100vh - 56px);
+  width: 100%;
 }
 
 /* ── SIDEBAR ── */
@@ -221,7 +230,7 @@ nav {
 /* ── CHAPTER GRID ── */
 .chapter-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 14px;
 }
 .chapter-card {
@@ -339,29 +348,47 @@ nav {
 .notice-box strong { display: block; margin-bottom: 4px; font-weight: 500; }
 
 /* ── RESPONSIVE ── */
+
+/* Tablet */
 @media (max-width: 768px) {
-  body { min-width: 900px; }
+  body { min-width: 320px; }
+  nav { padding: 0 16px; width: 100%; }
+  .hero { padding: 32px 20px 28px; width: 100%; }
+  .layout { grid-template-columns: 1fr; width: 100%; }
+  .sidebar { display: none; }
+  .main { padding: 28px 16px 60px; }
+  .chapter-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .chapter-card.full-width { grid-column: 1 / -1; }
 }
 
-/* ── MOBILE CHAPTER CARD EXPAND ── */
+/* Mobile */
 @media (max-width: 480px) {
-  body { min-width: unset; font-size: 14px; }
-  .layout { grid-template-columns: 1fr; }
+  nav { padding: 0 14px; width: 100%; }
+  .hero { padding: 24px 14px 20px; width: 100%; }
+  .layout { grid-template-columns: 1fr; width: 100%; }
   .sidebar { display: none; }
-  .main { padding: 24px 16px 60px; }
-  .chapter-grid { grid-template-columns: 1fr; gap: 12px; }
+  .main { padding: 16px 10px 60px; }
+
+  .chapter-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .chapter-card {
-    min-height: 140px;
-    padding: 22px 20px;
+    min-height: 120px;
+    padding: 14px 12px;
   }
-  .ch-title { font-size: 16px; margin-bottom: 12px; }
-  .ch-desc { font-size: 13px; line-height: 1.75; }
-  .ch-group-items { font-size: 13px; line-height: 1.75; }
-  .ch-group-label { font-size: 11px; }
-  .ch-tag { font-size: 12px; padding: 3px 12px; }
-  .ch-view-btn { font-size: 13px; padding: 5px 14px; }
-  nav { width: 100%; }
-  .hero { width: 100%; padding: 32px 20px 28px; }
+  .chapter-card.full-width { grid-column: 1 / -1; }
+  .ch-label { font-size: 9px; margin-bottom: 5px; }
+  .ch-title { font-size: 14px; margin-bottom: 8px; }
+  .ch-desc { font-size: 12px; line-height: 1.65; }
+  .ch-group { margin-bottom: 7px; }
+  .ch-group-items { font-size: 12px; line-height: 1.65; }
+  .ch-group-label { font-size: 10px; }
+  .ch-tag { font-size: 11px; padding: 2px 8px; }
+  .ch-view-btn { font-size: 11px; padding: 4px 10px; }
+  .ch-footer { margin-top: 8px; }
+
+  .checklist-card { padding: 18px 14px; }
+  .sop-card { padding: 18px 12px; }
+  .hero h1 { font-size: 20px; }
+  .hero-body { font-size: 12px; }
 }
 
 /* ── HIGHLIGHT FLASH ANIMATION ── */
@@ -495,8 +522,7 @@ nav {
     <div class="section-title">全部培訓章節</div>
     <div class="chapter-grid">
 
-      <div id="ch1" class="ch-anchor"></div>
-      <a class="chapter-card col-green" href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank">
+      <a id="ch1" class="chapter-card col-green" href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank">
         <div class="ch-label">Ch.1</div>
         <div class="ch-title">認識耶加</div>
         <div class="ch-desc">組織架構、跨部合作、打招呼文化、穿著規範</div>
@@ -506,8 +532,7 @@ nav {
         </div>
       </a>
 
-      <div id="ch2" class="ch-anchor"></div>
-      <a class="chapter-card col-purple" href="https://drive.google.com/drive/u/0/folders/1WhcwQYZyDciYYU3rXHXGkw3UJ7p_Aj7Q" target="_blank">
+      <a id="ch2" class="chapter-card col-purple" href="https://drive.google.com/drive/u/0/folders/1WhcwQYZyDciYYU3rXHXGkw3UJ7p_Aj7Q" target="_blank">
         <div class="ch-label">Ch.2</div>
         <div class="ch-title">考勤制度與薪資結構</div>
         <div class="ch-desc">打卡系統、請假規則、各假別定義、GP 評鑑結構</div>
@@ -517,8 +542,7 @@ nav {
         </div>
       </a>
 
-      <div id="ch3" class="ch-anchor"></div>
-      <a class="chapter-card col-gold" href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank">
+      <a id="ch3" class="chapter-card col-gold" href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank">
         <div class="ch-label">Ch.3</div>
         <div class="ch-title">教學範疇</div>
         <div class="ch-group">
@@ -535,8 +559,7 @@ nav {
         </div>
       </a>
 
-      <div id="ch4" class="ch-anchor"></div>
-      <a class="chapter-card col-coral" href="https://drive.google.com/drive/u/0/folders/1LGXf4CBm_C2IEGUMaf00exfu1U5UB-wd" target="_blank">
+      <a id="ch4" class="chapter-card col-coral" href="https://drive.google.com/drive/u/0/folders/1LGXf4CBm_C2IEGUMaf00exfu1U5UB-wd" target="_blank">
         <div class="ch-label">Ch.4</div>
         <div class="ch-title">跨部合作</div>
         <div class="ch-group">
@@ -553,8 +576,7 @@ nav {
         </div>
       </a>
 
-      <div id="ch5" class="ch-anchor"></div>
-      <a class="chapter-card col-teal" href="https://drive.google.com/drive/u/0/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER" target="_blank">
+      <a id="ch5" class="chapter-card col-teal" href="https://drive.google.com/drive/u/0/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER" target="_blank">
         <div class="ch-label">Ch.5</div>
         <div class="ch-title">校務與寒暑假</div>
         <div class="ch-group">
@@ -571,8 +593,7 @@ nav {
         </div>
       </a>
 
-      <div id="ch6" class="ch-anchor"></div>
-      <a class="chapter-card col-blue" href="https://drive.google.com/drive/u/0/folders/1opw7PPxz5LCHuJyUyVO5r_0y-Rlw7xoz" target="_blank">
+      <a id="ch6" class="chapter-card col-blue" href="https://drive.google.com/drive/u/0/folders/1opw7PPxz5LCHuJyUyVO5r_0y-Rlw7xoz" target="_blank">
         <div class="ch-label">Ch.6</div>
         <div class="ch-title">教學部季節目標</div>
         <div class="ch-desc">P 值計算、三大貢獻類型</div>
@@ -582,8 +603,7 @@ nav {
         </div>
       </a>
 
-      <div id="ch7" class="ch-anchor"></div>
-      <a class="chapter-card col-pink full-width" href="https://drive.google.com/drive/u/0/folders/1lcj7W9tRZcOqruAS8auXJEPgeDULM8X4" target="_blank">
+      <a id="ch7" class="chapter-card col-pink full-width" href="https://drive.google.com/drive/u/0/folders/1lcj7W9tRZcOqruAS8auXJEPgeDULM8X4" target="_blank">
         <div class="ch-label">Ch.7</div>
         <div class="ch-title">年度排程</div>
         <div class="ch-desc">全年重要時程與季節任務</div>
@@ -662,30 +682,23 @@ function setActive(el) {
 }
 
 function scrollToSection(id) {
-  const anchor = document.getElementById(id);
-  if (!anchor) return;
+  const el = document.getElementById(id);
+  if (!el) return;
 
   const navHeight = 56;
-  const top = anchor.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
+  const top = el.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
   window.scrollTo({ top: top, behavior: 'smooth' });
 
-  // 找 anchor 之後緊接的 chapter-card，加 highlight
-  if (id.startsWith('ch')) {
-    let sibling = anchor.nextElementSibling;
-    while (sibling && !sibling.classList.contains('chapter-card')) {
-      sibling = sibling.nextElementSibling;
-    }
-    if (sibling) {
-      sibling.classList.remove('ch-flash');
-      void sibling.offsetWidth; // 強制 reflow，讓 animation 可重新觸發
-      // 稍等滾動抵達後再閃
-      setTimeout(() => {
-        sibling.classList.add('ch-flash');
-        sibling.addEventListener('animationend', () => {
-          sibling.classList.remove('ch-flash');
-        }, { once: true });
-      }, 420);
-    }
+  // 如果目標本身就是 chapter-card，直接 flash
+  if (id.startsWith('ch') && el.classList.contains('chapter-card')) {
+    el.classList.remove('ch-flash');
+    void el.offsetWidth;
+    setTimeout(() => {
+      el.classList.add('ch-flash');
+      el.addEventListener('animationend', () => {
+        el.classList.remove('ch-flash');
+      }, { once: true });
+    }, 420);
   }
 }
 </script>
