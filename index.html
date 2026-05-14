@@ -342,6 +342,38 @@ nav {
 @media (max-width: 768px) {
   body { min-width: 900px; }
 }
+
+/* ── MOBILE CHAPTER CARD EXPAND ── */
+@media (max-width: 480px) {
+  body { min-width: unset; font-size: 14px; }
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 24px 16px 60px; }
+  .chapter-grid { grid-template-columns: 1fr; gap: 12px; }
+  .chapter-card {
+    min-height: 140px;
+    padding: 22px 20px;
+  }
+  .ch-title { font-size: 16px; margin-bottom: 12px; }
+  .ch-desc { font-size: 13px; line-height: 1.75; }
+  .ch-group-items { font-size: 13px; line-height: 1.75; }
+  .ch-group-label { font-size: 11px; }
+  .ch-tag { font-size: 12px; padding: 3px 12px; }
+  .ch-view-btn { font-size: 13px; padding: 5px 14px; }
+  nav { width: 100%; }
+  .hero { width: 100%; padding: 32px 20px 28px; }
+}
+
+/* ── HIGHLIGHT FLASH ANIMATION ── */
+@keyframes chHighlight {
+  0%   { box-shadow: 0 0 0 0 rgba(45,106,79,0); background: var(--white); }
+  20%  { box-shadow: 0 0 0 4px rgba(82,183,136,0.35), 0 6px 32px rgba(45,106,79,0.18); background: #f0faf4; }
+  60%  { box-shadow: 0 0 0 3px rgba(82,183,136,0.2), 0 4px 20px rgba(45,106,79,0.12); background: #f7fdf9; }
+  100% { box-shadow: var(--shadow); background: var(--white); }
+}
+.chapter-card.ch-flash {
+  animation: chHighlight 1.4s ease forwards;
+}
 </style>
 </head>
 <body>
@@ -630,11 +662,30 @@ function setActive(el) {
 }
 
 function scrollToSection(id) {
-  const el = document.getElementById(id);
-  if (el) {
-    const navHeight = 56;
-    const top = el.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
-    window.scrollTo({ top: top, behavior: 'smooth' });
+  const anchor = document.getElementById(id);
+  if (!anchor) return;
+
+  const navHeight = 56;
+  const top = anchor.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
+  window.scrollTo({ top: top, behavior: 'smooth' });
+
+  // 找 anchor 之後緊接的 chapter-card，加 highlight
+  if (id.startsWith('ch')) {
+    let sibling = anchor.nextElementSibling;
+    while (sibling && !sibling.classList.contains('chapter-card')) {
+      sibling = sibling.nextElementSibling;
+    }
+    if (sibling) {
+      sibling.classList.remove('ch-flash');
+      void sibling.offsetWidth; // 強制 reflow，讓 animation 可重新觸發
+      // 稍等滾動抵達後再閃
+      setTimeout(() => {
+        sibling.classList.add('ch-flash');
+        sibling.addEventListener('animationend', () => {
+          sibling.classList.remove('ch-flash');
+        }, { once: true });
+      }, 420);
+    }
   }
 }
 </script>
