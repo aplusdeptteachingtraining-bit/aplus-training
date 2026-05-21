@@ -278,6 +278,20 @@ nav, .hero, .layout { width: 100%; max-width: 100%; box-sizing: border-box; disp
 .ch-tag.new { background: #FEF9C3; color: #854D0E; border-color: #FDE68A; }
 .ch-tag.all { background: var(--green-pale); color: #085041; border-color: rgba(45,106,79,0.2); }
 .ch-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12px; }
+.ch-files {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-bottom: 8px; flex: 1;
+}
+.ch-file-link {
+  font-size: 12px; color: var(--green-mid);
+  text-decoration: none; padding: 3px 0;
+  border-bottom: 1px solid transparent;
+  transition: all .12s; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.ch-file-link:hover {
+  color: var(--green); border-bottom-color: var(--green-light);
+}
 .ch-view-btn {
   font-size: 12px; color: var(--green-mid); background: var(--green-pale);
   border: 1px solid rgba(45,106,79,0.2); border-radius: 99px; padding: 4px 12px;
@@ -396,8 +410,10 @@ nav, .hero, .layout { width: 100%; max-width: 100%; box-sizing: border-box; disp
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-label">系統功能</div>
-    <a href="questionnaire.html" class="sidebar-system-btn"><i class="ti ti-clipboard-text"></i><span>入職評估問卷</span></a>
-    <a href="tasks.html" class="sidebar-system-btn"><i class="ti ti-checklist"></i><span>培訓任務清單</span></a>
+    <a href="questionnaire.html" class="sidebar-system-btn"><i class="ti ti-clipboard-text"></i><span>填寫入職問卷</span></a>
+    <a href="tasks.html" class="sidebar-system-btn"><i class="ti ti-checklist"></i><span>查看培訓任務</span></a>
+    <a href="standards.html" class="sidebar-system-btn"><i class="ti ti-award"></i><span>了解達標標準</span></a>
+    <a href="admin.html" class="sidebar-system-btn" style="opacity:0.65;"><i class="ti ti-lock"></i><span>培訓官後台</span></a>
     <div class="sidebar-divider"></div>
     <div class="sidebar-label">新進必讀</div>
     <button class="sidebar-item active" onclick="setActive(this); scrollToSection('checklist-section')">
@@ -495,44 +511,90 @@ nav, .hero, .layout { width: 100%; max-width: 100%; box-sizing: border-box; disp
     <!-- CHAPTERS -->
     <div class="section-title">全部培訓章節</div>
     <div class="chapter-grid">
-      <a id="ch1" class="chapter-card col-green" href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank">
+
+      <!-- Ch.1 -->
+      <div id="ch1" class="chapter-card col-green">
         <div class="ch-label">Ch.1</div><div class="ch-title">認識耶加</div>
         <div class="ch-desc">組織架構、跨部合作、打招呼文化、穿著規範</div>
-        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag new">新進必讀</span></div><span class="ch-view-btn">查看 →</span></div>
-      </a>
-      <a id="ch2" class="chapter-card col-purple" href="https://drive.google.com/drive/u/0/folders/1WhcwQYZyDciYYU3rXHXGkw3UJ7p_Aj7Q" target="_blank">
+        <div class="ch-files">
+          <a href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank" class="ch-file-link">📁 About A Plus.png</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank" class="ch-file-link">📁 校園維護和營運.png</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank" class="ch-file-link">📁 校務.png</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank" class="ch-file-link">📁 耶加人穿著.png</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank" class="ch-file-link">📁 倒垃圾注意事項.png</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank" class="ch-file-link">📁 A Plus 耶加群組差異性</a>
+        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag new">新進必讀</span></div><span class="ch-view-btn" onclick="window.open('https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY','_blank')">開啟資料夾 →</span></div>
+      </div>
+
+      <!-- Ch.2 -->
+      <div id="ch2" class="chapter-card col-purple">
         <div class="ch-label">Ch.2</div><div class="ch-title">考勤制度與薪資結構</div>
         <div class="ch-desc">打卡系統、請假規則、各假別定義、GP 評鑑結構</div>
-        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag new">新進必讀</span></div><span class="ch-view-btn">查看 →</span></div>
-      </a>
-      <a id="ch3" class="chapter-card col-gold" href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank">
+        <div class="ch-files">
+          <a href="https://drive.google.com/drive/u/0/folders/1WhcwQYZyDciYYU3rXHXGkw3UJ7p_Aj7Q" target="_blank" class="ch-file-link">📁 耶加考勤規章</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1WhcwQYZyDciYYU3rXHXGkw3UJ7p_Aj7Q" target="_blank" class="ch-file-link">📁 G/P 薪資及紅利</a>
+        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag new">新進必讀</span></div><span class="ch-view-btn" onclick="window.open('https://drive.google.com/drive/u/0/folders/1WhcwQYZyDciYYU3rXHXGkw3UJ7p_Aj7Q','_blank')">開啟資料夾 →</span></div>
+      </div>
+
+      <!-- Ch.3 -->
+      <div id="ch3" class="chapter-card col-gold">
         <div class="ch-label">Ch.3</div><div class="ch-title">教學範疇</div>
-        <div class="ch-group"><div class="ch-group-label">教學老師職責</div><div class="ch-group-items">班級經營、親師溝通、學生管理、課程授課、招生合作</div></div>
-        <div class="ch-group"><div class="ch-group-label">教育行政</div><div class="ch-group-items">新生入班、請假管理、點名表/接送表/課表製作、晚餐記錄</div></div>
-        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">教學部必讀</span></div><span class="ch-view-btn">查看 →</span></div>
-      </a>
-      <a id="ch4" class="chapter-card col-coral" href="https://drive.google.com/drive/u/0/folders/1LGXf4CBm_C2IEGUMaf00exfu1U5UB-wd" target="_blank">
+        <div class="ch-files">
+          <a href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank" class="ch-file-link">📁 一、教育架構</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank" class="ch-file-link">📁 二、教育行政</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank" class="ch-file-link">📁 三、親師溝通</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank" class="ch-file-link">📁 四、學生管理</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank" class="ch-file-link">📁 五、危機處理</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank" class="ch-file-link">📁 六、課程授課</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank" class="ch-file-link">📁 七、招生合作</a>
+        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">教學部必讀</span></div><span class="ch-view-btn" onclick="window.open('https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0','_blank')">開啟資料夾 →</span></div>
+      </div>
+
+      <!-- Ch.4 -->
+      <div id="ch4" class="chapter-card col-coral">
         <div class="ch-label">Ch.4</div><div class="ch-title">跨部合作</div>
-        <div class="ch-group"><div class="ch-group-label">英語部相關</div><div class="ch-group-items">IEE 課程、LT 選填、平時英語溝通合作</div></div>
-        <div class="ch-group"><div class="ch-group-label">學務部相關</div><div class="ch-group-items">財務請款、學費流程、繳費 APP、變動表</div></div>
-        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag new">新進必讀</span></div><span class="ch-view-btn">查看 →</span></div>
-      </a>
-      <a id="ch5" class="chapter-card col-teal" href="https://drive.google.com/drive/u/0/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER" target="_blank">
+        <div class="ch-files">
+          <a href="https://drive.google.com/drive/u/0/folders/1LGXf4CBm_C2IEGUMaf00exfu1U5UB-wd" target="_blank" class="ch-file-link">📁 英語部相關合作</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1LGXf4CBm_C2IEGUMaf00exfu1U5UB-wd" target="_blank" class="ch-file-link">📁 學務部相關合作</a>
+        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag new">新進必讀</span></div><span class="ch-view-btn" onclick="window.open('https://drive.google.com/drive/u/0/folders/1LGXf4CBm_C2IEGUMaf00exfu1U5UB-wd','_blank')">開啟資料夾 →</span></div>
+      </div>
+
+      <!-- Ch.5 -->
+      <div id="ch5" class="chapter-card col-teal">
         <div class="ch-label">Ch.5</div><div class="ch-title">校務與寒暑假</div>
-        <div class="ch-group"><div class="ch-group-label">校務</div><div class="ch-group-items">代課交接流程、早值流程</div></div>
-        <div class="ch-group"><div class="ch-group-label">寒暑假</div><div class="ch-group-items">寒暑假架構規劃、戶外教學秘笈、兩天一夜要點</div></div>
-        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">全體適用</span></div><span class="ch-view-btn">查看 →</span></div>
-      </a>
-      <a id="ch6" class="chapter-card col-blue" href="https://drive.google.com/drive/u/0/folders/1opw7PPxz5LCHuJyUyVO5r_0y-Rlw7xoz" target="_blank">
+        <div class="ch-files">
+          <a href="https://drive.google.com/drive/u/0/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER" target="_blank" class="ch-file-link">📁 一、代課交接流程</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER" target="_blank" class="ch-file-link">📁 二、校務流程 SOP</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER" target="_blank" class="ch-file-link">📁 三、寒暑假相關資料</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER" target="_blank" class="ch-file-link">📁 四、戶外教學秘笈</a>
+        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">全體適用</span></div><span class="ch-view-btn" onclick="window.open('https://drive.google.com/drive/u/0/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER','_blank')">開啟資料夾 →</span></div>
+      </div>
+
+      <!-- Ch.6 -->
+      <div id="ch6" class="chapter-card col-blue">
         <div class="ch-label">Ch.6</div><div class="ch-title">教學部季節目標</div>
-        <div class="ch-desc">P 值計算、三大貢獻類型</div>
-        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">教學部必讀</span></div><span class="ch-view-btn">查看 →</span></div>
-      </a>
-      <a id="ch7" class="chapter-card col-pink full-width" href="https://drive.google.com/drive/u/0/folders/1lcj7W9tRZcOqruAS8auXJEPgeDULM8X4" target="_blank">
+        <div class="ch-files">
+          <a href="https://drive.google.com/drive/u/0/folders/1opw7PPxz5LCHuJyUyVO5r_0y-Rlw7xoz" target="_blank" class="ch-file-link">📁 一、教學部季節目標 說明</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1opw7PPxz5LCHuJyUyVO5r_0y-Rlw7xoz" target="_blank" class="ch-file-link">📁 二、教學部 P 值常見 QA</a>
+          <a href="https://drive.google.com/drive/u/0/folders/1opw7PPxz5LCHuJyUyVO5r_0y-Rlw7xoz" target="_blank" class="ch-file-link">📁 三、P 值模擬版</a>
+        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">教學部必讀</span></div><span class="ch-view-btn" onclick="window.open('https://drive.google.com/drive/u/0/folders/1opw7PPxz5LCHuJyUyVO5r_0y-Rlw7xoz','_blank')">開啟資料夾 →</span></div>
+      </div>
+
+      <!-- Ch.7 -->
+      <div id="ch7" class="chapter-card col-pink full-width">
         <div class="ch-label">Ch.7</div><div class="ch-title">年度排程</div>
-        <div class="ch-desc">全年重要時程與季節任務</div>
-        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">全體適用</span></div><span class="ch-view-btn">查看 →</span></div>
-      </a>
+        <div class="ch-files" style="flex-direction:row;flex-wrap:wrap;">
+          <a href="https://drive.google.com/drive/u/0/folders/1lcj7W9tRZcOqruAS8auXJEPgeDULM8X4" target="_blank" class="ch-file-link">📁 教學部年度排程</a>
+        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">全體適用</span></div><span class="ch-view-btn" onclick="window.open('https://drive.google.com/drive/u/0/folders/1lcj7W9tRZcOqruAS8auXJEPgeDULM8X4','_blank')">開啟資料夾 →</span></div>
+      </div>
+
     </div>
 
     <!-- SOP -->
