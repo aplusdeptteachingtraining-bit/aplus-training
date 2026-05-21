@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>達標標準 · A Plus 耶加</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root{--green:#1B4332;--green-mid:#2D6A4F;--green-light:#52B788;--green-pale:#D8F3DC;--gold:#F6E05E;--cream:#F9F6F0;--white:#fff;--text:#1A1A1A;--text-muted:#6B6B6B;--text-light:#9E9E9E;--border-light:#E8E8E8;--radius:14px;--shadow:0 2px 12px rgba(0,0,0,0.07);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--text);line-height:1.7;}
+.topbar{background:var(--green);padding:14px 32px;display:flex;align-items:center;gap:12px;}
+.topbar a{color:rgba(255,255,255,0.6);text-decoration:none;font-size:13px;}
+.topbar a:hover{color:#fff;}
+.topbar-sep{color:rgba(255,255,255,0.3);}
+.topbar-title{color:#fff;font-size:14px;font-weight:500;}
+.page-wrap{max-width:820px;margin:0 auto;padding:40px 24px 80px;}
+.page-title{font-size:24px;font-weight:500;margin-bottom:8px;}
+.page-sub{font-size:14px;color:var(--text-muted);margin-bottom:36px;}
+.section{margin-bottom:36px;}
+.section-title{font-size:13px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border-light);}
+.phase-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+.phase-card{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:22px;position:relative;overflow:hidden;}
+.phase-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.phase-card.entry::before{background:var(--green-mid);}
+.phase-card.basic::before{background:#2563EB;}
+.phase-card.advanced::before{background:#C05621;}
+.phase-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-light);margin-bottom:6px;}
+.phase-name{font-size:16px;font-weight:500;margin-bottom:4px;}
+.phase-period{font-size:12px;color:var(--text-muted);margin-bottom:16px;}
+.phase-items{list-style:none;}
+.phase-items li{display:flex;gap:8px;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border-light);}
+.phase-items li:last-child{border-bottom:none;}
+.phase-items li::before{content:'✓';color:var(--green-light);flex-shrink:0;font-weight:600;}
+.dim-table{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;}
+.dim-row{display:grid;grid-template-columns:1.2fr 0.6fr 2fr;gap:0;padding:12px 20px;border-bottom:1px solid var(--border-light);font-size:13px;align-items:center;}
+.dim-row:last-child{border-bottom:none;}
+.dim-row.head{background:var(--cream);font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);}
+.dim-weight{display:inline-flex;gap:4px;align-items:center;}
+.weight-bar{height:6px;border-radius:99px;background:var(--green-light);}
+.alert-table{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;}
+.alert-row{display:grid;grid-template-columns:120px 1fr;gap:0;padding:12px 20px;border-bottom:1px solid var(--border-light);font-size:13px;align-items:flex-start;}
+.alert-row:last-child{border-bottom:none;}
+.alert-level{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:500;white-space:nowrap;}
+.alert-level.yellow{background:#FEF9C3;color:#92400E;border:1px solid #FDE68A;}
+.alert-level.red{background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;}
+@media(max-width:640px){.phase-cards{grid-template-columns:1fr;}.dim-row{grid-template-columns:1fr 1fr;}.page-wrap{padding:24px 16px 60px;}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="index.html"><i class="ti ti-arrow-left"></i> 返回首頁</a>
+  <span class="topbar-sep">›</span>
+  <span class="topbar-title">達標標準 Standards</span>
+</div>
+<div class="page-wrap">
+  <div class="page-title">培訓達標標準</div>
+  <div class="page-sub">本頁說明各培訓階段的達標條件、能力維度與止損機制。</div>
+
+  <div class="section">
+    <div class="section-title">三階段達標條件</div>
+    <div class="phase-cards">
+      <div class="phase-card entry">
+        <div class="phase-label">Phase 01</div>
+        <div class="phase-name">入門 Entry</div>
+        <div class="phase-period">第 1–2 週</div>
+        <ul class="phase-items">
+          <li>任務完成率 100%</li>
+          <li>行政了解維度 ≥ 60 分</li>
+          <li>入職測驗 ≥ 70 分</li>
+          <li>完成時限：第 2 週末</li>
+        </ul>
+      </div>
+      <div class="phase-card basic">
+        <div class="phase-label">Phase 02</div>
+        <div class="phase-name">初階 Basic</div>
+        <div class="phase-period">第 3–8 週</div>
+        <ul class="phase-items">
+          <li>任務完成率 ≥ 80%</li>
+          <li>課堂管理維度 ≥ 65 分</li>
+          <li>單維度最低 ≥ 50 分</li>
+          <li>完成時限：第 8 週末</li>
+        </ul>
+      </div>
+      <div class="phase-card advanced">
+        <div class="phase-label">Phase 03</div>
+        <div class="phase-name">進階 Advanced</div>
+        <div class="phase-period">第 9–12 週</div>
+        <ul class="phase-items">
+          <li>進階任務完成率 ≥ 75%</li>
+          <li>課堂管理維度 ≥ 75 分</li>
+          <li>雷達圖加權總分 ≥ 70 分</li>
+          <li>培訓官最終評定通過</li>
+          <li>完成時限：第 12 週末</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">能力評估五維度</div>
+    <div class="dim-table">
+      <div class="dim-row head"><span>維度</span><span>權重</span><span>文件來源</span></div>
+      <div class="dim-row"><span><strong>課堂管理</strong><br><span style="font-size:11px;color:var(--text-muted);">Classroom Mgmt</span></span><span><div class="dim-weight"><div class="weight-bar" style="width:30px;"></div><span style="font-size:12px;">30%</span></div></span><span>中年級教學SOP、托育培訓、戶外教學</span></div>
+      <div class="dim-row"><span><strong>教學技巧</strong><br><span style="font-size:11px;color:var(--text-muted);">Teaching Skills</span></span><span><div class="dim-weight"><div class="weight-bar" style="width:25px;"></div><span style="font-size:12px;">25%</span></div></span><span>TTQS系列培訓（啟發、親師溝通、KIC）</span></div>
+      <div class="dim-row"><span><strong>學科知識</strong><br><span style="font-size:11px;color:var(--text-muted);">Subject Knowledge</span></span><span><div class="dim-weight"><div class="weight-bar" style="width:25px;"></div><span style="font-size:12px;">25%</span></div></span><span>低年級月份手冊、高年級教材（翰林/康軒）</span></div>
+      <div class="dim-row"><span><strong>行政了解</strong><br><span style="font-size:11px;color:var(--text-muted);">Administration</span></span><span><div class="dim-weight"><div class="weight-bar" style="width:10px;"></div><span style="font-size:12px;">10%</span></div></span><span>入職流程、考勤規章、G/P薪資、P值制度</span></div>
+      <div class="dim-row"><span><strong>備課能力</strong><br><span style="font-size:11px;color:var(--text-muted);">Lesson Prep</span></span><span><div class="dim-weight"><div class="weight-bar" style="width:10px;"></div><span style="font-size:12px;">10%</span></div></span><span>ChatGPT教案、KIC、核心課程表單說明</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">止損預警機制</div>
+    <div class="alert-table">
+      <div class="alert-row">
+        <div><span class="alert-level yellow">🟡 黃色預警</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">系統自動觸發</div></div>
+        <ul style="list-style:none;font-size:13px;">
+          <li style="padding:3px 0;">任一階段完成率連續 2 週未提升</li>
+          <li style="padding:3px 0;">課堂管理維度低於 45 分</li>
+          <li style="padding:3px 0;">任一維度分數低於 40 分</li>
+          <li style="padding:3px 0;">第 4 週末整體進度低於 50%</li>
+        </ul>
+      </div>
+      <div class="alert-row">
+        <div><span class="alert-level red">🔴 紅色止損</span><div style="font-size:11px;color:var(--text-muted);margin-top:4px;">培訓官確認決策</div></div>
+        <ul style="list-style:none;font-size:13px;">
+          <li style="padding:3px 0;">入門測驗低於 60 分（需重考一次）</li>
+          <li style="padding:3px 0;">重考仍低於 60 分 → 觸發適配度評估</li>
+          <li style="padding:3px 0;">課堂管理連續 3 週低於 40 分</li>
+          <li style="padding:3px 0;">第 8 週末任務完成率低於 60%</li>
+          <li style="padding:3px 0;">培訓官觀察連續 2 次「需關注」</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
