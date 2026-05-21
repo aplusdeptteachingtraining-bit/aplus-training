@@ -25,13 +25,8 @@
   --radius-sm: 8px;
   --shadow: 0 2px 12px rgba(0,0,0,0.07);
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
-html {
-  overflow-x: hidden;
-}
-
+html { overflow-x: hidden; }
 body {
   font-family: 'Noto Sans TC', sans-serif;
   background: var(--cream);
@@ -43,136 +38,82 @@ body {
   overflow-x: hidden;
 }
 
-/* ── NAV ── */
-nav {
-  position: sticky; top: 0; z-index: 100;
-  background: var(--green);
-  height: 56px;
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: nowrap;
-  padding: 0 32px; gap: 16px;
-  width: 100%;
-}
-.nav-logo {
-  color: #fff; font-size: 14px; font-weight: 500;
-  display: flex; align-items: center; gap: 8px;
-}
-.nav-logo-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--gold); flex-shrink: 0;
-}
-.nav-link {
-  font-size: 12px; color: rgba(255,255,255,0.6);
-  padding: 6px 10px; border-radius: 6px;
-  cursor: pointer; text-decoration: none;
-  transition: all .15s;
-}
-.nav-link:hover, .nav-link.active {
-  color: #fff; background: rgba(255,255,255,0.1);
-}
-
 /* ── HERO ── */
 .hero {
   background: var(--green);
   padding: 48px 48px 40px;
   position: relative; overflow: hidden;
-  width: 100%;
-  box-sizing: border-box;
+  width: 100%; box-sizing: border-box;
 }
 .hero::before {
-  content: '';
-  position: absolute; top: -60px; right: -60px;
+  content: ''; position: absolute; top: -60px; right: -60px;
   width: 280px; height: 280px; border-radius: 50%;
-  background: rgba(82,183,136,0.1);
-  pointer-events: none;
+  background: rgba(82,183,136,0.1); pointer-events: none;
 }
 .hero::after {
-  content: '';
-  position: absolute; bottom: -80px; left: 30%;
+  content: ''; position: absolute; bottom: -80px; left: 30%;
   width: 200px; height: 200px; border-radius: 50%;
-  background: rgba(246,224,94,0.06);
-  pointer-events: none;
+  background: rgba(246,224,94,0.06); pointer-events: none;
 }
 .hero-tagline {
-  position: absolute;
-  top: 24px; right: 40px;
-  color: rgba(255,255,255,0.45);
-  font-size: 13px; font-style: italic;
-  z-index: 1;
+  position: absolute; top: 24px; right: 40px;
+  color: rgba(255,255,255,0.45); font-size: 13px; font-style: italic; z-index: 1;
 }
 .hero-tag {
   display: inline-block;
-  background: rgba(246,224,94,0.15);
-  border: 1px solid rgba(246,224,94,0.3);
-  color: var(--gold);
-  font-size: 11px; padding: 4px 14px;
-  border-radius: 99px; margin-bottom: 20px;
-  letter-spacing: .04em;
+  background: rgba(246,224,94,0.15); border: 1px solid rgba(246,224,94,0.3);
+  color: var(--gold); font-size: 11px; padding: 4px 14px;
+  border-radius: 99px; margin-bottom: 20px; letter-spacing: .04em;
 }
 .hero h1 {
   color: #fff; font-size: clamp(22px, 3vw, 32px);
-  font-weight: 500; line-height: 1.45;
-  margin-bottom: 16px; position: relative; z-index: 1;
+  font-weight: 500; line-height: 1.45; margin-bottom: 16px; position: relative; z-index: 1;
 }
 .hero h1 span { color: var(--gold); }
 .hero-sub {
-  color: rgba(255,255,255,0.85);
-  font-size: 14px; font-weight: 500;
+  color: rgba(255,255,255,0.85); font-size: 14px; font-weight: 500;
   margin-bottom: 10px; position: relative; z-index: 1;
 }
 .hero-body {
-  color: rgba(255,255,255,0.6);
-  font-size: 13px; line-height: 1.85;
+  color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.85;
   max-width: 560px; position: relative; z-index: 1;
 }
 
-nav, .hero, .layout, .page-header {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  display: block;
+/* ── QUICK ENTRY CARDS ── */
+.quick-entry {
+  display: flex; gap: 10px; margin-top: 24px; position: relative; z-index: 1; flex-wrap: wrap;
 }
+.quick-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9); border-radius: 99px;
+  padding: 8px 16px; font-size: 12px; font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer; text-decoration: none; transition: all .15s;
+}
+.quick-btn:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.4); }
+.quick-btn i { font-size: 14px; }
 
 /* ── LAYOUT ── */
+nav, .hero, .layout { width: 100%; max-width: 100%; box-sizing: border-box; display: block; }
 .layout {
   display: grid;
   grid-template-columns: 240px 1fr;
   grid-template-rows: auto 1fr;
-  min-height: 100vh;
-  width: 100%;
+  min-height: 100vh; width: 100%;
 }
-
-/* Hero spans both columns */
-.layout > .hero {
-  grid-column: 1 / -1;
-  grid-row: 1;
-}
-
-/* Sidebar in second row, first column */
-.layout > .sidebar {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-/* Main in second row, second column */
-.layout > .main {
-  grid-column: 2;
-  grid-row: 2;
-}
+.layout > .hero { grid-column: 1 / -1; grid-row: 1; }
+.layout > .sidebar { grid-column: 1; grid-row: 2; }
+.layout > .main { grid-column: 2; grid-row: 2; }
 
 /* ── SIDEBAR ── */
 .sidebar {
-  background: var(--white);
-  border-right: 1px solid var(--border-light);
-  padding: 24px 16px;
-  position: sticky; top: 0;
-  height: 100vh;
-  overflow-y: auto;
+  background: var(--white); border-right: 1px solid var(--border-light);
+  padding: 24px 16px; position: sticky; top: 0;
+  height: 100vh; overflow-y: auto;
 }
 .sidebar-label {
-  font-size: 10px; letter-spacing: .12em;
-  text-transform: uppercase; color: var(--text-light);
-  padding: 0 8px; margin-bottom: 6px; margin-top: 20px;
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-light); padding: 0 8px; margin-bottom: 6px; margin-top: 20px;
 }
 .sidebar-label:first-child { margin-top: 0; }
 .sidebar-item {
@@ -180,9 +121,7 @@ nav, .hero, .layout, .page-header {
   padding: 8px 10px; border-radius: var(--radius-sm);
   font-size: 13px; color: var(--text);
   cursor: pointer; width: 100%; text-align: left;
-  border: none; background: none;
-  font-family: 'Noto Sans TC', sans-serif;
-  transition: all .12s;
+  border: none; background: none; font-family: 'Noto Sans TC', sans-serif; transition: all .12s;
 }
 .sidebar-item:hover { background: var(--green-pale); color: var(--green-mid); }
 .sidebar-item.active { background: var(--green-pale); color: var(--green-mid); font-weight: 500; }
@@ -190,39 +129,97 @@ nav, .hero, .layout, .page-header {
   width: 22px; height: 22px; border-radius: 50%;
   background: var(--cream); font-size: 11px; font-weight: 600;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; color: var(--text-muted);
-  transition: all .12s;
+  flex-shrink: 0; color: var(--text-muted); transition: all .12s;
 }
 .sidebar-item.active .sidebar-num { background: var(--green-mid); color: #fff; }
 .sidebar-text { flex: 1; }
-
+.sidebar-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
+.sidebar-system-btn {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--green-mid); background: var(--green-pale);
+  border: 1px solid rgba(45,106,79,0.15); cursor: pointer;
+  width: 100%; text-align: left; font-family: 'Noto Sans TC', sans-serif;
+  transition: all .12s; margin-bottom: 6px; text-decoration: none;
+}
+.sidebar-system-btn:hover { background: var(--green-mid); color: #fff; }
+.sidebar-system-btn i { font-size: 14px; }
 
 /* ── MAIN ── */
 .main { padding: 40px 48px 80px; min-width: 0; }
 
+/* ── PROFILE BANNER ── */
+.profile-banner {
+  background: var(--white); border: 1px solid var(--border-light);
+  border-radius: var(--radius); padding: 20px 24px; margin-bottom: 24px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.profile-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--green-pale); border: 2px solid var(--green-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.profile-info { flex: 1; min-width: 120px; }
+.profile-name { font-size: 15px; font-weight: 500; color: var(--text); }
+.profile-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.profile-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 99px;
+  font-size: 11px; background: var(--green-pale); color: var(--green-mid);
+  border: 1px solid rgba(45,106,79,0.2); margin-left: 8px;
+}
+.profile-setup-btn {
+  font-size: 12px; color: var(--green-mid);
+  background: none; border: 1px solid rgba(45,106,79,0.3);
+  border-radius: 99px; padding: 5px 14px;
+  cursor: pointer; font-family: 'Noto Sans TC', sans-serif;
+  transition: all .15s; white-space: nowrap;
+}
+.profile-setup-btn:hover { background: var(--green-pale); }
+
+/* ── PHASE PROGRESS ── */
+.phase-progress-wrap {
+  background: var(--white); border: 1px solid var(--border-light);
+  border-radius: var(--radius); padding: 20px 24px; margin-bottom: 28px;
+}
+.phase-progress-title {
+  font-size: 12px; font-weight: 500; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.phase-progress-title a {
+  font-size: 11px; color: var(--green-mid); text-decoration: none;
+  background: var(--green-pale); padding: 2px 10px; border-radius: 99px;
+}
+.phase-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.phase-item { cursor: pointer; }
+.phase-item-label {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: var(--text); margin-bottom: 6px;
+}
+.phase-item-pct { font-size: 11px; color: var(--text-muted); }
+.phase-bar {
+  height: 6px; background: var(--border-light);
+  border-radius: 99px; overflow: hidden;
+}
+.phase-fill {
+  height: 100%; border-radius: 99px; transition: width .8s ease;
+}
+.phase-fill.entry { background: linear-gradient(90deg, #52B788, #2D6A4F); }
+.phase-fill.basic { background: linear-gradient(90deg, #60A5FA, #2563EB); }
+.phase-fill.advanced { background: linear-gradient(90deg, #F97316, #C05621); }
+
 /* ── CHECKLIST ── */
 .checklist-card {
-  background: var(--green-pale);
-  border: 1px solid rgba(45,106,79,0.15);
-  border-radius: var(--radius);
-  padding: 28px 32px;
-  margin-bottom: 36px;
+  background: var(--green-pale); border: 1px solid rgba(45,106,79,0.15);
+  border-radius: var(--radius); padding: 28px 32px; margin-bottom: 36px;
 }
-.checklist-card h2 {
-  font-size: 18px; font-weight: 500;
-  color: #085041; margin-bottom: 6px;
-}
-.checklist-card > p {
-  font-size: 13px; color: #2D6A4F; margin-bottom: 18px;
-}
+.checklist-card h2 { font-size: 18px; font-weight: 500; color: #085041; margin-bottom: 6px; }
+.checklist-card > p { font-size: 13px; color: #2D6A4F; margin-bottom: 18px; }
 .progress-label {
-  display: flex; justify-content: space-between;
-  font-size: 12px; color: #2D6A4F; margin-bottom: 7px;
+  display: flex; justify-content: space-between; font-size: 12px; color: #2D6A4F; margin-bottom: 7px;
 }
-.progress-bar {
-  height: 6px; background: rgba(45,106,79,0.15);
-  border-radius: 99px; overflow: hidden; margin-bottom: 18px;
-}
+.progress-bar { height: 6px; background: rgba(45,106,79,0.15); border-radius: 99px; overflow: hidden; margin-bottom: 18px; }
 .progress-fill {
   height: 100%; border-radius: 99px;
   background: linear-gradient(90deg, var(--green-light), var(--green-mid));
@@ -231,14 +228,11 @@ nav, .hero, .layout, .page-header {
 .checklist { list-style: none; }
 .checklist li {
   display: flex; align-items: flex-start; gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(45,106,79,0.12);
-  font-size: 13px;
+  padding: 10px 0; border-bottom: 1px solid rgba(45,106,79,0.12); font-size: 13px;
 }
 .checklist li:last-child { border-bottom: none; }
 .checklist input[type=checkbox] {
-  width: 17px; height: 17px;
-  accent-color: var(--green-mid);
+  width: 17px; height: 17px; accent-color: var(--green-mid);
   cursor: pointer; flex-shrink: 0; margin-top: 2px;
 }
 .checklist .item-title { font-weight: 500; color: #085041; display: block; margin-bottom: 2px; }
@@ -247,35 +241,20 @@ nav, .hero, .layout, .page-header {
 
 /* ── SECTION TITLE ── */
 .section-title {
-  font-size: 11px; letter-spacing: .12em;
-  text-transform: uppercase; color: var(--text-muted);
-  margin-bottom: 16px; margin-top: 40px;
-  display: flex; align-items: center; gap: 10px;
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 16px; margin-top: 40px; display: flex; align-items: center; gap: 10px;
 }
 .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border-light); }
 
 /* ── CHAPTER GRID ── */
-.chapter-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
+.chapter-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .chapter-card {
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius);
-  padding: 22px;
-  cursor: pointer; transition: all .2s;
-  position: relative; overflow: hidden;
-  text-decoration: none;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
+  background: var(--white); border: 1px solid var(--border-light);
+  border-radius: var(--radius); padding: 22px;
+  cursor: pointer; transition: all .2s; position: relative; overflow: hidden;
+  text-decoration: none; color: var(--text); display: flex; flex-direction: column;
 }
-.chapter-card::before {
-  content: ''; position: absolute;
-  top: 0; left: 0; right: 0; height: 3px;
-}
+.chapter-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
 .chapter-card.col-green::before { background: var(--green-mid); }
 .chapter-card.col-purple::before { background: #534AB7; }
 .chapter-card.col-gold::before { background: var(--gold-dark); }
@@ -283,80 +262,37 @@ nav, .hero, .layout, .page-header {
 .chapter-card.col-teal::before { background: #0D9488; }
 .chapter-card.col-blue::before { background: #2563EB; }
 .chapter-card.col-pink::before { background: #D4537E; }
-.chapter-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-  border-color: rgba(45,106,79,0.2);
-}
+.chapter-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: rgba(45,106,79,0.2); }
 .chapter-card.full-width { grid-column: 1 / -1; border-style: dashed; }
-.ch-label {
-  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--text-light); margin-bottom: 8px;
-}
-.ch-title {
-  font-size: 15px; font-weight: 500;
-  color: var(--text); margin-bottom: 10px; line-height: 1.4;
-}
+.ch-label { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-light); margin-bottom: 8px; }
+.ch-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 10px; line-height: 1.4; }
 .ch-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 8px; }
 .ch-group { margin-bottom: 10px; }
-.ch-group-label {
-  font-size: 10px; font-weight: 500; text-transform: uppercase;
-  letter-spacing: .07em; color: var(--text-light); margin-bottom: 4px;
-}
+.ch-group-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: var(--text-light); margin-bottom: 4px; }
 .ch-group-items { font-size: 12px; color: var(--text-muted); line-height: 1.65; }
 .ch-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
 .ch-tag {
   font-size: 11px; padding: 2px 10px; border-radius: 99px;
-  background: var(--cream); color: var(--text-muted);
-  border: 1px solid var(--border-light);
+  background: var(--cream); color: var(--text-muted); border: 1px solid var(--border-light);
 }
 .ch-tag.new { background: #FEF9C3; color: #854D0E; border-color: #FDE68A; }
 .ch-tag.all { background: var(--green-pale); color: #085041; border-color: rgba(45,106,79,0.2); }
-.ch-footer {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-top: auto;
-  padding-top: 12px;
-}
+.ch-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 12px; }
 .ch-view-btn {
-  font-size: 12px; color: var(--green-mid);
-  background: var(--green-pale);
-  border: 1px solid rgba(45,106,79,0.2);
-  border-radius: 99px; padding: 4px 12px;
-  cursor: pointer; white-space: nowrap;
-  transition: all .15s;
+  font-size: 12px; color: var(--green-mid); background: var(--green-pale);
+  border: 1px solid rgba(45,106,79,0.2); border-radius: 99px; padding: 4px 12px;
+  cursor: pointer; white-space: nowrap; transition: all .15s;
 }
-.chapter-card:hover .ch-view-btn {
-  background: var(--green-mid); color: #fff;
-}
+.chapter-card:hover .ch-view-btn { background: var(--green-mid); color: #fff; }
 
 /* ── SOP ── */
-.sop-card {
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius);
-  padding: 28px; margin-top: 16px;
-}
+.sop-card { background: var(--white); border: 1px solid var(--border-light); border-radius: var(--radius); padding: 28px; margin-top: 16px; }
 .sop-title { font-size: 16px; font-weight: 500; margin-bottom: 24px; }
-.sop-steps {
-  display: flex; gap: 0;
-  overflow-x: auto; padding-bottom: 4px;
-}
-.sop-step {
-  flex: 1; min-width: 110px;
-  text-align: center; position: relative; padding: 0 6px;
-}
-.sop-step::after {
-  content: '→';
-  position: absolute; right: -10px; top: 18px;
-  color: var(--text-light); font-size: 14px;
-}
+.sop-steps { display: flex; gap: 0; overflow-x: auto; padding-bottom: 4px; }
+.sop-step { flex: 1; min-width: 110px; text-align: center; position: relative; padding: 0 6px; }
+.sop-step::after { content: '→'; position: absolute; right: -10px; top: 18px; color: var(--text-light); font-size: 14px; }
 .sop-step:last-child::after { display: none; }
-.step-icon {
-  width: 46px; height: 46px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 10px; font-size: 20px;
-  border: 1px solid transparent;
-}
+.step-icon { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px; border: 1px solid transparent; }
 .step-icon.c1 { background: #E1F5EE; border-color: rgba(15,110,86,0.2); color: #0F6E56; }
 .step-icon.c2 { background: #EEEDFE; border-color: rgba(83,74,183,0.2); color: #534AB7; }
 .step-icon.c3 { background: #FAEEDA; border-color: rgba(183,121,31,0.2); color: #B7791F; }
@@ -366,119 +302,128 @@ nav, .hero, .layout, .page-header {
 .step-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
 .notice-box {
   display: flex; gap: 10px; align-items: flex-start;
-  background: #FFFBEB; border: 1px solid #FDE68A;
-  border-radius: var(--radius-sm); padding: 12px 16px;
-  margin-top: 20px; font-size: 13px; color: #92400E;
+  background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius-sm);
+  padding: 12px 16px; margin-top: 20px; font-size: 13px; color: #92400E;
 }
 .notice-box i { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 .notice-box strong { display: block; margin-bottom: 4px; font-weight: 500; }
 
-/* ── RESPONSIVE ── */
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.45); align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: var(--radius);
+  padding: 32px; width: 90%; max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.modal h3 { font-size: 18px; font-weight: 500; margin-bottom: 20px; color: var(--text); }
+.modal label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; margin-top: 14px; }
+.modal input, .modal select {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm); font-family: 'Noto Sans TC', sans-serif;
+  font-size: 14px; color: var(--text); background: var(--cream); outline: none;
+}
+.modal input:focus, .modal select:focus { border-color: var(--green-light); background: var(--white); }
+.modal-btns { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+.btn-cancel {
+  padding: 8px 20px; border: 1px solid var(--border-light);
+  border-radius: 99px; background: none; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 13px;
+}
+.btn-save {
+  padding: 8px 20px; border: none; border-radius: 99px;
+  background: var(--green-mid); color: #fff; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 13px;
+}
 
-/* Tablet */
+/* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   body { min-width: 320px; }
-  nav { padding: 0 16px; width: 100%; }
   .hero-tagline { top: 16px; right: 20px; font-size: 11px; }
-  .layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr;
-    width: 100%;
-  }
+  .layout { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; width: 100%; }
   .layout > .hero { grid-column: 1; grid-row: 1; padding: 32px 20px 28px; }
   .layout > .sidebar { display: none; }
   .layout > .main { grid-column: 1; grid-row: 2; padding: 28px 16px 60px; }
   .chapter-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .chapter-card.full-width { grid-column: 1 / -1; }
+  .phase-row { grid-template-columns: 1fr; }
+  .profile-banner { flex-direction: column; align-items: flex-start; }
 }
-
-/* Mobile */
 @media (max-width: 480px) {
-  nav { padding: 0 14px; }
   .layout > .hero { padding: 24px 14px 20px; }
   .layout > .main { padding: 16px 10px 60px; }
-
   .chapter-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .chapter-card { min-height: 120px; padding: 14px 12px; }
   .chapter-card.full-width { grid-column: 1 / -1; }
-  .ch-label { font-size: 9px; margin-bottom: 5px; }
-  .ch-title { font-size: 14px; margin-bottom: 8px; }
-  .ch-desc { font-size: 12px; line-height: 1.65; }
-  .ch-group { margin-bottom: 7px; }
-  .ch-group-items { font-size: 12px; line-height: 1.65; }
-  .ch-group-label { font-size: 10px; }
-  .ch-tag { font-size: 11px; padding: 2px 8px; }
-  .ch-view-btn { font-size: 11px; padding: 4px 10px; }
-  .ch-footer { margin-top: 8px; }
+  .ch-title { font-size: 14px; }
   .checklist-card { padding: 18px 14px; }
-  .sop-card { padding: 18px 12px; }
   .hero h1 { font-size: 20px; }
-  .hero-body { font-size: 12px; }
+  .quick-entry { flex-direction: column; }
 }
 
-/* ── HIGHLIGHT FLASH ANIMATION ── */
+/* ── FLASH ANIMATION ── */
 @keyframes chHighlight {
   0%   { box-shadow: 0 0 0 0 rgba(45,106,79,0); background: var(--white); }
   20%  { box-shadow: 0 0 0 4px rgba(82,183,136,0.35), 0 6px 32px rgba(45,106,79,0.18); background: #f0faf4; }
   60%  { box-shadow: 0 0 0 3px rgba(82,183,136,0.2), 0 4px 20px rgba(45,106,79,0.12); background: #f7fdf9; }
   100% { box-shadow: var(--shadow); background: var(--white); }
 }
-.chapter-card.ch-flash {
-  animation: chHighlight 1.4s ease forwards;
-}
+.chapter-card.ch-flash { animation: chHighlight 1.4s ease forwards; }
 </style>
 </head>
 <body>
 
-
-
-<!-- LAYOUT: hero + sidebar + main all in one grid -->
 <div class="layout">
 
-  <!-- HERO: spans full width -->
+  <!-- HERO -->
   <div class="hero">
     <div class="hero-tagline">We don't just teach, we inspire.</div>
     <div class="hero-tag">Welcome to A Plus · 耶加教育機構</div>
     <h1>準備好在 <span>A Plus</span> 開啟<br>一段有意義的旅程了嗎？</h1>
     <div class="hero-sub">這是我們為你準備的「職涯加速包」。</div>
     <div class="hero-body">好的教育，是老師與學生一起成長。我們把入職的起步清單與各階段的挑戰都整理在這裡，希望讓你在耶加的每一天，都不只是工作，而是不斷突破自我、發掘才能的過程。</div>
+    <div class="quick-entry">
+      <a href="questionnaire.html" class="quick-btn"><i class="ti ti-clipboard-text"></i> 填寫入職問卷</a>
+      <a href="tasks.html" class="quick-btn"><i class="ti ti-checklist"></i> 查看培訓任務</a>
+      <a href="standards.html" class="quick-btn"><i class="ti ti-award"></i> 了解達標標準</a>
+      <a href="admin.html" class="quick-btn" style="margin-left:auto;opacity:0.6;"><i class="ti ti-lock"></i> 培訓官後台</a>
+    </div>
   </div>
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
+    <div class="sidebar-label">系統功能</div>
+    <a href="questionnaire.html" class="sidebar-system-btn"><i class="ti ti-clipboard-text"></i><span>入職評估問卷</span></a>
+    <a href="tasks.html" class="sidebar-system-btn"><i class="ti ti-checklist"></i><span>培訓任務清單</span></a>
+    <div class="sidebar-divider"></div>
     <div class="sidebar-label">新進必讀</div>
     <button class="sidebar-item active" onclick="setActive(this); scrollToSection('checklist-section')">
-      <span class="sidebar-num">0</span>
-      <span class="sidebar-text">入職報到</span>
+      <span class="sidebar-num">0</span><span class="sidebar-text">入職報到</span>
     </button>
     <button class="sidebar-item" onclick="setActive(this); scrollToSection('ch1')">
-      <span class="sidebar-num">1</span>
-      <span class="sidebar-text">認識耶加</span>
+      <span class="sidebar-num">1</span><span class="sidebar-text">認識耶加</span>
     </button>
     <div class="sidebar-label">全體適用</div>
     <button class="sidebar-item" onclick="setActive(this); scrollToSection('ch2')">
-      <span class="sidebar-num">2</span>
-      <span class="sidebar-text">考勤與薪資</span>
+      <span class="sidebar-num">2</span><span class="sidebar-text">考勤與薪資</span>
     </button>
     <button class="sidebar-item" onclick="setActive(this); scrollToSection('ch3')">
-      <span class="sidebar-num">3</span>
-      <span class="sidebar-text">教學範疇</span>
+      <span class="sidebar-num">3</span><span class="sidebar-text">教學範疇</span>
     </button>
     <button class="sidebar-item" onclick="setActive(this); scrollToSection('ch4')">
-      <span class="sidebar-num">4</span>
-      <span class="sidebar-text">跨部合作</span>
+      <span class="sidebar-num">4</span><span class="sidebar-text">跨部合作</span>
     </button>
     <button class="sidebar-item" onclick="setActive(this); scrollToSection('ch5')">
-      <span class="sidebar-num">5</span>
-      <span class="sidebar-text">校務與寒暑假</span>
+      <span class="sidebar-num">5</span><span class="sidebar-text">校務與寒暑假</span>
     </button>
     <button class="sidebar-item" onclick="setActive(this); scrollToSection('ch6')">
-      <span class="sidebar-num">6</span>
-      <span class="sidebar-text">教學部季節目標</span>
+      <span class="sidebar-num">6</span><span class="sidebar-text">教學部季節目標</span>
     </button>
     <button class="sidebar-item" onclick="setActive(this); scrollToSection('ch7')">
-      <span class="sidebar-num">7</span>
-      <span class="sidebar-text">年度排程</span>
+      <span class="sidebar-num">7</span><span class="sidebar-text">年度排程</span>
     </button>
     <div class="sidebar-label">查詢</div>
     <button class="sidebar-item" onclick="setActive(this)">
@@ -494,144 +439,100 @@ nav, .hero, .layout, .page-header {
   <!-- MAIN -->
   <main class="main">
 
+    <!-- PROFILE BANNER -->
+    <div class="profile-banner" id="profile-banner">
+      <div class="profile-avatar">👩‍🏫</div>
+      <div class="profile-info">
+        <div class="profile-name" id="profile-name-display">歡迎來到 A Plus！</div>
+        <div class="profile-meta" id="profile-meta-display">請設定你的個人資料，開始培訓旅程。</div>
+      </div>
+      <button class="profile-setup-btn" onclick="openProfileModal()">
+        <span id="profile-btn-txt">設定個人資料</span>
+      </button>
+    </div>
+
+    <!-- PHASE PROGRESS -->
+    <div class="phase-progress-wrap">
+      <div class="phase-progress-title">
+        培訓進度 Training Progress
+        <a href="tasks.html">查看所有任務 →</a>
+      </div>
+      <div class="phase-row">
+        <div class="phase-item" onclick="location.href='tasks.html#entry'">
+          <div class="phase-item-label">入門階段 Entry<span class="phase-item-pct" id="entry-pct">0%</span></div>
+          <div class="phase-bar"><div class="phase-fill entry" id="entry-fill" style="width:0%"></div></div>
+        </div>
+        <div class="phase-item" onclick="location.href='tasks.html#basic'">
+          <div class="phase-item-label">初階階段 Basic<span class="phase-item-pct" id="basic-pct">0%</span></div>
+          <div class="phase-bar"><div class="phase-fill basic" id="basic-fill" style="width:0%"></div></div>
+        </div>
+        <div class="phase-item" onclick="location.href='tasks.html#advanced'">
+          <div class="phase-item-label">進階階段 Advanced<span class="phase-item-pct" id="adv-pct">0%</span></div>
+          <div class="phase-bar"><div class="phase-fill advanced" id="adv-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- CHECKLIST -->
     <div class="checklist-card" id="checklist-section">
       <h2>Ch.0 入職第一週 Checklist</h2>
       <p>把每一項打勾，確認完成入職所有必要步驟。</p>
       <div class="progress-label">
-        <span>完成進度</span>
-        <span id="prog-txt">0 / 7 完成</span>
+        <span>完成進度</span><span id="prog-txt">0 / 7 完成</span>
       </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="prog-fill"></div>
-      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
       <ul class="checklist" id="checklist">
-        <li>
-          <input type="checkbox" onchange="updateProgress()">
-          <div><span class="item-title">準備入職物品</span><span class="item-desc">室內拖鞋、有蓋子的餐盒、水壺、個人藥品、衛生紙</span></div>
-        </li>
-        <li>
-          <input type="checkbox" onchange="updateProgress()">
-          <div><span class="item-title">完成人事手續</span><span class="item-desc">5日內完成人事項目，並繳交給人資</span></div>
-        </li>
-        <li>
-          <input type="checkbox" onchange="updateProgress()">
-          <div><span class="item-title">加入所有必要群組</span><span class="item-desc">校務、部門、跨部合作、全耶群組</span></div>
-        </li>
-        <li>
-          <input type="checkbox" onchange="updateProgress()">
-          <div><span class="item-title">各校區 Google Maps 留五星好評</span><span class="item-desc">總校、龍華、左新、中學部</span></div>
-        </li>
-        <li>
-          <input type="checkbox" onchange="updateProgress()">
-          <div><span class="item-title">了解薪資 G/P 值制度</span><span class="item-desc">紅利定義、勞保級距說明</span></div>
-        </li>
-        <li>
-          <input type="checkbox" onchange="updateProgress()">
-          <div><span class="item-title">認識自己的班表</span><span class="item-desc">學期班表與寒暑假班表</span></div>
-        </li>
-        <li>
-          <input type="checkbox" onchange="updateProgress()">
-          <div><span class="item-title">開始紙本打卡</span><span class="item-desc">寫上中英文姓名、年月、部門名稱</span></div>
-        </li>
+        <li><input type="checkbox" onchange="updateProgress()"><div><span class="item-title">準備入職物品</span><span class="item-desc">室內拖鞋、有蓋子的餐盒、水壺、個人藥品、衛生紙</span></div></li>
+        <li><input type="checkbox" onchange="updateProgress()"><div><span class="item-title">完成人事手續</span><span class="item-desc">5日內完成人事項目，並繳交給人資</span></div></li>
+        <li><input type="checkbox" onchange="updateProgress()"><div><span class="item-title">加入所有必要群組</span><span class="item-desc">校務、部門、跨部合作、全耶群組</span></div></li>
+        <li><input type="checkbox" onchange="updateProgress()"><div><span class="item-title">各校區 Google Maps 留五星好評</span><span class="item-desc">總校、龍華、左新、中學部</span></div></li>
+        <li><input type="checkbox" onchange="updateProgress()"><div><span class="item-title">了解薪資 G/P 值制度</span><span class="item-desc">紅利定義、勞保級距說明</span></div></li>
+        <li><input type="checkbox" onchange="updateProgress()"><div><span class="item-title">認識自己的班表</span><span class="item-desc">學期班表與寒暑假班表</span></div></li>
+        <li><input type="checkbox" onchange="updateProgress()"><div><span class="item-title">開始紙本打卡</span><span class="item-desc">寫上中英文姓名、年月、部門名稱</span></div></li>
       </ul>
     </div>
 
     <!-- CHAPTERS -->
     <div class="section-title">全部培訓章節</div>
     <div class="chapter-grid">
-
       <a id="ch1" class="chapter-card col-green" href="https://drive.google.com/drive/u/0/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY" target="_blank">
-        <div class="ch-label">Ch.1</div>
-        <div class="ch-title">認識耶加</div>
+        <div class="ch-label">Ch.1</div><div class="ch-title">認識耶加</div>
         <div class="ch-desc">組織架構、跨部合作、打招呼文化、穿著規範</div>
-        <div class="ch-footer">
-          <div class="ch-tags"><span class="ch-tag new">新進必讀</span></div>
-          <span class="ch-view-btn">查看 →</span>
-        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag new">新進必讀</span></div><span class="ch-view-btn">查看 →</span></div>
       </a>
-
       <a id="ch2" class="chapter-card col-purple" href="https://drive.google.com/drive/u/0/folders/1WhcwQYZyDciYYU3rXHXGkw3UJ7p_Aj7Q" target="_blank">
-        <div class="ch-label">Ch.2</div>
-        <div class="ch-title">考勤制度與薪資結構</div>
+        <div class="ch-label">Ch.2</div><div class="ch-title">考勤制度與薪資結構</div>
         <div class="ch-desc">打卡系統、請假規則、各假別定義、GP 評鑑結構</div>
-        <div class="ch-footer">
-          <div class="ch-tags"><span class="ch-tag new">新進必讀</span></div>
-          <span class="ch-view-btn">查看 →</span>
-        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag new">新進必讀</span></div><span class="ch-view-btn">查看 →</span></div>
       </a>
-
       <a id="ch3" class="chapter-card col-gold" href="https://drive.google.com/drive/u/0/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0" target="_blank">
-        <div class="ch-label">Ch.3</div>
-        <div class="ch-title">教學範疇</div>
-        <div class="ch-group">
-          <div class="ch-group-label">教學老師職責</div>
-          <div class="ch-group-items">班級經營、親師溝通、學生管理、課程授課、招生合作</div>
-        </div>
-        <div class="ch-group">
-          <div class="ch-group-label">教育行政</div>
-          <div class="ch-group-items">新生入班、請假管理、點名表/接送表/課表製作、晚餐記錄</div>
-        </div>
-        <div class="ch-footer">
-          <div class="ch-tags"><span class="ch-tag all">教學部必讀</span></div>
-          <span class="ch-view-btn">查看 →</span>
-        </div>
+        <div class="ch-label">Ch.3</div><div class="ch-title">教學範疇</div>
+        <div class="ch-group"><div class="ch-group-label">教學老師職責</div><div class="ch-group-items">班級經營、親師溝通、學生管理、課程授課、招生合作</div></div>
+        <div class="ch-group"><div class="ch-group-label">教育行政</div><div class="ch-group-items">新生入班、請假管理、點名表/接送表/課表製作、晚餐記錄</div></div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">教學部必讀</span></div><span class="ch-view-btn">查看 →</span></div>
       </a>
-
       <a id="ch4" class="chapter-card col-coral" href="https://drive.google.com/drive/u/0/folders/1LGXf4CBm_C2IEGUMaf00exfu1U5UB-wd" target="_blank">
-        <div class="ch-label">Ch.4</div>
-        <div class="ch-title">跨部合作</div>
-        <div class="ch-group">
-          <div class="ch-group-label">英語部相關</div>
-          <div class="ch-group-items">IEE 課程、LT 選填、平時英語溝通合作</div>
-        </div>
-        <div class="ch-group">
-          <div class="ch-group-label">學務部相關</div>
-          <div class="ch-group-items">財務請款、學費流程、繳費 APP、變動表</div>
-        </div>
-        <div class="ch-footer">
-          <div class="ch-tags"><span class="ch-tag new">新進必讀</span></div>
-          <span class="ch-view-btn">查看 →</span>
-        </div>
+        <div class="ch-label">Ch.4</div><div class="ch-title">跨部合作</div>
+        <div class="ch-group"><div class="ch-group-label">英語部相關</div><div class="ch-group-items">IEE 課程、LT 選填、平時英語溝通合作</div></div>
+        <div class="ch-group"><div class="ch-group-label">學務部相關</div><div class="ch-group-items">財務請款、學費流程、繳費 APP、變動表</div></div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag new">新進必讀</span></div><span class="ch-view-btn">查看 →</span></div>
       </a>
-
       <a id="ch5" class="chapter-card col-teal" href="https://drive.google.com/drive/u/0/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER" target="_blank">
-        <div class="ch-label">Ch.5</div>
-        <div class="ch-title">校務與寒暑假</div>
-        <div class="ch-group">
-          <div class="ch-group-label">校務</div>
-          <div class="ch-group-items">代課交接流程、早值流程</div>
-        </div>
-        <div class="ch-group">
-          <div class="ch-group-label">寒暑假</div>
-          <div class="ch-group-items">寒暑假架構規劃、戶外教學秘笈、兩天一夜要點</div>
-        </div>
-        <div class="ch-footer">
-          <div class="ch-tags"><span class="ch-tag all">全體適用</span></div>
-          <span class="ch-view-btn">查看 →</span>
-        </div>
+        <div class="ch-label">Ch.5</div><div class="ch-title">校務與寒暑假</div>
+        <div class="ch-group"><div class="ch-group-label">校務</div><div class="ch-group-items">代課交接流程、早值流程</div></div>
+        <div class="ch-group"><div class="ch-group-label">寒暑假</div><div class="ch-group-items">寒暑假架構規劃、戶外教學秘笈、兩天一夜要點</div></div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">全體適用</span></div><span class="ch-view-btn">查看 →</span></div>
       </a>
-
       <a id="ch6" class="chapter-card col-blue" href="https://drive.google.com/drive/u/0/folders/1opw7PPxz5LCHuJyUyVO5r_0y-Rlw7xoz" target="_blank">
-        <div class="ch-label">Ch.6</div>
-        <div class="ch-title">教學部季節目標</div>
+        <div class="ch-label">Ch.6</div><div class="ch-title">教學部季節目標</div>
         <div class="ch-desc">P 值計算、三大貢獻類型</div>
-        <div class="ch-footer">
-          <div class="ch-tags"><span class="ch-tag all">教學部必讀</span></div>
-          <span class="ch-view-btn">查看 →</span>
-        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">教學部必讀</span></div><span class="ch-view-btn">查看 →</span></div>
       </a>
-
       <a id="ch7" class="chapter-card col-pink full-width" href="https://drive.google.com/drive/u/0/folders/1lcj7W9tRZcOqruAS8auXJEPgeDULM8X4" target="_blank">
-        <div class="ch-label">Ch.7</div>
-        <div class="ch-title">年度排程</div>
+        <div class="ch-label">Ch.7</div><div class="ch-title">年度排程</div>
         <div class="ch-desc">全年重要時程與季節任務</div>
-        <div class="ch-footer">
-          <div class="ch-tags"><span class="ch-tag all">全體適用</span></div>
-          <span class="ch-view-btn">查看 →</span>
-        </div>
+        <div class="ch-footer"><div class="ch-tags"><span class="ch-tag all">全體適用</span></div><span class="ch-view-btn">查看 →</span></div>
       </a>
-
     </div>
 
     <!-- SOP -->
@@ -639,36 +540,15 @@ nav, .hero, .layout, .page-header {
     <div class="sop-card">
       <div class="sop-title">新生入校流程</div>
       <div class="sop-steps">
-        <div class="sop-step">
-          <div class="step-icon c1"><i class="ti ti-handshake"></i></div>
-          <div class="step-label">學務交接</div>
-          <div class="step-desc">學生資訊交總導師，發公告</div>
-        </div>
-        <div class="sop-step">
-          <div class="step-icon c2"><i class="ti ti-phone"></i></div>
-          <div class="step-label">聯繫家長</div>
-          <div class="step-desc">接送、托育/晚餐需求確認</div>
-        </div>
-        <div class="sop-step">
-          <div class="step-icon c3"><i class="ti ti-backpack"></i></div>
-          <div class="step-label">書包制服</div>
-          <div class="step-desc">確認繳費後申請發放</div>
-        </div>
-        <div class="sop-step">
-          <div class="step-icon c4"><i class="ti ti-file-text"></i></div>
-          <div class="step-label">教材發放</div>
-          <div class="step-desc">發放課表、聯絡簿、評量</div>
-        </div>
-        <div class="sop-step">
-          <div class="step-icon c5"><i class="ti ti-circle-check"></i></div>
-          <div class="step-label">正式入班</div>
-          <div class="step-desc">填寫學務日誌完成</div>
-        </div>
+        <div class="sop-step"><div class="step-icon c1"><i class="ti ti-handshake"></i></div><div class="step-label">學務交接</div><div class="step-desc">學生資訊交總導師，發公告</div></div>
+        <div class="sop-step"><div class="step-icon c2"><i class="ti ti-phone"></i></div><div class="step-label">聯繫家長</div><div class="step-desc">接送、托育/晚餐需求確認</div></div>
+        <div class="sop-step"><div class="step-icon c3"><i class="ti ti-backpack"></i></div><div class="step-label">書包制服</div><div class="step-desc">確認繳費後申請發放</div></div>
+        <div class="sop-step"><div class="step-icon c4"><i class="ti ti-file-text"></i></div><div class="step-label">教材發放</div><div class="step-desc">發放課表、聯絡簿、評量</div></div>
+        <div class="sop-step"><div class="step-icon c5"><i class="ti ti-circle-check"></i></div><div class="step-label">正式入班</div><div class="step-desc">填寫學務日誌完成</div></div>
       </div>
       <div class="notice-box">
         <i class="ti ti-alert-triangle"></i>
-        <div>
-          <strong>重要提醒</strong>
+        <div><strong>重要提醒</strong>
           <ol style="padding-left:16px;margin:0;line-height:2;">
             <li>確認家長已繳費後才能發放書包、制服和教材。</li>
             <li>庫存不足需主動告知家長等待時間。</li>
@@ -677,11 +557,39 @@ nav, .hero, .layout, .page-header {
         </div>
       </div>
     </div>
-
   </main>
 </div>
 
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal">
+    <h3>教師個人資料設定</h3>
+    <label>姓名</label>
+    <input type="text" id="input-name" placeholder="請輸入你的姓名">
+    <label>入職日期</label>
+    <input type="date" id="input-date">
+    <label>年級段</label>
+    <select id="input-grade">
+      <option value="">請選擇</option>
+      <option value="低年級">低年級（一、二年級）</option>
+      <option value="中年級">中年級（三、四年級）</option>
+      <option value="高年級">高年級（五、六年級）</option>
+      <option value="跨年級段">跨年級段（全覆蓋）</option>
+    </select>
+    <label>教師類型</label>
+    <select id="input-type">
+      <option value="單年級段">單年級段教師</option>
+      <option value="跨年級段">跨年級段教師</option>
+    </select>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeProfileModal()">取消</button>
+      <button class="btn-save" onclick="saveProfile()">儲存</button>
+    </div>
+  </div>
+</div>
+
 <script>
+// ── UTILS ──
 function updateProgress() {
   const items = document.querySelectorAll('#checklist li');
   const checks = document.querySelectorAll('#checklist input[type=checkbox]');
@@ -693,6 +601,7 @@ function updateProgress() {
   const pct = Math.round(done / checks.length * 100);
   document.getElementById('prog-fill').style.width = pct + '%';
   document.getElementById('prog-txt').textContent = done + ' / ' + checks.length + ' 完成';
+  saveChecklist();
 }
 
 function setActive(el) {
@@ -703,24 +612,98 @@ function setActive(el) {
 function scrollToSection(id) {
   const el = document.getElementById(id);
   if (!el) return;
-
-  const navHeight = 0;
-  const top = el.getBoundingClientRect().top + window.pageYOffset - navHeight - 16;
-  window.scrollTo({ top: top, behavior: 'smooth' });
-
-  // 如果目標本身就是 chapter-card，直接 flash
+  const top = el.getBoundingClientRect().top + window.pageYOffset - 16;
+  window.scrollTo({ top, behavior: 'smooth' });
   if (id.startsWith('ch') && el.classList.contains('chapter-card')) {
-    el.classList.remove('ch-flash');
-    void el.offsetWidth;
+    el.classList.remove('ch-flash'); void el.offsetWidth;
     setTimeout(() => {
       el.classList.add('ch-flash');
-      el.addEventListener('animationend', () => {
-        el.classList.remove('ch-flash');
-      }, { once: true });
+      el.addEventListener('animationend', () => el.classList.remove('ch-flash'), { once: true });
     }, 420);
   }
 }
-</script>
 
+// ── PROFILE ──
+function openProfileModal() {
+  const p = getProfile();
+  if (p) {
+    document.getElementById('input-name').value = p.name || '';
+    document.getElementById('input-date').value = p.startDate || '';
+    document.getElementById('input-grade').value = p.grade || '';
+    document.getElementById('input-type').value = p.type || '單年級段';
+  }
+  document.getElementById('profile-modal').classList.add('open');
+}
+function closeProfileModal() {
+  document.getElementById('profile-modal').classList.remove('open');
+}
+function saveProfile() {
+  const data = {
+    name: document.getElementById('input-name').value,
+    startDate: document.getElementById('input-date').value,
+    grade: document.getElementById('input-grade').value,
+    type: document.getElementById('input-type').value,
+  };
+  localStorage.setItem('profile', JSON.stringify(data));
+  closeProfileModal();
+  renderProfile();
+}
+function getProfile() {
+  try { return JSON.parse(localStorage.getItem('profile')); } catch { return null; }
+}
+function renderProfile() {
+  const p = getProfile();
+  if (!p || !p.name) return;
+  document.getElementById('profile-name-display').innerHTML =
+    p.name + (p.grade ? `<span class="profile-badge">${p.grade}</span>` : '');
+  const days = p.startDate ? Math.floor((new Date() - new Date(p.startDate)) / 86400000) : null;
+  document.getElementById('profile-meta-display').textContent =
+    p.type + (days !== null ? `　入職 ${days} 天` : '');
+  document.getElementById('profile-btn-txt').textContent = '編輯資料';
+}
+
+// ── PHASE PROGRESS from tasks localStorage ──
+function renderPhaseProgress() {
+  try {
+    const tasks = JSON.parse(localStorage.getItem('tasks') || '{}');
+    // Count by phase (simplified counts based on tasks.json structure)
+    const phases = { entry: { total: 6, done: 0 }, basic: { total: 8, done: 0 }, advanced: { total: 5, done: 0 } };
+    Object.keys(tasks).forEach(id => {
+      if (tasks[id] && id.startsWith('e')) phases.entry.done++;
+      else if (tasks[id] && id.startsWith('b')) phases.basic.done++;
+      else if (tasks[id] && id.startsWith('a')) phases.advanced.done++;
+    });
+    ['entry','basic','advanced'].forEach(p => {
+      const pct = Math.round(Math.min(phases[p].done / phases[p].total * 100, 100));
+      const key = p === 'entry' ? 'entry' : p === 'basic' ? 'basic' : 'adv';
+      document.getElementById(key + '-pct').textContent = pct + '%';
+      document.getElementById(key + '-fill').style.width = pct + '%';
+    });
+  } catch(e) {}
+}
+
+// ── CHECKLIST PERSIST ──
+function saveChecklist() {
+  const checks = document.querySelectorAll('#checklist input[type=checkbox]');
+  const state = Array.from(checks).map(c => c.checked);
+  localStorage.setItem('checklist', JSON.stringify(state));
+}
+function loadChecklist() {
+  try {
+    const state = JSON.parse(localStorage.getItem('checklist') || '[]');
+    const checks = document.querySelectorAll('#checklist input[type=checkbox]');
+    state.forEach((v, i) => { if (checks[i]) checks[i].checked = v; });
+    updateProgress();
+  } catch(e) {}
+}
+
+// ── INIT ──
+renderProfile();
+renderPhaseProgress();
+loadChecklist();
+document.getElementById('profile-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeProfileModal();
+});
+</script>
 </body>
 </html>

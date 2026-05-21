@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>培訓任務清單 · A Plus 耶加</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="sheets.js"></script>
+<style>
+:root {
+  --green:#1B4332;--green-mid:#2D6A4F;--green-light:#52B788;
+  --green-pale:#D8F3DC;--gold:#F6E05E;--cream:#F9F6F0;
+  --white:#fff;--text:#1A1A1A;--text-muted:#6B6B6B;--text-light:#9E9E9E;
+  --border-light:#E8E8E8;--radius:14px;--radius-sm:8px;--shadow:0 2px 12px rgba(0,0,0,0.07);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{overflow-x:hidden;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--text);line-height:1.7;font-size:15px;}
+
+.topbar{background:var(--green);padding:14px 32px;display:flex;align-items:center;gap:12px;}
+.topbar a{color:rgba(255,255,255,0.6);text-decoration:none;font-size:13px;}
+.topbar a:hover{color:#fff;}
+.topbar-sep{color:rgba(255,255,255,0.3);}
+.topbar-title{color:#fff;font-size:14px;font-weight:500;}
+
+.page-wrap{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 56px);}
+
+/* SIDEBAR */
+.t-sidebar{background:var(--white);border-right:1px solid var(--border-light);padding:24px 16px;position:sticky;top:0;height:calc(100vh - 56px);overflow-y:auto;}
+.t-sidebar h3{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-light);margin-bottom:12px;}
+.grade-btn{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;border:1px solid var(--border-light);border-radius:var(--radius-sm);font-family:'Noto Sans TC',sans-serif;font-size:13px;cursor:pointer;background:var(--white);color:var(--text);margin-bottom:6px;transition:all .15s;text-align:left;}
+.grade-btn:hover{border-color:var(--green-light);background:var(--green-pale);}
+.grade-btn.active{border-color:var(--green-mid);background:var(--green-pale);color:var(--green-mid);font-weight:500;}
+.grade-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sidebar-divider{height:1px;background:var(--border-light);margin:20px 0;}
+.radar-wrap{padding:8px 0;}
+.radar-title{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-light);margin-bottom:12px;}
+
+/* ── RADAR PANEL (main area) ── */
+.radar-panel{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:28px;margin-bottom:28px;}
+.radar-panel-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+.radar-panel-title{font-size:15px;font-weight:500;}
+.radar-panel-sub{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.radar-sync-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;border:1px solid rgba(45,106,79,0.3);color:var(--green-mid);background:var(--green-pale);font-family:'Noto Sans TC',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;}
+.radar-sync-btn:hover{background:var(--green-mid);color:#fff;}
+.radar-sync-btn.syncing{opacity:.6;pointer-events:none;}
+.radar-layout{display:grid;grid-template-columns:1fr 220px;gap:24px;align-items:center;}
+.radar-chart-wrap{position:relative;}
+.radar-dim-list{display:flex;flex-direction:column;gap:10px;}
+.radar-dim-item{}
+.radar-dim-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.radar-dim-name{font-size:13px;font-weight:500;}
+.radar-dim-score{font-size:13px;font-weight:600;color:var(--green-mid);}
+.radar-dim-bar{height:6px;background:var(--border-light);border-radius:99px;overflow:hidden;}
+.radar-dim-fill{height:100%;border-radius:99px;transition:width 1s ease;}
+.radar-dim-label{font-size:10px;color:var(--text-light);margin-top:2px;display:flex;justify-content:space-between;}
+.radar-legend{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;}
+.radar-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);}
+.radar-legend-dot{width:10px;height:3px;border-radius:99px;}
+
+/* MAIN */
+.t-main{padding:32px 40px 80px;min-width:0;}
+.t-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.t-header-left h2{font-size:20px;font-weight:500;margin-bottom:4px;}
+.t-header-left p{font-size:13px;color:var(--text-muted);}
+.level-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:99px;font-size:12px;font-weight:500;}
+.level-badge.entry{background:#D1FAE5;color:#065F46;border:1px solid #6EE7B7;}
+.level-badge.basic{background:#DBEAFE;color:#1E40AF;border:1px solid #93C5FD;}
+.level-badge.advanced{background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;}
+
+/* PHASE SECTION */
+.phase-section{margin-bottom:32px;}
+.phase-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.phase-title-row{flex:1;}
+.phase-name{font-size:14px;font-weight:500;}
+.phase-en{font-size:11px;color:var(--text-muted);}
+.phase-count{font-size:12px;color:var(--text-muted);background:var(--cream);padding:2px 10px;border-radius:99px;border:1px solid var(--border-light);}
+.phase-bar-mini{height:4px;background:var(--border-light);border-radius:99px;flex:1;max-width:160px;}
+.phase-fill-mini{height:100%;border-radius:99px;transition:width .8s ease;}
+.phase-fill-mini.e{background:var(--green-mid);}
+.phase-fill-mini.b{background:#2563EB;}
+.phase-fill-mini.a{background:#C05621;}
+
+/* TASK CARD */
+.task-card{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;transition:all .15s;}
+.task-card.completed{opacity:.65;}
+.task-head{display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer;}
+.task-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .15s;}
+.task-card.completed .task-check{background:var(--green-mid);border-color:var(--green-mid);color:#fff;}
+.task-info{flex:1;min-width:0;}
+.task-name{font-size:14px;font-weight:500;margin-bottom:2px;}
+.task-card.completed .task-name{text-decoration:line-through;color:var(--text-muted);}
+.task-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.task-dim{font-size:11px;padding:1px 8px;border-radius:99px;background:var(--cream);border:1px solid var(--border-light);color:var(--text-muted);}
+.task-time{font-size:11px;color:var(--text-light);}
+.task-weight{font-size:11px;color:#B7791F;background:#FEF9C3;padding:1px 7px;border-radius:99px;border:1px solid #FDE68A;}
+.task-expand-btn{color:var(--text-light);font-size:18px;flex-shrink:0;transition:transform .2s;}
+.task-card.open .task-expand-btn{transform:rotate(180deg);}
+.task-detail{display:none;padding:0 20px 20px;border-top:1px solid var(--border-light);}
+.task-card.open .task-detail{display:block;}
+.task-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;margin-top:14px;}
+.detail-item label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);display:block;margin-bottom:3px;}
+.detail-item span{font-size:13px;color:var(--text);}
+.task-score-row{display:flex;align-items:center;gap:10px;}
+.score-input{width:80px;padding:6px 10px;border:1px solid var(--border-light);border-radius:var(--radius-sm);font-size:14px;font-family:'Noto Sans TC',sans-serif;color:var(--text);background:var(--cream);outline:none;}
+.score-input:focus{border-color:var(--green-light);background:var(--white);}
+.complete-btn{padding:7px 18px;border-radius:99px;font-family:'Noto Sans TC',sans-serif;font-size:13px;cursor:pointer;border:1px solid rgba(45,106,79,0.3);color:var(--green-mid);background:var(--green-pale);transition:all .15s;}
+.complete-btn:hover{background:var(--green-mid);color:#fff;border-color:var(--green-mid);}
+.task-card.completed .complete-btn{background:var(--cream);color:var(--text-muted);border-color:var(--border-light);}
+
+/* NO TASKS */
+.no-tasks{padding:40px;text-align:center;color:var(--text-muted);font-size:14px;}
+
+@media(max-width:768px){
+  .page-wrap{grid-template-columns:1fr;}
+  .t-sidebar{display:none;}
+  .t-main{padding:20px 16px 60px;}
+  .task-detail-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html"><i class="ti ti-arrow-left"></i> 返回首頁</a>
+  <span class="topbar-sep">›</span>
+  <span class="topbar-title">培訓任務清單 Training Tasks</span>
+</div>
+
+<div class="page-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="t-sidebar">
+    <h3>年級段篩選</h3>
+    <button class="grade-btn active" onclick="setGrade('all',this)">
+      <span class="grade-dot" style="background:#9CA3AF;"></span>全部顯示
+    </button>
+    <button class="grade-btn" onclick="setGrade('低年級',this)">
+      <span class="grade-dot" style="background:#10B981;"></span>低年級（一、二年級）
+    </button>
+    <button class="grade-btn" onclick="setGrade('中年級',this)">
+      <span class="grade-dot" style="background:#3B82F6;"></span>中年級（三、四年級）
+    </button>
+    <button class="grade-btn" onclick="setGrade('高年級',this)">
+      <span class="grade-dot" style="background:#F59E0B;"></span>高年級（五、六年級）
+    </button>
+    <button class="grade-btn" onclick="setGrade('跨年級',this)">
+      <span class="grade-dot" style="background:#8B5CF6;"></span>跨年級段（全覆蓋）
+    </button>
+
+    <div class="sidebar-divider"></div>
+    <div class="radar-title">能力概覽</div>
+    <div class="radar-wrap">
+      <canvas id="miniRadarChart" width="220" height="180"></canvas>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="t-main">
+    <div class="t-header">
+      <div class="t-header-left">
+        <h2>培訓任務清單</h2>
+        <p>點擊任務卡可展開詳細資訊，完成後標記並輸入評分。</p>
+      </div>
+      <div id="level-badge-wrap"></div>
+    </div>
+
+    <!-- RADAR PANEL -->
+    <div class="radar-panel">
+      <div class="radar-panel-header">
+        <div>
+          <div class="radar-panel-title">能力雷達圖 Competency Radar</div>
+          <div class="radar-panel-sub">根據問卷自評與任務完成情況動態更新</div>
+        </div>
+        <button class="radar-sync-btn" id="radar-sync-btn" onclick="syncRadarToSheets()">
+          <i class="ti ti-cloud-upload"></i> 同步至 Google Sheets
+        </button>
+      </div>
+      <div class="radar-layout">
+        <div class="radar-chart-wrap">
+          <canvas id="radarChart" width="340" height="300"></canvas>
+          <div class="radar-legend" id="radar-legend"></div>
+        </div>
+        <div class="radar-dim-list" id="radar-dim-list"></div>
+      </div>
+    </div>
+    <div id="tasks-container"></div>
+  </main>
+</div>
+
+<script>
+// ── TASK DATA ──
+const TASKS = [
+  // ENTRY
+  {id:'e1',phase:'entry',name:'完成入職流程 SOP',nameEn:'Complete Onboarding SOP',dim:'行政了解',assess:'Q&A 口頭',grades:['通用'],doc:'入職流程SOP、帶新人入職流程',detail:'確認制服、資料繳交、勞健保、Gmail設定',time:'第1-2天',weight:1.0},
+  {id:'e2',phase:'entry',name:'認識機構組織架構',nameEn:'Org Structure',dim:'行政了解',assess:'Q&A 口頭',grades:['通用'],doc:'認識耶加 Ch.1',detail:'各部門職責、跨部合作方式、打招呼文化',time:'第1-2天',weight:1.0},
+  {id:'e3',phase:'entry',name:'了解考勤與薪資制度',nameEn:'Attendance & Payroll',dim:'行政了解',assess:'填充題',grades:['通用'],doc:'考勤制度與薪資結構 Ch.2',detail:'打卡系統、請假規則、G/P值制度說明',time:'第3-4天',weight:1.0},
+  {id:'e4',phase:'entry',name:'完成入職問卷填寫',nameEn:'Onboarding Questionnaire',dim:'行政了解',assess:'系統自動',grades:['通用'],doc:'入職評估問卷系統',detail:'填寫A/B/C/D四個區塊，系統自動判定起始等級',time:'報到前',weight:1.0},
+  {id:'e5',phase:'entry',name:'各校區 Google Maps 五星好評',nameEn:'Google Maps Review',dim:'行政了解',assess:'截圖確認',grades:['通用'],doc:'Ch.0 入職 Checklist',detail:'總校、龍華、左新、中學部各留一則好評',time:'第1週',weight:1.0},
+  {id:'e6',phase:'entry',name:'認識班表與課表',nameEn:'Class Schedule',dim:'行政了解',assess:'Q&A 口頭',grades:['通用'],doc:'Ch.2 考勤制度',detail:'學期班表、寒暑假班表格式說明',time:'第1週',weight:1.0},
+  // BASIC
+  {id:'b1',phase:'basic',name:'新生入校流程演練',nameEn:'New Student Onboarding',dim:'行政了解',assess:'實作演練',grades:['通用'],doc:'新生入校 SOP',detail:'學務交接→聯繫家長→書包制服→教材發放→正式入班',time:'第3-4週',weight:1.5},
+  {id:'b2',phase:'basic',name:'點名表與接送表操作',nameEn:'Attendance Sheet',dim:'行政了解',assess:'實作提交',grades:['通用'],doc:'教育行政 Ch.3',detail:'正確填寫格式、提交時間、異常處理',time:'第3週',weight:1.0},
+  {id:'b3',phase:'basic',name:'低年級教學 SOP 熟悉',nameEn:'Low Grade Teaching SOP',dim:'教學技巧',assess:'培訓官觀察',grades:['低年級'],doc:'低年級月份手冊（1-6月）',detail:'低年級國語/數學課程體系、月份迭代教材',time:'第4-6週',weight:1.5},
+  {id:'b4',phase:'basic',name:'中年級教學 SOP 熟悉',nameEn:'Mid Grade Teaching SOP',dim:'教學技巧',assess:'培訓官觀察',grades:['中年級'],doc:'中年級教學老師培訓SOP',detail:'中年級課程體系、班級經營重點',time:'第4-6週',weight:1.5},
+  {id:'b5',phase:'basic',name:'高年級教材掌握',nameEn:'High Grade Materials',dim:'學科知識',assess:'培訓官觀察',grades:['高年級'],doc:'五上/下/六上數學（翰林）、五上/下/六上國語（康軒）',detail:'翰林版數學、康軒版國語主要單元說明',time:'第4-6週',weight:1.5},
+  {id:'b6',phase:'basic',name:'親師溝通技巧實作',nameEn:'Parent Communication',dim:'教學技巧',assess:'培訓官評定',grades:['通用'],doc:'教學技巧 TTQS 系列',detail:'定期聯繫模式、投訴處理流程、溝通紀錄格式',time:'第5-7週',weight:1.0},
+  {id:'b7',phase:'basic',name:'課堂管理策略建立',nameEn:'Classroom Management',dim:'課堂管理',assess:'培訓官觀察',grades:['通用'],doc:'課堂與班級管理文件',detail:'班規制定、正向鼓勵系統、問題行為處理',time:'第5-8週',weight:1.5},
+  {id:'b8',phase:'basic',name:'IEE 課程跨部合作',nameEn:'IEE Cross-Dept',dim:'行政了解',assess:'Q&A 口頭',grades:['通用'],doc:'跨部合作 Ch.4',detail:'IEE 課程機制、LT 選填時間點、英語部聯繫方式',time:'第6-7週',weight:1.0},
+  // ADVANCED
+  {id:'a1',phase:'advanced',name:'教案設計與提交',nameEn:'Lesson Plan',dim:'備課能力',assess:'實作提交',grades:['通用'],doc:'ChatGPT教案應用、KIC',detail:'使用 ChatGPT 輔助教案設計，提交符合格式的完整教案',time:'第9-10週',weight:1.5},
+  {id:'a2',phase:'advanced',name:'KIC 課程體系了解',nameEn:'KIC Curriculum',dim:'學科知識',assess:'Q&A 口頭',grades:['通用'],doc:'KIC、核心課程表單說明',detail:'KIC課程架構、核心課程與補充課程的區別',time:'第9週',weight:1.0},
+  {id:'a3',phase:'advanced',name:'寒暑假課程規劃',nameEn:'Holiday Curriculum',dim:'備課能力',assess:'培訓官評定',grades:['通用'],doc:'校務與寒暑假 Ch.5',detail:'寒暑假架構規劃、戶外教學秘笈、兩天一夜要點',time:'第11週',weight:1.5},
+  {id:'a4',phase:'advanced',name:'P 值計算與季節目標',nameEn:'P-Value & Seasonal Goals',dim:'行政了解',assess:'Q&A 口頭',grades:['通用'],doc:'教學部季節目標 Ch.6',detail:'P 值計算方式、三大貢獻類型說明',time:'第10週',weight:1.0},
+  {id:'a5',phase:'advanced',name:'年段認證前總評',nameEn:'Grade Certification Review',dim:'課堂管理',assess:'培訓官評定',grades:['通用'],doc:'全部培訓文件',detail:'達標標準確認：任務完成率≥75%、課堂管理≥75分、加權總分≥70分',time:'第12週',weight:1.5},
+];
+
+const PHASE_INFO = {
+  entry: { name:'入門階段', en:'Entry Phase', color:'e', badge:'entry' },
+  basic: { name:'初階階段', en:'Basic Phase', color:'b', badge:'basic' },
+  advanced: { name:'進階階段', en:'Advanced Phase', color:'a', badge:'advanced' },
+};
+
+let currentGrade = 'all';
+let taskState = {};
+let taskScores = {};
+
+function loadState() {
+  try { taskState = JSON.parse(localStorage.getItem('tasks')||'{}'); } catch(e){}
+  try { taskScores = JSON.parse(localStorage.getItem('scores')||'{}'); } catch(e){}
+}
+function saveState() {
+  localStorage.setItem('tasks', JSON.stringify(taskState));
+  localStorage.setItem('scores', JSON.stringify(taskScores));
+}
+
+function isVisible(task) {
+  if (currentGrade === 'all') return true;
+  if (currentGrade === '跨年級') return true;
+  return task.grades.includes('通用') || task.grades.includes(currentGrade);
+}
+
+function renderTasks() {
+  const container = document.getElementById('tasks-container');
+  const phases = ['entry','basic','advanced'];
+  let html = '';
+
+  phases.forEach(phase => {
+    const phaseTasks = TASKS.filter(t => t.phase === phase && isVisible(t));
+    if (!phaseTasks.length) return;
+    const info = PHASE_INFO[phase];
+    const done = phaseTasks.filter(t => taskState[t.id]).length;
+    const pct = Math.round(done / phaseTasks.length * 100);
+
+    html += `
+      <div class="phase-section" id="${phase}">
+        <div class="phase-header">
+          <div class="phase-title-row">
+            <div class="phase-name">${info.name} <span style="font-size:12px;color:var(--text-muted);font-weight:400;">${info.en}</span></div>
+          </div>
+          <div class="phase-bar-mini"><div class="phase-fill-mini ${info.color}" style="width:${pct}%"></div></div>
+          <div class="phase-count">${done} / ${phaseTasks.length} 完成</div>
+        </div>`;
+
+    phaseTasks.forEach(t => {
+      const done = !!taskState[t.id];
+      const score = taskScores[t.id] || '';
+      html += `
+        <div class="task-card ${done?'completed':''}" id="card-${t.id}">
+          <div class="task-head" onclick="toggleCard('${t.id}')">
+            <div class="task-check" onclick="event.stopPropagation();toggleDone('${t.id}')">
+              ${done ? '<i class="ti ti-check" style="font-size:12px;"></i>' : ''}
+            </div>
+            <div class="task-info">
+              <div class="task-name">${t.name}</div>
+              <div class="task-meta">
+                <span class="task-dim">${t.dim}</span>
+                <span class="task-time">${t.time}</span>
+                ${t.weight > 1 ? `<span class="task-weight">×${t.weight} 高權重</span>` : ''}
+                ${t.grades.filter(g=>g!=='通用').map(g=>`<span class="task-dim" style="background:#EDE9FE;color:#5B21B6;border-color:#C4B5FD;">${g}</span>`).join('')}
+              </div>
+            </div>
+            <i class="ti ti-chevron-down task-expand-btn"></i>
+          </div>
+          <div class="task-detail">
+            <div class="task-detail-grid">
+              <div class="detail-item"><label>文件來源</label><span>${t.doc}</span></div>
+              <div class="detail-item"><label>考核方式</label><span>${t.assess}</span></div>
+              <div class="detail-item"><label>培訓重點</label><span>${t.detail}</span></div>
+              <div class="detail-item"><label>建議時程</label><span>${t.time}</span></div>
+            </div>
+            <div class="task-score-row">
+              <input type="number" class="score-input" id="score-${t.id}" min="0" max="100" placeholder="分數" value="${score}"
+                onchange="saveScore('${t.id}',this.value)" onclick="event.stopPropagation()">
+              <span style="font-size:12px;color:var(--text-muted);">/ 100 分</span>
+              <button class="complete-btn" onclick="toggleDone('${t.id}')">${done?'取消完成':'標記完成 ✓'}</button>
+            </div>
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+  });
+
+  container.innerHTML = html || '<div class="no-tasks"><i class="ti ti-inbox" style="font-size:32px;margin-bottom:8px;"></i><br>此年級段無對應任務</div>';
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-'+id);
+  card.classList.toggle('open');
+}
+
+function toggleDone(id) {
+  taskState[id] = !taskState[id];
+  saveState();
+  renderTasks();
+  renderRadar();
+}
+
+function saveScore(id, val) {
+  taskScores[id] = parseInt(val) || 0;
+  saveState();
+}
+
+function setGrade(grade, btn) {
+  currentGrade = grade;
+  document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTasks();
+}
+
+// ── RADAR ──
+const DIM_COLORS = {
+  '教學技巧': '#2D6A4F',
+  '學科知識': '#2563EB',
+  '課堂管理': '#C05621',
+  '行政了解': '#6D28D9',
+  '備課能力': '#0D9488',
+};
+const DIM_EN = {
+  '教學技巧': 'Teaching Skills',
+  '學科知識': 'Subject Knowledge',
+  '課堂管理': 'Classroom Mgmt',
+  '行政了解': 'Administration',
+  '備課能力': 'Lesson Prep',
+};
+const DIMS = ['教學技巧','學科知識','課堂管理','行政了解','備課能力'];
+
+function calcRadarScores() {
+  const scores = {};
+  try { Object.assign(scores, JSON.parse(localStorage.getItem('radarScores')||'{}')); } catch(e){}
+  DIMS.forEach(d => { if (!scores[d]) scores[d] = 35; });
+  TASKS.filter(t => taskState[t.id]).forEach(t => {
+    scores[t.dim] = Math.min(100, (scores[t.dim] || 35) + Math.round(t.weight * 4));
+  });
+  return scores;
+}
+
+function calcHistoryScores() {
+  // Simulate "last month" as 80% of current (initial state)
+  try {
+    const saved = JSON.parse(localStorage.getItem('radarHistory')||'null');
+    if (saved) return saved;
+  } catch(e){}
+  const base = {};
+  try { Object.assign(base, JSON.parse(localStorage.getItem('radarScores')||'{}')); } catch(e){}
+  DIMS.forEach(d => { if (!base[d]) base[d] = 30; });
+  return base;
+}
+
+let radarChart;
+function renderRadar() {
+  const scores = calcRadarScores();
+  const history = calcHistoryScores();
+  const current = DIMS.map(d => scores[d] || 35);
+  const prev    = DIMS.map(d => history[d] || 30);
+
+  // Save history snapshot if not yet
+  if (!localStorage.getItem('radarHistory')) {
+    localStorage.setItem('radarHistory', JSON.stringify(scores));
+  }
+
+  // Chart
+  if (radarChart) radarChart.destroy();
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: DIMS.map(d => [d, DIM_EN[d]]),
+      datasets: [
+        {
+          label: '目前分數',
+          data: current,
+          backgroundColor: 'rgba(45,106,79,0.18)',
+          borderColor: '#2D6A4F',
+          borderWidth: 2,
+          pointBackgroundColor: DIMS.map(d => DIM_COLORS[d]),
+          pointRadius: 5,
+          pointHoverRadius: 7,
+        },
+        {
+          label: '初始分數',
+          data: prev,
+          backgroundColor: 'rgba(0,0,0,0)',
+          borderColor: 'rgba(150,150,150,0.4)',
+          borderWidth: 1.5,
+          borderDash: [4,4],
+          pointRadius: 3,
+          pointBackgroundColor: 'rgba(150,150,150,0.5)',
+        }
+      ]
+    },
+    options: {
+      animation: { duration: 800, easing: 'easeInOutQuart' },
+      scales: {
+        r: {
+          min: 0, max: 100,
+          ticks: { stepSize: 20, font: { size: 9 }, color: '#9E9E9E', backdropColor: 'transparent' },
+          grid: { color: 'rgba(0,0,0,0.07)' },
+          angleLines: { color: 'rgba(0,0,0,0.08)' },
+          pointLabels: { font: { size: 10, family: "'Noto Sans TC', sans-serif" }, color: '#1A1A1A' }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}：${ctx.raw} 分`
+          }
+        }
+      }
+    }
+  });
+
+  // Legend
+  document.getElementById('radar-legend').innerHTML = `
+    <div class="radar-legend-item"><div class="radar-legend-dot" style="background:#2D6A4F;"></div>目前分數</div>
+    <div class="radar-legend-item"><div class="radar-legend-dot" style="background:rgba(150,150,150,0.5);border:1px dashed #999;height:0;width:16px;"></div>初始分數</div>
+  `;
+
+  // Dim bars
+  const avg = Math.round(current.reduce((a,b)=>a+b,0) / current.length);
+  document.getElementById('radar-dim-list').innerHTML = DIMS.map((d,i) => {
+    const score = current[i];
+    const prevScore = prev[i];
+    const diff = score - prevScore;
+    const diffTxt = diff > 0 ? `<span style="color:#10B981;">+${diff}</span>` : diff < 0 ? `<span style="color:#EF4444;">${diff}</span>` : '—';
+    const threshold = d === '課堂管理' ? 65 : d === '行政了解' ? 60 : 50;
+    const warn = score < threshold;
+    return `<div class="radar-dim-item">
+      <div class="radar-dim-head">
+        <span class="radar-dim-name" style="color:${DIM_COLORS[d]};">${d}</span>
+        <span class="radar-dim-score">${score}</span>
+      </div>
+      <div class="radar-dim-bar">
+        <div class="radar-dim-fill" style="width:${score}%;background:${warn?'#F97316':DIM_COLORS[d]};"></div>
+      </div>
+      <div class="radar-dim-label">
+        <span style="color:${warn?'#C05621':'var(--text-light)'};">${warn?'⚠ 低於達標線':'達標線 '+threshold}</span>
+        <span>${diffTxt}</span>
+      </div>
+    </div>`;
+  }).join('') + `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light);display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-muted);">雷達圖加權平均</span><strong style="color:var(--green-mid);">${avg} 分</strong></div>`;
+
+  // Sync sidebar mini radar
+  renderMiniRadar(current);
+}
+
+let miniRadar;
+function renderMiniRadar(current) {
+  const canvas = document.getElementById('miniRadarChart');
+  if (!canvas) return;
+  if (miniRadar) miniRadar.destroy();
+  miniRadar = new Chart(canvas.getContext('2d'), {
+    type: 'radar',
+    data: {
+      labels: DIMS,
+      datasets: [{ data: current, backgroundColor:'rgba(45,106,79,0.2)', borderColor:'#2D6A4F', borderWidth:1.5, pointRadius:2 }]
+    },
+    options: {
+      scales: { r:{ min:0,max:100, ticks:{display:false}, grid:{color:'rgba(0,0,0,0.06)'}, angleLines:{color:'rgba(0,0,0,0.06)'}, pointLabels:{font:{size:8}} } },
+      plugins: { legend:{display:false} },
+      animation: false,
+    }
+  });
+}
+
+// ── SYNC TO SHEETS ──
+async function syncRadarToSheets() {
+  const btn = document.getElementById('radar-sync-btn');
+  btn.classList.add('syncing');
+  btn.innerHTML = '<i class="ti ti-loader-2"></i> 同步中...';
+  try {
+    const profile = JSON.parse(localStorage.getItem('profile')||'{}');
+    const scores = calcRadarScores();
+    const tasks = taskState;
+    await submitProgress({ name: profile.name||'未知', grade: profile.grade||'', radarScores: scores, tasks });
+    btn.innerHTML = '<i class="ti ti-check"></i> 已同步';
+    btn.style.background = '#D1FAE5'; btn.style.color = '#065F46';
+    setTimeout(() => {
+      btn.innerHTML = '<i class="ti ti-cloud-upload"></i> 同步至 Google Sheets';
+      btn.style.background = ''; btn.style.color = '';
+      btn.classList.remove('syncing');
+    }, 2500);
+  } catch(e) {
+    btn.innerHTML = '<i class="ti ti-alert-circle"></i> 同步失敗（離線儲存）';
+    btn.style.color = '#C05621';
+    setTimeout(() => {
+      btn.innerHTML = '<i class="ti ti-cloud-upload"></i> 同步至 Google Sheets';
+      btn.style.color = ''; btn.classList.remove('syncing');
+    }, 2500);
+  }
+}
+
+// ── LEVEL BADGE ──
+function renderLevelBadge() {
+  try {
+    const r = JSON.parse(localStorage.getItem('qResult')||'{}');
+    if (!r.level) return;
+    const cls = r.level.includes('進階') ? 'advanced' : r.level.includes('初階') ? 'basic' : 'entry';
+    document.getElementById('level-badge-wrap').innerHTML =
+      `<span class="level-badge ${cls}"><i class="ti ti-award"></i> ${r.level}</span>`;
+  } catch(e){}
+}
+
+// ── INIT ──
+loadState();
+renderTasks();
+renderRadar();
+renderLevelBadge();
+
+// Scroll to hash
+if (location.hash) {
+  setTimeout(() => {
+    const el = document.getElementById(location.hash.replace('#',''));
+    if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+  }, 300);
+}
+</script>
+</body>
+</html>
