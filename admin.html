@@ -6,7 +6,6 @@
 <title>培訓官後台 · A Plus 耶加</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<script src="sheets.js"></script>
 <style>
 :root{--green:#1B4332;--green-mid:#2D6A4F;--green-light:#52B788;--green-pale:#D8F3DC;--gold:#F6E05E;--cream:#F9F6F0;--white:#fff;--text:#1A1A1A;--text-muted:#6B6B6B;--text-light:#9E9E9E;--border-light:#E8E8E8;--radius:14px;--radius-sm:8px;--shadow:0 2px 12px rgba(0,0,0,0.07);}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -192,7 +191,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
 </div>
 
 <script>
-const ADMIN_PW = 'aplus2024';
+const ADMIN_PW = 'aplus2026';
 
 function doLogin() {
   const pw = document.getElementById('pw-input').value;
@@ -300,8 +299,18 @@ function renderTeachers() {
     const ph = String(t.phase||'').toLowerCase();
     const pc = ph.includes('entry')||ph==='입문'?'entry':ph.includes('basic')||ph==='초급'?'basic':ph.includes('advanced')?'advanced':'done';
     const pl = pc==='entry'?'入門':pc==='basic'?'初階':pc==='advanced'?'進階':'完成';
-    return '<div class="teacher-row"><div class="teacher-name">'+t.name+'</div><div><span class="teacher-grade">'+t.grade+'</span></div><div><span class="phase-tag '+pc+'">'+pl+'</span></div><div><div style="font-size:12px;color:var(--text-muted);">'+overall+'%</div><div class="progress-mini"><div class="progress-mini-fill" style="width:'+overall+'%"></div></div></div><div style="display:flex;align-items:center;gap:6px;">'+dot+'<span style="font-size:12px;color:var(--text-muted);">'+(hasRed?'止損':hasYellow?'預警':'正常')+'</span></div><div><button style="font-size:11px;padding:4px 10px;border-radius:99px;border:1px solid var(--border-light);background:var(--white);cursor:pointer;" onclick="alert(t.name+chr(10)+(t.radarScores||'—'))">詳細</button></div></div>';
+    return '<div class="teacher-row"><div class="teacher-name">'+t.name+'</div><div><span class="teacher-grade">'+t.grade+'</span></div><div><span class="phase-tag '+pc+'">'+pl+'</span></div><div><div style="font-size:12px;color:var(--text-muted);">'+overall+'%</div><div class="progress-mini"><div class="progress-mini-fill" style="width:'+overall+'%"></div></div></div><div style="display:flex;align-items:center;gap:6px;">'+dot+'<span style="font-size:12px;color:var(--text-muted);">'+(hasRed?'止損':hasYellow?'預警':'正常')+'</span></div><div><button style="font-size:11px;padding:4px 10px;border-radius:99px;border:1px solid var(--border-light);background:var(--white);cursor:pointer;font-family:\'Noto Sans TC\',sans-serif;" onclick="showTeacherDetail(\''+t.name+'\')">詳細</button></div></div>';
   }).join('');
+}
+
+function showTeacherDetail(name) {
+  const t = teachersData.find(x => x.name === name);
+  if (!t) return;
+  let radar = {};
+  try { radar = JSON.parse(t.radarScores || '{}'); } catch(e) {}
+  const dims = ['教學技巧','學科知識','課堂管理','行政了解','備課能力'];
+  const radarStr = dims.map(d => d + ': ' + (radar[d] || '0') + ' 分').join('\n');
+  alert('【' + t.name + '】\n年級段：' + t.grade + '\n當前階段：' + t.phase + '\n入門：' + t.entryPct + '%  初階：' + t.basicPct + '%  進階：' + t.advPct + '%\n\n能力分數：\n' + radarStr + '\n\n更新時間：' + (t.updatedAt || '—'));
 }
 
 const D_QS = ['你為什麼選擇到 A Plus 耶加任職？','回想你最近一次遇到挫折，你如何面對？','三件緊急事項同時發生，你如何分配優先順序？','你認為好的教育機構文化最重要的核心是什麼？','請解釋如何教三年級學生理解分數概念。'];
@@ -329,7 +338,7 @@ function renderCerts() {
   if(!teachersData.length){document.getElementById('cert-grid').innerHTML='<div class="empty-state"><i class="ti ti-award"></i>尚無教師資料</div>';return;}
   document.getElementById('cert-grid').innerHTML=teachersData.map(t=>{
     const tk=t.name;
-    return '<div class="cert-card"><div class="cert-card-name">'+t.name+'</div><div class="cert-card-grade">'+t.grade+'</div><div class="cert-items">'+CERTS.map(c=>{const g=!!(certState[tk]&&certState[tk][c.id]);return '<div class="cert-item '+(g?'granted':'')+'"><span>'+c.label+'</span><button class="cert-grant-btn" onclick="toggleCert('+tk+'','+c.id+'')">'+(g?'✓ 已認證':'授予認證')+'</button></div>';}).join('')+'</div></div>';
+    return '<div class="cert-card"><div class="cert-card-name">'+t.name+'</div><div class="cert-card-grade">'+t.grade+'</div><div class="cert-items">'+CERTS.map(c=>{const g=!!(certState[tk]&&certState[tk][c.id]);return '<div class="cert-item '+(g?'granted':'')+'"><span>'+c.label+'</span><button class="cert-grant-btn" onclick="toggleCert(\''+tk+'\',\''+c.id+'\')">'+(g?'✓ 已認證':'授予認證')+'</button></div>';}).join('')+'</div></div>';
   }).join('');
 }
 function toggleCert(teacher,certId) {

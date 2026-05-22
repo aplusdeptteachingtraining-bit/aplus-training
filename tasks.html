@@ -193,16 +193,13 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
 <script>
 // ── TASK DATA ──
 const TASKS = [
-  // ENTRY
+  // ENTRY — 依指定順序排列
+  {id:'e4',phase:'entry',name:'完成入職問卷填寫',nameEn:'Onboarding Questionnaire',dim:'行政了解',assess:'系統自動',grades:['通用'],doc:'入職評估問卷系統',detail:'填寫A/B/C/D四個區塊，系統自動判定起始等級',time:'報到前',weight:1.0},
   {id:'e1',phase:'entry',name:'完成入職流程 SOP',nameEn:'Complete Onboarding SOP',dim:'行政了解',assess:'Q&A 口頭',grades:['通用'],doc:'二、校務流程 SOP（Ch.5）',detail:'確認制服、資料繳交、勞健保、Gmail設定',time:'第1-2天',weight:1.0},
   {id:'e2',phase:'entry',name:'認識機構組織架構',nameEn:'Org Structure',dim:'行政了解',assess:'Q&A 口頭',grades:['通用'],doc:'About A Plus.png、校務.png、校園維護和營運.png（Ch.1）',detail:'各部門職責、跨部合作方式、打招呼文化',time:'第1-2天',weight:1.0},
   {id:'e3',phase:'entry',name:'了解考勤與薪資制度',nameEn:'Attendance & Payroll',dim:'行政了解',assess:'填充題',grades:['通用'],doc:'耶加考勤規章、G/P 薪資及紅利（Ch.2）',detail:'打卡系統、請假規則、G/P值制度說明',time:'第3-4天',weight:1.0},
-  {id:'e4',phase:'entry',name:'完成入職問卷填寫',nameEn:'Onboarding Questionnaire',dim:'行政了解',assess:'系統自動',grades:['通用'],doc:'入職評估問卷系統',detail:'填寫A/B/C/D四個區塊，系統自動判定起始等級',time:'報到前',weight:1.0},
-  // 1. 文件來源去除
   {id:'e5',phase:'entry',name:'各校區 Google Maps 五星好評',nameEn:'Google Maps Review',dim:'行政了解',assess:'截圖確認',grades:['通用'],doc:'',detail:'總校、龍華、左新、中學部各留一則好評',time:'第1週',weight:1.0},
-  // 2. 改名 + 文件來源去除
   {id:'e6',phase:'entry',name:'認識學期間、寒暑假班表',nameEn:'Class Schedule',dim:'行政了解',assess:'Q&A 口頭',grades:['通用'],doc:'',detail:'學期班表、寒暑假班表格式說明',time:'第1週',weight:1.0},
-  // 3. 新增加入所有必要群組
   {id:'e7',phase:'entry',name:'加入所有必要群組',nameEn:'Join Required Groups',dim:'行政了解',assess:'',grades:['通用'],doc:'A Plus 耶加群組差異性（Ch.1）',detail:'了解群組功能',time:'第1週',weight:1.0},
 
   // BASIC
@@ -221,12 +218,12 @@ const TASKS = [
   {id:'b10',phase:'basic',name:'學務部跨部合作',nameEn:'Admin Cross-Dept',dim:'行政了解',assess:'Q&A 口頭、實作',grades:['通用'],doc:'學務部相關合作（Ch.4）',detail:'變動表執行、家長接送學生相關合作',time:'第6-7週',weight:1.0},
 
   // ADVANCED
-  // 2. 培訓重點改為 AI 工具
   {id:'a1',phase:'advanced',name:'教案設計與提交',nameEn:'Lesson Plan',dim:'備課能力',assess:'實作提交',grades:['通用'],doc:'六、課程授課（Ch.3）',detail:'使用 AI 工具輔助教案設計，提交符合格式的完整教案',time:'第9-10週',weight:1.5},
-  {id:'a2',phase:'advanced',name:'KIC 課程體系了解',nameEn:'KIC Curriculum',dim:'學科知識',assess:'Q&A 口頭',grades:['通用'],doc:'一、教育架構（Ch.3）',detail:'KIC課程架構、核心課程與補充課程的區別',time:'第9週',weight:1.0},
-  {id:'a3',phase:'advanced',name:'寒暑假課程規劃',nameEn:'Holiday Curriculum',dim:'備課能力',assess:'培訓官評定',grades:['通用'],doc:'三、寒暑假相關資料、四、戶外教學秘笈（Ch.5）',detail:'寒暑假架構規劃、戶外教學秘笈、兩天一夜要點',time:'第11週',weight:1.5},
+  {id:'a2',phase:'advanced',name:'KIC 課程體系了解',nameEn:'KIC Curriculum',dim:'學科知識',assess:'Q&A 口頭',grades:['通用'],doc:'六、課程授課（Ch.3）',detail:'KIC課程架構、核心課程與補充課程的區別',time:'第9週',weight:1.0},
   {id:'a4',phase:'advanced',name:'P 值計算與季節目標',nameEn:'P-Value & Seasonal Goals',dim:'行政了解',assess:'Q&A 口頭',grades:['通用'],doc:'一、教學部季節目標說明、二、P 值常見 QA、三、P 值模擬版（Ch.6）',detail:'P 值計算方式、三大貢獻類型說明',time:'第10週',weight:1.0},
-  // 1. 招生合作移到年段認證前總評前面
+  {id:'a7',phase:'advanced',name:'龍華校啟發型態課程授課了解',nameEn:'Inspirational Teaching',dim:'教學技巧',assess:'培訓官觀察',grades:['通用'],doc:'六、課程授課（Ch.3）',detail:'啟發型態教育課程架構、課程實際執行項目',time:'第11-12週',weight:1.0},
+  {id:'a8',phase:'advanced',name:'AMS 數學授課了解',nameEn:'AMS Math Teaching',dim:'學科知識',assess:'培訓官觀察',grades:['通用'],doc:'六、課程授課（Ch.3）',detail:'AMS 數學架構、如何培養教師數學授課能力',time:'第11-12週',weight:1.0},
+  {id:'a3',phase:'advanced',name:'寒暑假課程規劃',nameEn:'Holiday Curriculum',dim:'備課能力',assess:'培訓官評定',grades:['通用'],doc:'三、寒暑假相關資料、四、戶外教學秘笈（Ch.5）',detail:'寒暑假架構規劃、戶外教學秘笈、兩天一夜要點',time:'第11週',weight:1.5},
   {id:'a6',phase:'advanced',name:'招生合作',nameEn:'Student Recruitment',dim:'教學技巧',assess:'Q&A 口頭',grades:['通用'],doc:'七、招生合作（Ch.3）',detail:'座談會 QA 細節、要資料/發 DM 語詞、電聯詞',time:'第10-11週',weight:1.0},
   {id:'a5',phase:'advanced',name:'年段認證前總評',nameEn:'Grade Certification Review',dim:'課堂管理',assess:'培訓官評定',grades:['通用'],doc:'教學部年度排程（Ch.7）＋全部培訓文件',detail:'達標標準確認：任務完成率≥75%、課堂管理≥75分、加權總分≥70分',time:'第12週',weight:1.5},
 ];
