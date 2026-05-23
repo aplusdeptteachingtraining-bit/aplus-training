@@ -594,38 +594,51 @@ function calcRadarAvg() {
   return avgs;
 }
 
-function submitQuestionnaire() {
+async function handleSubmit() {
   const bScore = calcBScore();
   const radarScores = calcRadarAvg();
-  const radarAvg = Math.round(Object.values(radarScores).reduce((a,b)=>a+b,0)/5);
+  const radarAvg = Math.round(Object.values(radarScores).reduce((a, b) => a + b, 0) / 5);
+
   let level, startPoint;
-  if (bScore >= 60) { level = '進階起始 Advanced'; startPoint = '直接進入進階任務，仍需完成機構特定行政培訓。'; }
-  else if (bScore >= 40) { level = '初階起始 Basic'; startPoint = '入門任務以 Q&A 口頭確認（1天），直接進入初階。'; }
-  else { level = '入門起始 Entry'; startPoint = '從入門階段完整開始，培訓官將給予較高支持密度。'; }
+  if      (bScore >= 60) { level = '進階起始 Advanced'; startPoint = '直接進入進階任務，仍需完成機構特定行政培訓。'; }
+  else if (bScore >= 40) { level = '初階起始 Basic';    startPoint = '入門任務以 Q&A 口頭確認（1天），直接進入初階。'; }
+  else                   { level = '入門起始 Entry';    startPoint = '從入門階段完整開始，培訓官將給予較高支持密度。'; }
 
   const dAnswers = {};
-  [1,2,3,4,5].forEach(i => dAnswers['d'+i] = (document.getElementById('d'+i)||{}).value||'');
+  [1, 2, 3, 4, 5].forEach(i => {
+    dAnswers['d' + i] = (document.getElementById('d' + i) || {}).value || '';
+  });
 
-  const result = { bScore, level, radarScores, dAnswers, submittedAt: new Date().toISOString() };
-  localStorage.setItem('qResult', JSON.stringify(result));
-  localStorage.setItem('radarScores', JSON.stringify(radarScores));
+  const profile = loadJSON('profile', {});
 
-  // Update profile with start level
-  try {
-    const p = JSON.parse(localStorage.getItem('profile')||'{}');
-    p.startLevel = level; localStorage.setItem('profile', JSON.stringify(p));
-  } catch(e){}
+  // 儲存至 localStorage
+  saveJSON('qResult',      { bScore, level, radarScores, dAnswers, submittedAt: new Date().toISOString() });
+  saveJSON('radarScores',  radarScores);
+  saveJSON('profile',      { ...profile, startLevel: level });
 
-  // Show result
-  blockOrder.forEach(b => document.getElementById('block-'+b).style.display = 'none');
+  // 同步至 Google Sheets（sheets.js 的 submitQuestionnaire）
+  submitQuestionnaire({
+    name:      profile.name  || '未填寫',
+    email:     profile.email || '',
+    bScore,
+    level,
+    fitScore:  0,
+    cScores:   radarScores,
+    dAnswers,
+  }).catch(e => console.warn('[questionnaire] GAS 送出失敗：', e.message));
+
+  // 顯示結果
+  blockOrder.forEach(b => { document.getElementById('block-' + b).style.display = 'none'; });
   document.getElementById('block-result').style.display = 'block';
   document.getElementById('result-level-badge').textContent = level;
   document.getElementById('result-title').textContent = '問卷填寫完成！';
   document.getElementById('result-desc').textContent = `B區塊得分：${bScore}分。${startPoint}`;
   document.getElementById('res-b-score').textContent = bScore;
   document.getElementById('res-radar').textContent = radarAvg;
-  ['step-a','step-b','step-c','step-d'].forEach(s => { document.getElementById(s).className = 'q-step done'; });
-  window.scrollTo({ top: 0, behavior:'smooth' });
+  ['step-a', 'step-b', 'step-c', 'step-d'].forEach(s => {
+    document.getElementById(s).className = 'q-step done';
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 buildCQuestions();
