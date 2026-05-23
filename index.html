@@ -701,37 +701,31 @@ function renderProfile() {
 
 // ── PHASE PROGRESS from tasks localStorage ──
 function renderPhaseProgress() {
-  try {
-    const tasks = JSON.parse(localStorage.getItem('tasks') || '{}');
-    // Count by phase (simplified counts based on tasks.json structure)
-    const phases = { entry: { total: 6, done: 0 }, basic: { total: 8, done: 0 }, advanced: { total: 5, done: 0 } };
-    Object.keys(tasks).forEach(id => {
-      if (tasks[id] && id.startsWith('e')) phases.entry.done++;
-      else if (tasks[id] && id.startsWith('b')) phases.basic.done++;
-      else if (tasks[id] && id.startsWith('a')) phases.advanced.done++;
-    });
-    ['entry','basic','advanced'].forEach(p => {
-      const pct = Math.round(Math.min(phases[p].done / phases[p].total * 100, 100));
-      const key = p === 'entry' ? 'entry' : p === 'basic' ? 'basic' : 'adv';
-      document.getElementById(key + '-pct').textContent = pct + '%';
-      document.getElementById(key + '-fill').style.width = pct + '%';
-    });
-  } catch(e) {}
+  const tasks = loadJSON('tasks', {});
+  const phases = { entry: { total: 6, done: 0 }, basic: { total: 8, done: 0 }, advanced: { total: 5, done: 0 } };
+  Object.keys(tasks).forEach(id => {
+    if (tasks[id] && id.startsWith('e')) phases.entry.done++;
+    else if (tasks[id] && id.startsWith('b')) phases.basic.done++;
+    else if (tasks[id] && id.startsWith('a')) phases.advanced.done++;
+  });
+  ['entry', 'basic', 'advanced'].forEach(p => {
+    const pct = Math.round(Math.min(phases[p].done / phases[p].total * 100, 100));
+    const key = p === 'advanced' ? 'adv' : p;
+    document.getElementById(key + '-pct').textContent = pct + '%';
+    document.getElementById(key + '-fill').style.width = pct + '%';
+  });
 }
 
 // ── CHECKLIST PERSIST ──
 function saveChecklist() {
   const checks = document.querySelectorAll('#checklist input[type=checkbox]');
-  const state = Array.from(checks).map(c => c.checked);
-  localStorage.setItem('checklist', JSON.stringify(state));
+  saveJSON('checklist', Array.from(checks).map(c => c.checked));
 }
 function loadChecklist() {
-  try {
-    const state = JSON.parse(localStorage.getItem('checklist') || '[]');
-    const checks = document.querySelectorAll('#checklist input[type=checkbox]');
-    state.forEach((v, i) => { if (checks[i]) checks[i].checked = v; });
-    updateProgress();
-  } catch(e) {}
+  const state = loadJSON('checklist', []);
+  const checks = document.querySelectorAll('#checklist input[type=checkbox]');
+  state.forEach((v, i) => { if (checks[i]) checks[i].checked = v; });
+  updateProgress();
 }
 
 // ── INIT ──
