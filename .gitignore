@@ -1,0 +1,20 @@
+# Claude Code 本地設定（個人，不納入版控）
+.claude/settings.local.json
+
+# 敏感設定（Apps Script URL、Secret Token）
+config.js
+config.local.js
+
+# 環境變數
+.env
+.env.local
+.env.*.local
+
+# 系統檔案
+.DS_Store
+Thumbs.db
+
+# 備份檔
+*.bak
+"index (1).html"
+"questionnaire (1).html"
