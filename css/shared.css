@@ -1,0 +1,81 @@
+/* ══════════════════════════════════════
+   A Plus 耶加培訓系統 · 共用樣式
+   所有頁面共用，請勿在此加入頁面專屬樣式
+   ══════════════════════════════════════ */
+
+/* ── CSS 設計系統變數 ── */
+:root {
+  --green:        #1B4332;
+  --green-mid:    #2D6A4F;
+  --green-light:  #52B788;
+  --green-pale:   #D8F3DC;
+  --gold:         #F6E05E;
+  --gold-dark:    #B7791F;
+  --cream:        #F9F6F0;
+  --white:        #ffffff;
+  --text:         #1A1A1A;
+  --text-muted:   #6B6B6B;
+  --text-light:   #9E9E9E;
+  --border:       rgba(45, 106, 79, 0.12);
+  --border-light: #E8E8E8;
+  --radius:       14px;
+  --radius-sm:    8px;
+  --shadow:       0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ── 基礎排版 ── */
+html {
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+  min-width: 320px;
+}
+
+/* ── 頂部導覽列（子頁面共用） ── */
+.topbar {
+  background: var(--green);
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.topbar a:hover {
+  color: #fff;
+}
+
+.topbar-sep {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.topbar-title {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ── 共用按鈕基底 ── */
+button {
+  font-family: 'Noto Sans TC', sans-serif;
+}
