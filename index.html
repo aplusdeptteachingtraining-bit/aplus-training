@@ -675,18 +675,24 @@ function saveProfile() {
     grade: document.getElementById('input-grade').value,
     type: document.getElementById('input-type').value,
   };
-  localStorage.setItem('profile', JSON.stringify(data));
+  saveJSON('profile', data);
   closeProfileModal();
   renderProfile();
 }
 function getProfile() {
-  try { return JSON.parse(localStorage.getItem('profile')); } catch { return null; }
+  return loadJSON('profile');
 }
 function renderProfile() {
   const p = getProfile();
   if (!p || !p.name) return;
-  document.getElementById('profile-name-display').innerHTML =
-    p.name + (p.grade ? `<span class="profile-badge">${p.grade}</span>` : '');
+  const nameEl = document.getElementById('profile-name-display');
+  nameEl.textContent = p.name;
+  if (p.grade) {
+    const badge = document.createElement('span');
+    badge.className = 'profile-badge';
+    badge.textContent = p.grade;
+    nameEl.appendChild(badge);
+  }
   const days = p.startDate ? Math.floor((new Date() - new Date(p.startDate)) / 86400000) : null;
   document.getElementById('profile-meta-display').textContent =
     p.type + (days !== null ? `　入職 ${days} 天` : '');
