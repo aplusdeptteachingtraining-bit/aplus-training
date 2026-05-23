@@ -6,26 +6,17 @@
 <title>培訓任務清單 · A Plus 耶加</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="css/shared.css">
+<script src="js/utils.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="sheets.js"></script>
 <style>
-:root {
-  --green:#1B4332;--green-mid:#2D6A4F;--green-light:#52B788;
-  --green-pale:#D8F3DC;--gold:#F6E05E;--cream:#F9F6F0;
-  --white:#fff;--text:#1A1A1A;--text-muted:#6B6B6B;--text-light:#9E9E9E;
-  --border-light:#E8E8E8;--radius:14px;--radius-sm:8px;--shadow:0 2px 12px rgba(0,0,0,0.07);
+
+.page-wrap {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: calc(100vh - 56px);
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-html{overflow-x:hidden;}
-body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--text);line-height:1.7;font-size:15px;}
-
-.topbar{background:var(--green);padding:14px 32px;display:flex;align-items:center;gap:12px;}
-.topbar a{color:rgba(255,255,255,0.6);text-decoration:none;font-size:13px;}
-.topbar a:hover{color:#fff;}
-.topbar-sep{color:rgba(255,255,255,0.3);}
-.topbar-title{color:#fff;font-size:14px;font-weight:500;}
-
-.page-wrap{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 56px);}
 
 /* SIDEBAR */
 .t-sidebar{background:var(--white);border-right:1px solid var(--border-light);padding:24px 16px;position:sticky;top:0;height:calc(100vh - 56px);overflow-y:auto;}
