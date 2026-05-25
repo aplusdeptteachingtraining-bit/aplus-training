@@ -534,16 +534,6 @@ body { font-family:'Noto Sans TC',sans-serif; background:var(--cream); color:var
         <div class="score-item"><div class="score-num" id="res-radar">--</div><div class="score-label">雷達圖平均初始值</div></div>
       </div>
       <div id="sheets-sync-result" style="margin-bottom:16px;font-size:13px;"></div>
-      <!-- Sheets URL 設定（若未設定才顯示）-->
-      <div id="sheets-url-wrap" style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:14px 16px;margin-bottom:20px;text-align:left;">
-        <div style="font-size:13px;font-weight:500;color:#92400E;margin-bottom:6px;">⚙ 設定 Google Sheets 連線（一次設定即可）</div>
-        <div style="font-size:12px;color:#B7791F;margin-bottom:10px;">貼入培訓官提供的 Apps Script URL，資料將自動送出至後台。</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <input id="sheets-url-input-q" type="text" placeholder="https://script.google.com/macros/s/.../exec"
-            style="flex:1;min-width:200px;padding:8px 12px;border:1px solid #FDE68A;border-radius:8px;font-size:13px;outline:none;">
-          <button onclick="saveAndResync()" style="padding:8px 16px;border:none;border-radius:99px;background:#B7791F;color:#fff;cursor:pointer;font-size:13px;white-space:nowrap;">儲存並重新送出</button>
-        </div>
-      </div>
       <a href="tasks.html" class="result-btn"><i class="ti ti-checklist"></i> 前往培訓任務清單</a>
     </div>
   </div>
@@ -644,9 +634,12 @@ function validateAndGoB() {
   goToBlock('b');
 }
 
-// ── SHEETS URL（填入後自動記住）──
+// ── Google Sheets URL（內建，教師無需設定）──
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwZaAsaIAgc-RrnT-z_r1YQDHEVQnSLieL5KAzjFEm50316BF_4K0x5jzkkofFwMf4v/exec';
+localStorage.setItem('sheetsUrl', SHEETS_URL);
+
 function getSheetsUrl() {
-  return localStorage.getItem('sheetsUrl') || '';
+  return SHEETS_URL;
 }
 
 async function pushToSheets(payload) {

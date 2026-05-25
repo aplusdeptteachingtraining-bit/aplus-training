@@ -149,10 +149,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
     <div class="radar-wrap">
       <canvas id="miniRadarChart" width="220" height="180"></canvas>
     </div>
-    <div class="sidebar-divider"></div>
-    <button onclick="resetSheetsUrl()" style="width:100%;padding:8px 10px;border:1px solid var(--border-light);border-radius:var(--radius-sm);background:none;font-family:'Noto Sans TC',sans-serif;font-size:12px;color:var(--text-muted);cursor:pointer;text-align:left;">
-      <i class="ti ti-settings"></i> 重新設定 Sheets 連線
-    </button>
   </aside>
 
   <!-- MAIN -->
@@ -160,24 +156,13 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
     <div class="t-header">
       <div class="t-header-left">
         <h2>培訓任務清單</h2>
-        <p>點擊任務卡可展開詳細資訊，完成後標記並輸入評分。</p>
+        <p>點擊任務卡可展開詳細資訊，由培訓官評分後自動更新。</p>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
         <div id="level-badge-wrap"></div>
         <button onclick="manualSyncFromSheets()" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--border-light);border-radius:99px;background:var(--white);cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:12px;color:var(--text-muted);">
           <i class="ti ti-refresh" id="sync-icon"></i> 同步評分
         </button>
-      </div>
-    </div>
-
-    <!-- SHEETS URL 設定（首次使用才顯示）-->
-    <div id="sheets-setup-banner" style="display:none;background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:14px 18px;margin-bottom:16px;font-size:13px;">
-      <div style="font-weight:500;color:#92400E;margin-bottom:6px;">⚙ 設定培訓資料同步</div>
-      <div style="color:#B7791F;margin-bottom:10px;font-size:12px;">請向培訓官取得 Apps Script URL，貼入後才能讀取評分結果。</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <input id="teacher-sheets-url" type="text" placeholder="https://script.google.com/macros/s/.../exec"
-          style="flex:1;min-width:200px;padding:8px 12px;border:1px solid #FDE68A;border-radius:8px;font-size:13px;outline:none;">
-        <button onclick="saveTeacherSheetsUrl()" style="padding:8px 16px;border:none;border-radius:99px;background:#B7791F;color:#fff;cursor:pointer;font-size:13px;font-family:'Noto Sans TC',sans-serif;">儲存並同步</button>
       </div>
     </div>
     <div id="sync-status-bar" style="margin-bottom:12px;font-size:12px;color:var(--text-muted);"></div>
@@ -588,18 +573,9 @@ async function manualSyncFromSheets() {
   }
 }
 
-// 支援 ?reset=1 清除 Sheets URL
-if (location.search.includes('reset=1')) {
-  localStorage.removeItem('sheetsUrl');
-  history.replaceState({}, '', location.pathname);
-}
-
-function checkSheetsSetup() {
-  const url = localStorage.getItem('sheetsUrl') || '';
-  if (!url) {
-    document.getElementById('sheets-setup-banner').style.display = 'block';
-  }
-}
+// ── Google Sheets URL（由培訓官設定，教師無需操作）──
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwZaAsaIAgc-RrnT-z_r1YQDHEVQnSLieL5KAzjFEm50316BF_4K0x5jzkkofFwMf4v/exec';
+localStorage.setItem('sheetsUrl', SHEETS_URL);
 
 // 加入 spin 動畫 CSS
 const spinStyle = document.createElement('style');
@@ -679,7 +655,6 @@ taskScores = {};
 renderTasks();
 renderRadar();
 renderLevelBadge();
-checkSheetsSetup();
 loadStateFromSheets(); // 從 Sheets 讀取（會覆蓋並 re-render）
 
 // Scroll to hash
