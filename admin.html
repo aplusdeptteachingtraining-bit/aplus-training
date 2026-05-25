@@ -106,10 +106,42 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
 .empty-state{padding:60px;text-align:center;color:var(--text-muted);}
 .empty-state i{font-size:40px;display:block;margin-bottom:12px;color:var(--text-light);}
 
+/* TASK SCORING */
+.scoring-layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start;}
+.teacher-list-panel{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;position:sticky;top:20px;}
+.teacher-list-title{padding:14px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);border-bottom:1px solid var(--border-light);background:var(--cream);}
+.teacher-list-item{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border-light);transition:all .12s;font-size:13px;}
+.teacher-list-item:last-child{border-bottom:none;}
+.teacher-list-item:hover{background:var(--green-pale);}
+.teacher-list-item.active{background:var(--green-pale);color:var(--green-mid);font-weight:500;}
+.teacher-list-avatar{width:30px;height:30px;border-radius:50%;background:var(--green-pale);border:2px solid var(--green-light);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.teacher-list-item.active .teacher-list-avatar{background:var(--green-mid);color:#fff;}
+.scoring-main{min-width:0;}
+.scoring-header{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.scoring-teacher-name{font-size:18px;font-weight:500;}
+.scoring-teacher-meta{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.save-all-btn{display:flex;align-items:center;gap:6px;padding:8px 20px;border:none;border-radius:99px;background:var(--green-mid);color:#fff;font-family:'Noto Sans TC',sans-serif;font-size:13px;cursor:pointer;transition:all .15s;}
+.save-all-btn:hover{background:var(--green);}
+.save-all-btn:disabled{opacity:.5;cursor:not-allowed;}
+.phase-block{margin-bottom:20px;}
+.phase-block-title{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:10px;padding:6px 0;border-bottom:2px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;}
+.phase-block-title span{background:var(--cream);padding:2px 10px;border-radius:99px;font-size:11px;}
+.task-score-row{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:8px;display:grid;grid-template-columns:1fr auto auto auto;gap:12px;align-items:center;}
+.task-score-name{font-size:13px;font-weight:500;}
+.task-score-detail{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.task-done-toggle{width:24px;height:24px;border-radius:50%;border:2px solid var(--border-light);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.task-done-toggle.done{background:var(--green-mid);border-color:var(--green-mid);color:#fff;}
+.task-score-input{width:70px;padding:6px 8px;border:1px solid var(--border-light);border-radius:6px;font-size:13px;font-family:'Noto Sans TC',sans-serif;text-align:center;outline:none;}
+.task-score-input:focus{border-color:var(--green-light);}
+.task-assess-tag{font-size:10px;padding:2px 8px;border-radius:99px;background:var(--cream);border:1px solid var(--border-light);color:var(--text-muted);white-space:nowrap;}
+
 @media(max-width:768px){
   .admin-page{padding:20px 16px 60px;}
   .table-head,.teacher-row{grid-template-columns:1fr 1fr 1fr;font-size:12px;}
   .topbar{padding:12px 16px;}
+  .scoring-layout{grid-template-columns:1fr;}
+  .teacher-list-panel{position:static;}
+  .task-score-row{grid-template-columns:1fr auto auto;}
 }
 </style>
 </head>
@@ -164,6 +196,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
     <!-- TABS -->
     <div class="tabs">
       <button class="tab active" onclick="showTab('overview',this)">教師總覽</button>
+      <button class="tab" onclick="showTab('scoring',this);initScoring()">任務評分</button>
       <button class="tab" onclick="showTab('questionnaire',this)">問卷管理</button>
       <button class="tab" onclick="showTab('certs',this)">年段認證</button>
     </div>
@@ -175,6 +208,21 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
           <span>教師</span><span>年級段</span><span>當前階段</span><span>整體進度</span><span>預警狀態</span><span>操作</span>
         </div>
         <div id="teachers-list"></div>
+      </div>
+    </div>
+
+    <!-- TASK SCORING TAB -->
+    <div id="tab-scoring" style="display:none;">
+      <div class="scoring-layout">
+        <div class="teacher-list-panel">
+          <div class="teacher-list-title">選擇教師</div>
+          <div id="scoring-teacher-list"></div>
+        </div>
+        <div class="scoring-main">
+          <div id="scoring-content">
+            <div class="empty-state"><i class="ti ti-arrow-left"></i>請從左側選擇教師</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -381,6 +429,202 @@ function toggleCert(teacher,certId) {
 }
 function _mockTeachers(){return[{name:'林老師',grade:'低年級',phase:'basic',entryPct:100,basicPct:55,advPct:0},{name:'王老師',grade:'中年級',phase:'entry',entryPct:60,basicPct:0,advPct:0},{name:'陳老師',grade:'高年級',phase:'advanced',entryPct:100,basicPct:100,advPct:70},{name:'張老師',grade:'跨年級段',phase:'basic',entryPct:100,basicPct:30,advPct:0}];}
 function _mockQuestionnaires(){return[{name:'林老師',submittedAt:'2026-05-10',bScore:52,level:'初階起始',dAnswers:['教學是我的熱情所在。','上學期有位學生一直不配合，我課後與他單獨談話，了解困境後調整策略。','學生突發狀況最優先，然後是家長電話，文件下班前完成。','互相尊重與持續學習。','我會用蘋果示範1/2，請同學把蘋果對切。']}];}
+
+// ══════════════════════════════════════════
+//  任務評分模組
+// ══════════════════════════════════════════
+
+// 所有培訓任務定義（與 tasks.html 同步）
+const ALL_TASKS = [
+  {id:'e1',phase:'entry',name:'完成入職流程 SOP',assess:'Q&A 口頭'},
+  {id:'e2',phase:'entry',name:'認識機構組織架構',assess:'Q&A 口頭'},
+  {id:'e3',phase:'entry',name:'了解考勤與薪資制度',assess:'填充題'},
+  {id:'e4',phase:'entry',name:'完成入職問卷填寫',assess:'系統自動'},
+  {id:'e5',phase:'entry',name:'各校區 Google Maps 五星好評',assess:'截圖確認'},
+  {id:'e6',phase:'entry',name:'認識學期間、寒暑假班表',assess:'Q&A 口頭'},
+  {id:'e7',phase:'entry',name:'加入所有必要群組',assess:'確認'},
+  {id:'b1',phase:'basic',name:'新生入校流程演練',assess:'實作演練'},
+  {id:'b2',phase:'basic',name:'點名表與接送表操作',assess:'實作提交'},
+  {id:'b11',phase:'basic',name:'客製化課表製作',assess:'實作提交'},
+  {id:'b12',phase:'basic',name:'代課流程熟悉',assess:'Q&A 口頭、實作'},
+  {id:'b3',phase:'basic',name:'低年級教學 SOP 熟悉',assess:'培訓官觀察'},
+  {id:'b4',phase:'basic',name:'中年級教學 SOP 熟悉',assess:'培訓官觀察'},
+  {id:'b5',phase:'basic',name:'高年級教學 SOP 熟悉',assess:'培訓官觀察'},
+  {id:'b6',phase:'basic',name:'親師溝通技巧實作',assess:'培訓官觀察、Q&A 口頭'},
+  {id:'b7',phase:'basic',name:'課堂管理策略建立',assess:'培訓官觀察、Q&A 口頭'},
+  {id:'b9',phase:'basic',name:'危機處理技巧實作',assess:'培訓官觀察、Q&A 口頭'},
+  {id:'b8',phase:'basic',name:'IEE 課程跨部合作',assess:'Q&A 口頭、表單實作'},
+  {id:'b10',phase:'basic',name:'學務部跨部合作',assess:'Q&A 口頭、實作'},
+  {id:'a1',phase:'advanced',name:'教案設計與提交',assess:'實作提交'},
+  {id:'a2',phase:'advanced',name:'KIC 課程體系了解',assess:'Q&A 口頭'},
+  {id:'a4',phase:'advanced',name:'P 值計算與季節目標',assess:'Q&A 口頭'},
+  {id:'a7',phase:'advanced',name:'龍華校啟發型態課程授課了解',assess:'培訓官觀察'},
+  {id:'a8',phase:'advanced',name:'AMS 數學授課了解',assess:'培訓官觀察'},
+  {id:'a3',phase:'advanced',name:'寒暑假課程規劃',assess:'培訓官評定'},
+  {id:'a6',phase:'advanced',name:'招生合作',assess:'Q&A 口頭'},
+  {id:'a5',phase:'advanced',name:'年段認證前總評',assess:'培訓官評定'},
+];
+
+const PHASE_LABEL = { entry:'入門階段', basic:'初階階段', advanced:'進階階段' };
+
+// 儲存格式：scoringState[teacherName][taskId] = { done: bool, score: number }
+let scoringState = {};
+let currentScoringTeacher = null;
+
+function loadScoringState() {
+  try { scoringState = JSON.parse(localStorage.getItem('adminScoring') || '{}'); } catch(e) { scoringState = {}; }
+}
+
+function saveScoringState() {
+  localStorage.setItem('adminScoring', JSON.stringify(scoringState));
+}
+
+function initScoring() {
+  loadScoringState();
+  renderScoringTeacherList();
+}
+
+function renderScoringTeacherList() {
+  const names = teachersData.length ? teachersData : _mockTeachers();
+  document.getElementById('scoring-teacher-list').innerHTML = names.map(t => {
+    const state = scoringState[t.name] || {};
+    const doneCnt = Object.values(state).filter(s => s.done).length;
+    const isActive = currentScoringTeacher === t.name;
+    return `<div class="teacher-list-item ${isActive?'active':''}" onclick="selectScoringTeacher('${t.name}','${t.grade}')">
+      <div class="teacher-list-avatar">${t.name[0]}</div>
+      <div>
+        <div style="font-size:13px;">${t.name}</div>
+        <div style="font-size:11px;color:var(--text-muted);">${t.grade} · ${doneCnt}/${ALL_TASKS.length} 完成</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectScoringTeacher(name, grade) {
+  currentScoringTeacher = name;
+  if (!scoringState[name]) scoringState[name] = {};
+  renderScoringTeacherList();
+  renderScoringTasks(name, grade);
+}
+
+function renderScoringTasks(name, grade) {
+  const state = scoringState[name] || {};
+  const phases = ['entry','basic','advanced'];
+  const doneCnt = Object.values(state).filter(s => s.done).length;
+  const pct = Math.round(doneCnt / ALL_TASKS.length * 100);
+
+  let html = `
+    <div class="scoring-header">
+      <div>
+        <div class="scoring-teacher-name">${name}</div>
+        <div class="scoring-teacher-meta">${grade} · 整體完成 ${pct}%（${doneCnt} / ${ALL_TASKS.length} 項）</div>
+      </div>
+      <button class="save-all-btn" onclick="saveAllScores('${name}')">
+        <i class="ti ti-cloud-upload"></i> 儲存並同步至 Sheets
+      </button>
+    </div>`;
+
+  phases.forEach(phase => {
+    const tasks = ALL_TASKS.filter(t => t.phase === phase);
+    const phaseDone = tasks.filter(t => state[t.id] && state[t.id].done).length;
+    html += `<div class="phase-block">
+      <div class="phase-block-title">${PHASE_LABEL[phase]}<span>${phaseDone} / ${tasks.length} 完成</span></div>`;
+    tasks.forEach(t => {
+      const s = state[t.id] || { done: false, score: '' };
+      html += `<div class="task-score-row" id="row-${name}-${t.id}">
+        <div>
+          <div class="task-score-name">${t.name}</div>
+          <div class="task-score-detail">${t.assess}</div>
+        </div>
+        <span class="task-assess-tag">${phase==='entry'?'入門':phase==='basic'?'初階':'進階'}</span>
+        <input type="number" class="task-score-input" min="0" max="100" placeholder="分數"
+          value="${s.score||''}" id="score-${name}-${t.id}"
+          onchange="updateScore('${name}','${t.id}',this.value)">
+        <div class="task-done-toggle ${s.done?'done':''}" id="toggle-${name}-${t.id}"
+          onclick="toggleTaskDone('${name}','${t.id}')">
+          ${s.done?'<i class="ti ti-check" style="font-size:12px;"></i>':''}
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  document.getElementById('scoring-content').innerHTML = html;
+}
+
+function toggleTaskDone(teacherName, taskId) {
+  if (!scoringState[teacherName]) scoringState[teacherName] = {};
+  const cur = scoringState[teacherName][taskId] || { done: false, score: '' };
+  cur.done = !cur.done;
+  scoringState[teacherName][taskId] = cur;
+  saveScoringState();
+
+  // 更新 toggle UI
+  const toggle = document.getElementById('toggle-'+teacherName+'-'+taskId);
+  if (toggle) {
+    toggle.className = 'task-done-toggle ' + (cur.done ? 'done' : '');
+    toggle.innerHTML = cur.done ? '<i class="ti ti-check" style="font-size:12px;"></i>' : '';
+  }
+  // 更新 header 進度
+  const t = (teachersData.length ? teachersData : _mockTeachers()).find(x => x.name === teacherName);
+  if (t) renderScoringTasks(teacherName, t.grade || '');
+  renderScoringTeacherList();
+}
+
+function updateScore(teacherName, taskId, val) {
+  if (!scoringState[teacherName]) scoringState[teacherName] = {};
+  if (!scoringState[teacherName][taskId]) scoringState[teacherName][taskId] = { done: false, score: '' };
+  scoringState[teacherName][taskId].score = val;
+  saveScoringState();
+}
+
+async function saveAllScores(teacherName) {
+  saveScoringState();
+  const btn = document.querySelector('.save-all-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i> 同步中...'; }
+
+  const state = scoringState[teacherName] || {};
+  const doneTasks = ALL_TASKS.filter(t => state[t.id] && state[t.id].done);
+  const entryDone = doneTasks.filter(t => t.phase==='entry').length;
+  const basicDone = doneTasks.filter(t => t.phase==='basic').length;
+  const advDone   = doneTasks.filter(t => t.phase==='advanced').length;
+  const entryTotal = ALL_TASKS.filter(t=>t.phase==='entry').length;
+  const basicTotal = ALL_TASKS.filter(t=>t.phase==='basic').length;
+  const advTotal   = ALL_TASKS.filter(t=>t.phase==='advanced').length;
+
+  const teacher = (teachersData.length ? teachersData : _mockTeachers()).find(x => x.name === teacherName) || {};
+  const phase = advDone > 0 ? 'advanced' : basicDone > 0 ? 'basic' : 'entry';
+
+  const url = getSheetsUrl();
+  if (url) {
+    try {
+      await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          type: 'progress',
+          name: teacherName,
+          grade: teacher.grade || '',
+          phase,
+          entryPct: Math.round(entryDone/entryTotal*100),
+          basicPct: Math.round(basicDone/basicTotal*100),
+          advPct:   Math.round(advDone/advTotal*100),
+          taskCount: doneTasks.length,
+          radarScores: {},
+          updatedAt: new Date().toISOString(),
+        }),
+      });
+      if (btn) { btn.innerHTML = '<i class="ti ti-check"></i> 已同步'; btn.style.background='#10B981'; }
+    } catch(e) {
+      if (btn) { btn.innerHTML = '<i class="ti ti-alert-circle"></i> 同步失敗（已存本機）'; btn.style.background='#C05621'; }
+    }
+  } else {
+    if (btn) { btn.innerHTML = '<i class="ti ti-check"></i> 已儲存本機'; btn.style.background='#6B7280'; }
+  }
+  setTimeout(() => {
+    if (btn) { btn.innerHTML = '<i class="ti ti-cloud-upload"></i> 儲存並同步至 Sheets'; btn.style.background=''; btn.disabled=false; }
+  }, 2500);
+}
 </script>
 </body>
 </html>
