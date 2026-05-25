@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>培訓官後台 · A Plus 耶加</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root{--green:#1B4332;--green-mid:#2D6A4F;--green-light:#52B788;--green-pale:#D8F3DC;--gold:#F6E05E;--cream:#F9F6F0;--white:#fff;--text:#1A1A1A;--text-muted:#6B6B6B;--text-light:#9E9E9E;--border-light:#E8E8E8;--radius:14px;--radius-sm:8px;--shadow:0 2px 12px rgba(0,0,0,0.07);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--text);line-height:1.7;}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.login-card{background:var(--white);border-radius:var(--radius);padding:40px 36px;width:360px;box-shadow:0 8px 40px rgba(0,0,0,0.12);}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+.login-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);}
+.login-name{font-size:15px;font-weight:500;color:var(--green);}
+.login-sub{font-size:12px;color:var(--text-muted);}
+.login-card h2{font-size:20px;font-weight:500;margin-bottom:6px;}
+.login-card p{font-size:13px;color:var(--text-muted);margin-bottom:24px;}
+.login-label{font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block;}
+.login-input{width:100%;padding:10px 14px;border:1px solid var(--border-light);border-radius:var(--radius-sm);font-family:'Noto Sans TC',sans-serif;font-size:14px;color:var(--text);background:var(--cream);outline:none;margin-bottom:16px;}
+.login-input:focus{border-color:var(--green-light);background:var(--white);}
+.login-btn{width:100%;padding:11px;border:none;border-radius:99px;background:var(--green-mid);color:#fff;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;}
+.login-btn:hover{background:var(--green);}
+.login-error{color:#DC2626;font-size:12px;margin-top:-8px;margin-bottom:12px;display:none;}
+
+/* ADMIN LAYOUT */
+.admin-wrap{display:none;}
+.topbar{background:var(--green);padding:14px 32px;display:flex;align-items:center;gap:16px;}
+.topbar-logo{display:flex;align-items:center;gap:8px;color:#fff;font-size:14px;font-weight:500;}
+.topbar-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);}
+.topbar-badge{background:rgba(246,224,94,0.2);border:1px solid rgba(246,224,94,0.3);color:var(--gold);font-size:11px;padding:2px 10px;border-radius:99px;}
+.topbar-link{color:rgba(255,255,255,0.6);font-size:13px;text-decoration:none;margin-left:auto;}
+.topbar-link:hover{color:#fff;}
+
+.admin-page{max-width:1100px;margin:0 auto;padding:32px 32px 80px;}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;}
+.admin-header h2{font-size:20px;font-weight:500;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:4px;margin-bottom:28px;width:fit-content;}
+.tab{padding:8px 18px;border-radius:6px;font-size:13px;cursor:pointer;border:none;background:none;font-family:'Noto Sans TC',sans-serif;color:var(--text-muted);transition:all .15s;}
+.tab.active{background:var(--green-mid);color:#fff;}
+
+/* ALERT CARDS */
+.alerts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:32px;}
+.alert-card{padding:16px 20px;border-radius:var(--radius-sm);border-left:4px solid;display:flex;gap:12px;}
+.alert-card.yellow{background:#FFFBEB;border-color:#F59E0B;}
+.alert-card.red{background:#FEF2F2;border-color:#EF4444;}
+.alert-card.green{background:#F0FDF4;border-color:#10B981;}
+.alert-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.alert-title{font-size:13px;font-weight:500;margin-bottom:2px;}
+.alert-desc{font-size:12px;color:var(--text-muted);}
+
+/* TEACHER TABLE */
+.teachers-table{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;}
+.table-head{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 80px;gap:0;background:var(--cream);padding:10px 20px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);border-bottom:1px solid var(--border-light);}
+.teacher-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 80px;gap:0;padding:14px 20px;border-bottom:1px solid var(--border-light);align-items:center;font-size:13px;transition:background .1s;}
+.teacher-row:last-child{border-bottom:none;}
+.teacher-row:hover{background:var(--cream);}
+.teacher-name{font-weight:500;}
+.teacher-grade{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;background:var(--green-pale);color:var(--green-mid);border:1px solid rgba(45,106,79,0.2);}
+.progress-mini{height:5px;background:var(--border-light);border-radius:99px;margin-top:4px;}
+.progress-mini-fill{height:100%;border-radius:99px;background:var(--green-light);}
+.alert-dot{width:8px;height:8px;border-radius:50%;}
+.phase-tag{font-size:11px;padding:2px 8px;border-radius:99px;}
+.phase-tag.entry{background:#D1FAE5;color:#065F46;}
+.phase-tag.basic{background:#DBEAFE;color:#1E40AF;}
+.phase-tag.advanced{background:#FEE2E2;color:#991B1B;}
+.phase-tag.done{background:#F3F4F6;color:#374151;}
+
+/* QUESTIONNAIRE LIST */
+.q-list{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;}
+.q-item{padding:18px 22px;border-bottom:1px solid var(--border-light);}
+.q-item:last-child{border-bottom:none;}
+.q-item-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.q-name{font-size:14px;font-weight:500;}
+.q-date{font-size:11px;color:var(--text-muted);}
+.q-scores{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;}
+.q-score-badge{font-size:12px;}
+.q-score-badge strong{color:var(--green-mid);}
+.d-answers{margin-top:8px;}
+.d-answer{background:var(--cream);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:6px;}
+.d-answer-q{font-size:11px;color:var(--text-muted);margin-bottom:2px;}
+.d-answer-a{font-size:13px;}
+.d-score-row{display:flex;gap:6px;margin-top:6px;}
+.d-score-btn{padding:3px 10px;border-radius:99px;border:1px solid var(--border-light);background:var(--white);font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .1s;}
+.d-score-btn.sel{background:var(--green-mid);color:#fff;border-color:var(--green-mid);}
+
+/* CERT */
+.cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.cert-card{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:20px 22px;}
+.cert-card-name{font-size:15px;font-weight:500;margin-bottom:6px;}
+.cert-card-grade{font-size:12px;color:var(--text-muted);margin-bottom:14px;}
+.cert-items{display:flex;flex-direction:column;gap:8px;}
+.cert-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--border-light);font-size:13px;}
+.cert-item.granted{border-color:var(--green-light);background:var(--green-pale);}
+.cert-grant-btn{font-size:11px;padding:2px 10px;border-radius:99px;border:none;cursor:pointer;font-family:'Noto Sans TC',sans-serif;background:var(--green-pale);color:var(--green-mid);transition:all .1s;}
+.cert-grant-btn:hover{background:var(--green-mid);color:#fff;}
+.cert-item.granted .cert-grant-btn{background:var(--white);color:var(--text-muted);border:1px solid var(--border-light);}
+
+/* EMPTY */
+.empty-state{padding:60px;text-align:center;color:var(--text-muted);}
+.empty-state i{font-size:40px;display:block;margin-bottom:12px;color:var(--text-light);}
+
+/* TASK SCORING */
+.scoring-layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start;}
+.teacher-list-panel{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;position:sticky;top:20px;}
+.teacher-list-title{padding:14px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);border-bottom:1px solid var(--border-light);background:var(--cream);}
+.teacher-list-item{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border-light);transition:all .12s;font-size:13px;}
+.teacher-list-item:last-child{border-bottom:none;}
+.teacher-list-item:hover{background:var(--green-pale);}
+.teacher-list-item.active{background:var(--green-pale);color:var(--green-mid);font-weight:500;}
+.teacher-list-avatar{width:30px;height:30px;border-radius:50%;background:var(--green-pale);border:2px solid var(--green-light);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.teacher-list-item.active .teacher-list-avatar{background:var(--green-mid);color:#fff;}
+.scoring-main{min-width:0;}
+.scoring-header{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.scoring-teacher-name{font-size:18px;font-weight:500;}
+.scoring-teacher-meta{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.save-all-btn{display:flex;align-items:center;gap:6px;padding:8px 20px;border:none;border-radius:99px;background:var(--green-mid);color:#fff;font-family:'Noto Sans TC',sans-serif;font-size:13px;cursor:pointer;transition:all .15s;}
+.save-all-btn:hover{background:var(--green);}
+.save-all-btn:disabled{opacity:.5;cursor:not-allowed;}
+.phase-block{margin-bottom:20px;}
+.phase-block-title{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:10px;padding:6px 0;border-bottom:2px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;}
+.phase-block-title span{background:var(--cream);padding:2px 10px;border-radius:99px;font-size:11px;}
+.task-score-row{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:8px;display:grid;grid-template-columns:1fr auto auto auto;gap:12px;align-items:center;}
+.task-score-name{font-size:13px;font-weight:500;}
+.task-score-detail{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.task-done-toggle{width:24px;height:24px;border-radius:50%;border:2px solid var(--border-light);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.task-done-toggle.done{background:var(--green-mid);border-color:var(--green-mid);color:#fff;}
+.task-score-input{width:70px;padding:6px 8px;border:1px solid var(--border-light);border-radius:6px;font-size:13px;font-family:'Noto Sans TC',sans-serif;text-align:center;outline:none;}
+.task-score-input:focus{border-color:var(--green-light);}
+.task-assess-tag{font-size:10px;padding:2px 8px;border-radius:99px;background:var(--cream);border:1px solid var(--border-light);color:var(--text-muted);white-space:nowrap;}
+
+@media(max-width:768px){
+  .admin-page{padding:20px 16px 60px;}
+  .table-head,.teacher-row{grid-template-columns:1fr 1fr 1fr;font-size:12px;}
+  .topbar{padding:12px 16px;}
+  .scoring-layout{grid-template-columns:1fr;}
+  .teacher-list-panel{position:static;}
+  .task-score-row{grid-template-columns:1fr auto auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-dot"></div>
+      <div>
+        <div class="login-name">A Plus 耶加</div>
+        <div class="login-sub">培訓管理系統</div>
+      </div>
+    </div>
+    <h2>培訓官後台</h2>
+    <p>請輸入密碼以進入管理介面</p>
+    <label class="login-label">登入密碼</label>
+    <input type="password" class="login-input" id="pw-input" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-error" id="login-error">密碼錯誤，請重新輸入</div>
+    <button class="login-btn" onclick="doLogin()">進入後台</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-wrap" id="admin-wrap">
+  <div class="topbar">
+    <div class="topbar-logo"><div class="topbar-dot"></div>A Plus 耶加</div>
+    <span class="topbar-badge">培訓官後台</span>
+    <a href="index.html" class="topbar-link"><i class="ti ti-arrow-left"></i> 返回首頁</a>
+  </div>
+
+  <div class="admin-page">
+    <div class="admin-header">
+      <h2>培訓管理後台</h2>
+      <button id="refresh-btn" onclick="refreshData()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border-light);border-radius:99px;background:var(--white);cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:13px;"><i class="ti ti-refresh"></i> 重新整理</button>
+    </div>
+
+    <div id="sheets-status"></div>
+    <div id="alerts-section"></div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('overview',this)">教師總覽</button>
+      <button class="tab" onclick="showTab('scoring',this)">任務評分</button>
+      <button class="tab" onclick="showTab('questionnaire',this)">問卷管理</button>
+      <button class="tab" onclick="showTab('certs',this)">年段認證</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div id="tab-overview">
+      <div class="teachers-table">
+        <div class="table-head">
+          <span>教師</span><span>年級段</span><span>當前階段</span><span>整體進度</span><span>預警狀態</span><span>操作</span>
+        </div>
+        <div id="teachers-list"></div>
+      </div>
+    </div>
+
+    <!-- TASK SCORING TAB -->
+    <div id="tab-scoring" style="display:none;">
+      <div class="scoring-layout">
+        <div class="teacher-list-panel">
+          <div class="teacher-list-title">選擇教師</div>
+          <div id="scoring-teacher-list"></div>
+        </div>
+        <div class="scoring-main">
+          <div id="scoring-content">
+            <div class="empty-state"><i class="ti ti-arrow-left"></i>請從左側選擇教師</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUESTIONNAIRE TAB -->
+    <div id="tab-questionnaire" style="display:none;">
+      <div class="q-list" id="q-list"></div>
+    </div>
+
+    <!-- CERTS TAB -->
+    <div id="tab-certs" style="display:none;">
+      <div class="cert-grid" id="cert-grid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PW = 'aplus2026';
+
+function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === ADMIN_PW) {
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('admin-wrap').style.display = 'block';
+    initAdmin();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function showTab(name, btn) {
+  ['overview','scoring','questionnaire','certs'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  // 切到任務評分時自動初始化
+  if (name === 'scoring') initScoring();
+}
+
+// ── Google Sheets URL 內建，無需手動設定 ──
+const ADMIN_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwZaAsaIAgc-RrnT-z_r1YQDHEVQnSLieL5KAzjFEm50316BF_4K0x5jzkkofFwMf4v/exec';
+localStorage.setItem('adminSheetsUrl', ADMIN_SHEETS_URL);
+
+// ── SHEETS DATA LAYER ──
+function getSheetsUrl() {
+  return localStorage.getItem('adminSheetsUrl') || 'https://script.google.com/macros/s/AKfycbwZaAsaIAgc-RrnT-z_r1YQDHEVQnSLieL5KAzjFEm50316BF_4K0x5jzkkofFwMf4v/exec';
+}
+
+async function getTeachersData() {
+  const url = getSheetsUrl();
+  if (url) {
+    try {
+      // 同時讀取問卷表（姓名來源）和進度表（進度數字）
+      const [qRes, tRes] = await Promise.all([
+        fetch(url + '?sheet=Questionnaire&t=' + Date.now()),
+        fetch(url + '?sheet=Teachers&t=' + Date.now()),
+      ]);
+
+      let qData = [], tData = [];
+      if (qRes.ok) { try { qData = await qRes.json(); } catch(e){} }
+      if (tRes.ok) { try { tData = await tRes.json(); } catch(e){} }
+
+      if (!Array.isArray(qData) || !qData.length) return _mockTeachers();
+
+      // 以問卷表為主，合併進度表的數字
+      const progressMap = {};
+      tData.forEach(r => {
+        const name = r['姓名'] || r.name || '';
+        if (name) progressMap[name] = r;
+      });
+
+      return qData
+        .filter(r => (r['姓名'] || r.name || '').trim())
+        .map(r => {
+          const name  = r['姓名'] || r.name  || '';
+          const grade = r['年級段']|| r.grade || '—';
+          const prog  = progressMap[name] || {};
+          return {
+            name,
+            grade,
+            email:    r['Email']    || r.email    || '',
+            phase:    prog['當前階段'] || prog.phase    || 'entry',
+            entryPct: Number(prog['入門%']  || prog.entryPct || 0),
+            basicPct: Number(prog['初階%']  || prog.basicPct || 0),
+            advPct:   Number(prog['進階%']  || prog.advPct   || 0),
+            updatedAt: prog['更新時間'] || '',
+            radarScores: prog.radarScores || '{}',
+          };
+        });
+
+    } catch(e) { console.warn('Sheets fetch failed:', e.message); }
+  }
+  return _mockTeachers();
+}
+
+async function getQuestionnairesData() {
+  const url = getSheetsUrl();
+  if (url) {
+    try {
+      const res = await fetch(url + '?sheet=Questionnaire&t=' + Date.now());
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) return normalizeQuestionnaires(data);
+      }
+    } catch(e) { console.warn('Sheets fetch failed:', e.message); }
+  }
+  return _mockQuestionnaires();
+}
+
+// Google Sheets 欄位名稱轉換成前端格式
+function normalizeQuestionnaires(rows) {
+  return rows.map(r => ({
+    name:       r['姓名']    || r.name       || '—',
+    grade:      r['年級段']  || r.grade      || '—',
+    level:      r['起始等級']|| r.level      || '—',
+    bScore:     r['B分數']   || r.bScore     || 0,
+    submittedAt: r['填寫時間']|| r.submittedAt|| '',
+    radarScores: {
+      '教學技巧': Number(r['教學技巧'] || 0),
+      '學科知識': Number(r['學科知識'] || 0),
+      '課堂管理': Number(r['課堂管理'] || 0),
+      '行政了解': Number(r['行政了解'] || 0),
+      '備課能力': Number(r['備課能力'] || 0),
+    },
+    dAnswers: [
+      r['D1答案']||'', r['D2答案']||'',
+      r['D3答案']||'', r['D4答案']||'', r['D5答案']||''
+    ],
+  })).filter(r => r.name && r.name !== '—');
+}
+
+function checkAlerts(teacher) {
+  const alerts = [];
+  const ep = Number(teacher.entryPct||0), bp = Number(teacher.basicPct||0);
+  if (bp < 50 && String(teacher.phase).includes('basic')) alerts.push({ level:'yellow', msg:teacher.name+'：初階進度偏低（'+bp+'%）' });
+  if (ep < 80 && String(teacher.phase).includes('entry')) alerts.push({ level:'red', msg:teacher.name+'：入門進度嚴重落後（'+ep+'%）' });
+  return alerts;
+}
+
+let teachersData = [], questionnairesData = [];
+
+async function initAdmin() {
+  document.getElementById('teachers-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">載入中...</div>';
+  [teachersData, questionnairesData] = await Promise.all([getTeachersData(), getQuestionnairesData()]);
+  renderAlerts(); renderTeachers(); renderQuestionnaires(); renderCerts();
+  // 若任務評分分頁已開啟，一併刷新教師列表
+  if (document.getElementById('tab-scoring').style.display !== 'none') {
+    initScoring();
+  }
+}
+
+async function refreshData() {
+  const btn = document.getElementById('refresh-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '載入中...'; }
+  await initAdmin();
+  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-refresh"></i> 重新整理'; }
+}
+
+function renderAlerts() {
+  const allAlerts = teachersData.flatMap(t => checkAlerts(t));
+  teachersData.forEach(t => { if (Number(t.advPct||0) > 60) allAlerts.push({ level:'green', msg:t.name+' 進階進度 '+t.advPct+'%，即將達標！' }); });
+  if (!allAlerts.length) allAlerts.push({ level:'green', msg:'目前無預警事項，所有教師進度正常。' });
+  document.getElementById('alerts-section').innerHTML = '<div class="alerts-grid">' + allAlerts.map(a =>
+    '<div class="alert-card '+a.level+'">' +
+    '<div class="alert-icon">'+(a.level==='red'?'🔴':a.level==='yellow'?'🟡':'🟢')+'</div>' +
+    '<div><div class="alert-title">'+(a.level==='red'?'紅色止損':a.level==='yellow'?'黃色預警':'達標通知')+'</div><div class="alert-desc">'+a.msg+'</div></div>' +
+    '</div>').join('') + '</div>';
+}
+
+function renderTeachers() {
+  if (!teachersData.length) { document.getElementById('teachers-list').innerHTML = '<div class="empty-state"><i class="ti ti-users"></i>尚無教師資料</div>'; return; }
+  document.getElementById('teachers-list').innerHTML = teachersData.map(t => {
+    const ep=Number(t.entryPct||0), bp=Number(t.basicPct||0), ap=Number(t.advPct||0);
+    const overall = Math.round((ep+bp+ap)/3);
+    const hasRed = checkAlerts(t).some(a=>a.level==='red');
+    const hasYellow = checkAlerts(t).some(a=>a.level==='yellow');
+    const dot = hasRed?'<span class="alert-dot" style="background:#EF4444;display:inline-block;"></span>':hasYellow?'<span class="alert-dot" style="background:#F59E0B;display:inline-block;"></span>':'<span class="alert-dot" style="background:#10B981;display:inline-block;"></span>';
+    const ph = String(t.phase||'').toLowerCase();
+    const pc = ph.includes('entry')||ph==='입문'?'entry':ph.includes('basic')||ph==='초급'?'basic':ph.includes('advanced')?'advanced':'done';
+    const pl = pc==='entry'?'入門':pc==='basic'?'初階':pc==='advanced'?'進階':'完成';
+    return '<div class="teacher-row"><div class="teacher-name">'+t.name+'</div><div><span class="teacher-grade">'+t.grade+'</span></div><div><span class="phase-tag '+pc+'">'+pl+'</span></div><div><div style="font-size:12px;color:var(--text-muted);">'+overall+'%</div><div class="progress-mini"><div class="progress-mini-fill" style="width:'+overall+'%"></div></div></div><div style="display:flex;align-items:center;gap:6px;">'+dot+'<span style="font-size:12px;color:var(--text-muted);">'+(hasRed?'止損':hasYellow?'預警':'正常')+'</span></div><div><button style="font-size:11px;padding:4px 10px;border-radius:99px;border:1px solid var(--border-light);background:var(--white);cursor:pointer;font-family:\'Noto Sans TC\',sans-serif;" onclick="showTeacherDetail(\''+t.name+'\')">詳細</button></div></div>';
+  }).join('');
+}
+
+function showTeacherDetail(name) {
+  const t = teachersData.find(x => x.name === name);
+  if (!t) return;
+  let radar = {};
+  try { radar = JSON.parse(t.radarScores || '{}'); } catch(e) {}
+  const dims = ['教學技巧','學科知識','課堂管理','行政了解','備課能力'];
+  const radarStr = dims.map(d => d + ': ' + (radar[d] || '0') + ' 分').join('\n');
+  alert('【' + t.name + '】\n年級段：' + t.grade + '\n當前階段：' + t.phase + '\n入門：' + t.entryPct + '%  初階：' + t.basicPct + '%  進階：' + t.advPct + '%\n\n能力分數：\n' + radarStr + '\n\n更新時間：' + (t.updatedAt || '—'));
+}
+
+const D_QS = ['你為什麼選擇到 A Plus 耶加任職？','回想你最近一次遇到挫折，你如何面對？','三件緊急事項同時發生，你如何分配優先順序？','你認為好的教育機構文化最重要的核心是什麼？','請解釋如何教三年級學生理解分數概念。'];
+let dScores = {};
+function renderQuestionnaires() {
+  if (!questionnairesData.length) { document.getElementById('q-list').innerHTML = '<div class="empty-state"><i class="ti ti-inbox"></i>目前尚無問卷填寫記錄</div>'; return; }
+  document.getElementById('q-list').innerHTML = questionnairesData.map((q,qi) => {
+    let da = []; try { da = typeof q.dAnswers==='string'?JSON.parse(q.dAnswers):(q.dAnswers||[]); } catch(e){}
+    if (!Array.isArray(da)) da = Object.values(da||{});
+    return '<div class="q-item"><div class="q-item-head"><div><div class="q-name">'+(q.name||'—')+'</div><div class="q-date">填寫：'+String(q.submittedAt||q.date||'').substring(0,10)+'</div></div></div><div class="q-scores"><span class="q-score-badge">B區塊：<strong>'+(q.bScore||'—')+' / 70 分</strong></span><span class="q-score-badge">起始等級：<strong>'+(q.level||'—')+'</strong></span><span class="q-score-badge">D區塊：<strong id="d-total-'+qi+'">待評分 / 10</strong></span></div><div class="d-answers"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:8px;">D 區塊問答 — 人工評分</div>'+da.map((a,di)=>'<div class="d-answer"><div class="d-answer-q">D'+(di+1)+'｜'+(D_QS[di]||'')+'</div><div class="d-answer-a">'+(a||'（未填寫）')+'</div><div class="d-score-row">評分：'+[0,1,2].map(v=>'<button class="d-score-btn" id="dscore-'+qi+'-'+di+'-'+v+'" onclick="setDScore('+qi+','+di+','+v+')">'+v+' 分</button>').join('')+'</div></div>').join('')+'</div></div>';
+  }).join('');
+}
+function setDScore(qi,di,val) {
+  if (!dScores[qi]) dScores[qi]={};
+  dScores[qi][di]=val;
+  [0,1,2].forEach(v=>{const b=document.getElementById('dscore-'+qi+'-'+di+'-'+v);if(b)b.classList.toggle('sel',v===val);});
+  const t=document.getElementById('d-total-'+qi);
+  if(t)t.textContent=Object.values(dScores[qi]).reduce((a,b)=>a+b,0)+' / 10';
+}
+
+let certState={};
+function renderCerts() {
+  try{certState=JSON.parse(localStorage.getItem('adminCerts')||'{}');}catch(e){}
+  const CERTS=[{id:'primary',label:'主年段認證 Primary'},{id:'sub',label:'代班認證 Substitute'},{id:'expanded',label:'擴展主帶認證 Expanded'}];
+  if(!teachersData.length){document.getElementById('cert-grid').innerHTML='<div class="empty-state"><i class="ti ti-award"></i>尚無教師資料</div>';return;}
+  document.getElementById('cert-grid').innerHTML=teachersData.map(t=>{
+    const tk=t.name;
+    return '<div class="cert-card"><div class="cert-card-name">'+t.name+'</div><div class="cert-card-grade">'+t.grade+'</div><div class="cert-items">'+CERTS.map(c=>{const g=!!(certState[tk]&&certState[tk][c.id]);return '<div class="cert-item '+(g?'granted':'')+'"><span>'+c.label+'</span><button class="cert-grant-btn" onclick="toggleCert(\''+tk+'\',\''+c.id+'\')">'+(g?'✓ 已認證':'授予認證')+'</button></div>';}).join('')+'</div></div>';
+  }).join('');
+}
+function toggleCert(teacher,certId) {
+  if(!certState[teacher])certState[teacher]={};
+  certState[teacher][certId]=!certState[teacher][certId];
+  localStorage.setItem('adminCerts',JSON.stringify(certState));
+  renderCerts();
+}
+function _mockTeachers(){return[{name:'林老師',grade:'低年級',phase:'basic',entryPct:100,basicPct:55,advPct:0},{name:'王老師',grade:'中年級',phase:'entry',entryPct:60,basicPct:0,advPct:0},{name:'陳老師',grade:'高年級',phase:'advanced',entryPct:100,basicPct:100,advPct:70},{name:'張老師',grade:'跨年級段',phase:'basic',entryPct:100,basicPct:30,advPct:0}];}
+function _mockQuestionnaires(){return[{name:'林老師',submittedAt:'2026-05-10',bScore:52,level:'初階起始',dAnswers:['教學是我的熱情所在。','上學期有位學生一直不配合，我課後與他單獨談話，了解困境後調整策略。','學生突發狀況最優先，然後是家長電話，文件下班前完成。','互相尊重與持續學習。','我會用蘋果示範1/2，請同學把蘋果對切。']}];}
+
+// ══════════════════════════════════════════
+//  任務評分模組
+// ══════════════════════════════════════════
+
+// 所有培訓任務定義（與 tasks.html 同步）
+const ALL_TASKS = [
+  {id:'e1',phase:'entry',name:'完成入職流程 SOP',assess:'Q&A 口頭'},
+  {id:'e2',phase:'entry',name:'認識機構組織架構',assess:'Q&A 口頭'},
+  {id:'e3',phase:'entry',name:'了解考勤與薪資制度',assess:'填充題'},
+  {id:'e4',phase:'entry',name:'完成入職問卷填寫',assess:'系統自動'},
+  {id:'e5',phase:'entry',name:'各校區 Google Maps 五星好評',assess:'截圖確認'},
+  {id:'e6',phase:'entry',name:'認識學期間、寒暑假班表',assess:'Q&A 口頭'},
+  {id:'e7',phase:'entry',name:'加入所有必要群組',assess:'確認'},
+  {id:'b1',phase:'basic',name:'新生入校流程演練',assess:'實作演練'},
+  {id:'b2',phase:'basic',name:'點名表與接送表操作',assess:'實作提交'},
+  {id:'b11',phase:'basic',name:'客製化課表製作',assess:'實作提交'},
+  {id:'b12',phase:'basic',name:'代課流程熟悉',assess:'Q&A 口頭、實作'},
+  {id:'b3',phase:'basic',name:'低年級教學 SOP 熟悉',assess:'培訓官觀察'},
+  {id:'b4',phase:'basic',name:'中年級教學 SOP 熟悉',assess:'培訓官觀察'},
+  {id:'b5',phase:'basic',name:'高年級教學 SOP 熟悉',assess:'培訓官觀察'},
+  {id:'b6',phase:'basic',name:'親師溝通技巧實作',assess:'培訓官觀察、Q&A 口頭'},
+  {id:'b7',phase:'basic',name:'課堂管理策略建立',assess:'培訓官觀察、Q&A 口頭'},
+  {id:'b9',phase:'basic',name:'危機處理技巧實作',assess:'培訓官觀察、Q&A 口頭'},
+  {id:'b8',phase:'basic',name:'IEE 課程跨部合作',assess:'Q&A 口頭、表單實作'},
+  {id:'b10',phase:'basic',name:'學務部跨部合作',assess:'Q&A 口頭、實作'},
+  {id:'a1',phase:'advanced',name:'教案設計與提交',assess:'實作提交'},
+  {id:'a2',phase:'advanced',name:'KIC 課程體系了解',assess:'Q&A 口頭'},
+  {id:'a4',phase:'advanced',name:'P 值計算與季節目標',assess:'Q&A 口頭'},
+  {id:'a7',phase:'advanced',name:'龍華校啟發型態課程授課了解',assess:'培訓官觀察'},
+  {id:'a8',phase:'advanced',name:'AMS 數學授課了解',assess:'培訓官觀察'},
+  {id:'a3',phase:'advanced',name:'寒暑假課程規劃',assess:'培訓官評定'},
+  {id:'a6',phase:'advanced',name:'招生合作',assess:'Q&A 口頭'},
+  {id:'a5',phase:'advanced',name:'年段認證前總評',assess:'培訓官評定'},
+];
+
+const PHASE_LABEL = { entry:'入門階段', basic:'初階階段', advanced:'進階階段' };
+
+// 儲存格式：scoringState[teacherName][taskId] = { done: bool, score: number }
+let scoringState = {};
+let currentScoringTeacher = null;
+
+function loadScoringState() {
+  try { scoringState = JSON.parse(localStorage.getItem('adminScoring') || '{}'); } catch(e) { scoringState = {}; }
+}
+
+function saveScoringState() {
+  localStorage.setItem('adminScoring', JSON.stringify(scoringState));
+}
+
+function initScoring() {
+  loadScoringState();
+  // 用已載入的真實資料，沒有才用 mock
+  const list = (teachersData && teachersData.length) ? teachersData : _mockTeachers();
+  renderScoringTeacherList(list);
+}
+
+function renderScoringTeacherList(list) {
+  if (!list) list = (teachersData && teachersData.length) ? teachersData : _mockTeachers();
+  document.getElementById('scoring-teacher-list').innerHTML = list.map(t => {
+    const state = scoringState[t.name] || {};
+    const doneCnt = Object.values(state).filter(s => s.done).length;
+    const isActive = currentScoringTeacher === t.name;
+    return `<div class="teacher-list-item ${isActive?'active':''}" onclick="selectScoringTeacher('${t.name}','${t.grade||''}')">
+      <div class="teacher-list-avatar">${(t.name||'?')[0]}</div>
+      <div>
+        <div style="font-size:13px;">${t.name}</div>
+        <div style="font-size:11px;color:var(--text-muted);">${t.grade||'—'} · ${doneCnt}/${ALL_TASKS.length} 完成</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectScoringTeacher(name, grade) {
+  currentScoringTeacher = name;
+  if (!scoringState[name]) scoringState[name] = {};
+  renderScoringTeacherList();
+  renderScoringTasks(name, grade);
+}
+
+function renderScoringTasks(name, grade) {
+  const state = scoringState[name] || {};
+  const phases = ['entry','basic','advanced'];
+  const doneCnt = Object.values(state).filter(s => s.done).length;
+  const pct = Math.round(doneCnt / ALL_TASKS.length * 100);
+
+  let html = `
+    <div class="scoring-header">
+      <div>
+        <div class="scoring-teacher-name">${name}</div>
+        <div class="scoring-teacher-meta">${grade} · 整體完成 ${pct}%（${doneCnt} / ${ALL_TASKS.length} 項）</div>
+      </div>
+      <button class="save-all-btn" onclick="saveAllScores('${name}')">
+        <i class="ti ti-cloud-upload"></i> 儲存並同步至 Sheets
+      </button>
+    </div>`;
+
+  phases.forEach(phase => {
+    const tasks = ALL_TASKS.filter(t => t.phase === phase);
+    const phaseDone = tasks.filter(t => state[t.id] && state[t.id].done).length;
+    html += `<div class="phase-block">
+      <div class="phase-block-title">${PHASE_LABEL[phase]}<span>${phaseDone} / ${tasks.length} 完成</span></div>`;
+    tasks.forEach(t => {
+      const s = state[t.id] || { done: false, score: '' };
+      html += `<div class="task-score-row" id="row-${name}-${t.id}">
+        <div>
+          <div class="task-score-name">${t.name}</div>
+          <div class="task-score-detail">${t.assess}</div>
+        </div>
+        <span class="task-assess-tag">${phase==='entry'?'入門':phase==='basic'?'初階':'進階'}</span>
+        <input type="number" class="task-score-input" min="0" max="100" placeholder="分數"
+          value="${s.score||''}" id="score-${name}-${t.id}"
+          onchange="updateScore('${name}','${t.id}',this.value)">
+        <div class="task-done-toggle ${s.done?'done':''}" id="toggle-${name}-${t.id}"
+          onclick="toggleTaskDone('${name}','${t.id}')">
+          ${s.done?'<i class="ti ti-check" style="font-size:12px;"></i>':''}
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  document.getElementById('scoring-content').innerHTML = html;
+}
+
+function toggleTaskDone(teacherName, taskId) {
+  if (!scoringState[teacherName]) scoringState[teacherName] = {};
+  const cur = scoringState[teacherName][taskId] || { done: false, score: '' };
+  cur.done = !cur.done;
+  scoringState[teacherName][taskId] = cur;
+  saveScoringState();
+
+  // 更新 toggle UI
+  const toggle = document.getElementById('toggle-'+teacherName+'-'+taskId);
+  if (toggle) {
+    toggle.className = 'task-done-toggle ' + (cur.done ? 'done' : '');
+    toggle.innerHTML = cur.done ? '<i class="ti ti-check" style="font-size:12px;"></i>' : '';
+  }
+  // 更新 header 進度
+  const t = (teachersData.length ? teachersData : _mockTeachers()).find(x => x.name === teacherName);
+  if (t) renderScoringTasks(teacherName, t.grade || '');
+  renderScoringTeacherList();
+}
+
+function updateScore(teacherName, taskId, val) {
+  if (!scoringState[teacherName]) scoringState[teacherName] = {};
+  if (!scoringState[teacherName][taskId]) scoringState[teacherName][taskId] = { done: false, score: '' };
+  scoringState[teacherName][taskId].score = val;
+  saveScoringState();
+}
+
+async function saveAllScores(teacherName) {
+  saveScoringState();
+  const btn = document.querySelector('.save-all-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i> 同步中...'; }
+
+  const state = scoringState[teacherName] || {};
+  const doneTasks = ALL_TASKS.filter(t => state[t.id] && state[t.id].done);
+  const entryDone = doneTasks.filter(t => t.phase==='entry').length;
+  const basicDone = doneTasks.filter(t => t.phase==='basic').length;
+  const advDone   = doneTasks.filter(t => t.phase==='advanced').length;
+  const entryTotal = ALL_TASKS.filter(t=>t.phase==='entry').length;
+  const basicTotal = ALL_TASKS.filter(t=>t.phase==='basic').length;
+  const advTotal   = ALL_TASKS.filter(t=>t.phase==='advanced').length;
+
+  const teacher = (teachersData.length ? teachersData : _mockTeachers()).find(x => x.name === teacherName) || {};
+  const phase = advDone > 0 ? 'advanced' : basicDone > 0 ? 'basic' : 'entry';
+  const teacherEmail = teacher.email || teacher['Email'] || '';
+
+  const url = getSheetsUrl();
+  if (url) {
+    try {
+      await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          type: 'progress',
+          name: teacherName,
+          email: teacherEmail,
+          grade: teacher.grade || '',
+          phase,
+          entryPct: Math.round(entryDone/entryTotal*100),
+          basicPct: Math.round(basicDone/basicTotal*100),
+          advPct:   Math.round(advDone/advTotal*100),
+          taskCount: doneTasks.length,
+          tasks: JSON.stringify(state),
+          radarScores: {},
+          updatedAt: new Date().toISOString(),
+        }),
+      });
+      if (btn) { btn.innerHTML = '<i class="ti ti-check"></i> 已同步'; btn.style.background='#10B981'; }
+    } catch(e) {
+      if (btn) { btn.innerHTML = '<i class="ti ti-alert-circle"></i> 同步失敗（已存本機）'; btn.style.background='#C05621'; }
+    }
+  } else {
+    if (btn) { btn.innerHTML = '<i class="ti ti-check"></i> 已儲存本機'; btn.style.background='#6B7280'; }
+  }
+  setTimeout(() => {
+    if (btn) { btn.innerHTML = '<i class="ti ti-cloud-upload"></i> 儲存並同步至 Sheets'; btn.style.background=''; btn.disabled=false; }
+  }, 2500);
+}
+</script>
+</body>
+</html>
