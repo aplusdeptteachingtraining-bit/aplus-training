@@ -533,8 +533,47 @@ function renderLevelBadge() {
   } catch(e){}
 }
 
-// ── INIT ──
-// 讀取培訓官評分結果（從 adminScoring 同步）
+// ── 從 Google Sheets 讀取培訓官評分結果 ──
+async function loadStateFromSheets() {
+  try {
+    const profile = JSON.parse(localStorage.getItem('profile') || '{}');
+    const myName = profile.name || '';
+    if (!myName) return;
+
+    const sheetsUrl = localStorage.getItem('sheetsUrl') || '';
+    if (!sheetsUrl) {
+      // 沒有 Sheets URL，從本機 adminScoring 讀（同裝置測試用）
+      loadStateFromAdmin();
+      return;
+    }
+
+    const res = await fetch(sheetsUrl + '?sheet=Teachers&t=' + Date.now());
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (!Array.isArray(rows)) return;
+
+    // 找到自己的那一行
+    const mine = rows.find(r => (r['姓名'] || r.name || '') === myName);
+    if (!mine) return;
+
+    // 讀任務狀態（從 adminScoring 同步存入 Sheets 的 JSON）
+    try {
+      const taskJson = mine['任務狀態'] || mine.tasks || '{}';
+      const taskData = typeof taskJson === 'string' ? JSON.parse(taskJson) : taskJson;
+      Object.keys(taskData).forEach(id => {
+        taskState[id] = !!taskData[id].done;
+        if (taskData[id].score) taskScores[id] = taskData[id].score;
+      });
+    } catch(e) {}
+
+    renderTasks();
+    renderRadar();
+  } catch(e) {
+    // 讀取失敗，用本機資料
+    loadStateFromAdmin();
+  }
+}
+
 function loadStateFromAdmin() {
   try {
     const profile = JSON.parse(localStorage.getItem('profile') || '{}');
@@ -551,10 +590,11 @@ function loadStateFromAdmin() {
 }
 
 loadState();
-loadStateFromAdmin();
+loadStateFromAdmin(); // 先顯示本機資料
 renderTasks();
 renderRadar();
 renderLevelBadge();
+loadStateFromSheets(); // 非同步從 Sheets 更新（完成後自動 re-render）
 
 // Scroll to hash
 if (location.hash) {

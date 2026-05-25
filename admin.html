@@ -653,6 +653,7 @@ async function saveAllScores(teacherName) {
           basicPct: Math.round(basicDone/basicTotal*100),
           advPct:   Math.round(advDone/advTotal*100),
           taskCount: doneTasks.length,
+          tasks: JSON.stringify(state),  // ← 任務狀態寫入 Sheets
           radarScores: {},
           updatedAt: new Date().toISOString(),
         }),
