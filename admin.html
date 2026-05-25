@@ -196,7 +196,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
     <!-- TABS -->
     <div class="tabs">
       <button class="tab active" onclick="showTab('overview',this)">教師總覽</button>
-      <button class="tab" onclick="showTab('scoring',this);initScoring()">任務評分</button>
+      <button class="tab" onclick="showTab('scoring',this)">任務評分</button>
       <button class="tab" onclick="showTab('questionnaire',this)">問卷管理</button>
       <button class="tab" onclick="showTab('certs',this)">年段認證</button>
     </div>
@@ -254,11 +254,13 @@ function doLogin() {
 }
 
 function showTab(name, btn) {
-  ['overview','questionnaire','certs'].forEach(t => {
+  ['overview','scoring','questionnaire','certs'].forEach(t => {
     document.getElementById('tab-'+t).style.display = t===name?'block':'none';
   });
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
+  // 切到任務評分時自動初始化
+  if (name === 'scoring') initScoring();
 }
 
 // ── SHEETS CONFIG ──
@@ -348,6 +350,10 @@ async function initAdmin() {
   document.getElementById('teachers-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">載入中...</div>';
   [teachersData, questionnairesData] = await Promise.all([getTeachersData(), getQuestionnairesData()]);
   renderAlerts(); renderTeachers(); renderQuestionnaires(); renderCerts();
+  // 若任務評分分頁已開啟，一併刷新教師列表
+  if (document.getElementById('tab-scoring').style.display !== 'none') {
+    initScoring();
+  }
 }
 
 async function refreshData() {
@@ -481,20 +487,22 @@ function saveScoringState() {
 
 function initScoring() {
   loadScoringState();
-  renderScoringTeacherList();
+  // 用已載入的真實資料，沒有才用 mock
+  const list = (teachersData && teachersData.length) ? teachersData : _mockTeachers();
+  renderScoringTeacherList(list);
 }
 
-function renderScoringTeacherList() {
-  const names = teachersData.length ? teachersData : _mockTeachers();
-  document.getElementById('scoring-teacher-list').innerHTML = names.map(t => {
+function renderScoringTeacherList(list) {
+  if (!list) list = (teachersData && teachersData.length) ? teachersData : _mockTeachers();
+  document.getElementById('scoring-teacher-list').innerHTML = list.map(t => {
     const state = scoringState[t.name] || {};
     const doneCnt = Object.values(state).filter(s => s.done).length;
     const isActive = currentScoringTeacher === t.name;
-    return `<div class="teacher-list-item ${isActive?'active':''}" onclick="selectScoringTeacher('${t.name}','${t.grade}')">
-      <div class="teacher-list-avatar">${t.name[0]}</div>
+    return `<div class="teacher-list-item ${isActive?'active':''}" onclick="selectScoringTeacher('${t.name}','${t.grade||''}')">
+      <div class="teacher-list-avatar">${(t.name||'?')[0]}</div>
       <div>
         <div style="font-size:13px;">${t.name}</div>
-        <div style="font-size:11px;color:var(--text-muted);">${t.grade} · ${doneCnt}/${ALL_TASKS.length} 完成</div>
+        <div style="font-size:11px;color:var(--text-muted);">${t.grade||'—'} · ${doneCnt}/${ALL_TASKS.length} 完成</div>
       </div>
     </div>`;
   }).join('');
