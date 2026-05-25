@@ -6,403 +6,116 @@
 <title>培訓官後台 · A Plus 耶加</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<link rel="stylesheet" href="css/shared.css">
-<script src="js/utils.js"></script>
-<script src="sheets.js"></script>
 <style>
+:root{--green:#1B4332;--green-mid:#2D6A4F;--green-light:#52B788;--green-pale:#D8F3DC;--gold:#F6E05E;--cream:#F9F6F0;--white:#fff;--text:#1A1A1A;--text-muted:#6B6B6B;--text-light:#9E9E9E;--border-light:#E8E8E8;--radius:14px;--radius-sm:8px;--shadow:0 2px 12px rgba(0,0,0,0.07);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--text);line-height:1.7;}
 
-/* ── 登入頁 ── */
-.login-wrap {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.login-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 40px 36px;
-  width: 360px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
-}
-.login-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 28px;
-}
-.login-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--gold);
-}
-.login-name {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--green);
-}
-.login-sub {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-.login-card h2 {
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 6px;
-}
-.login-card p {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 24px;
-}
-.login-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-  display: block;
-}
-.login-input {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  font-family: 'Noto Sans TC', sans-serif;
-  font-size: 14px;
-  color: var(--text);
-  background: var(--cream);
-  outline: none;
-  margin-bottom: 16px;
-}
-.login-input:focus {
-  border-color: var(--green-light);
-  background: var(--white);
-}
-.login-btn {
-  width: 100%;
-  padding: 11px;
-  border: none;
-  border-radius: 99px;
-  background: var(--green-mid);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background .15s;
-}
-.login-btn:hover {
-  background: var(--green);
-}
-.login-btn:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
-.login-error {
-  color: #DC2626;
-  font-size: 12px;
-  margin-top: -8px;
-  margin-bottom: 12px;
-  display: none;
-}
-.login-lockout {
-  color: #92400E;
-  background: #FFFBEB;
-  border: 1px solid #FDE68A;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  padding: 8px 12px;
-  margin-bottom: 12px;
-  display: none;
-}
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.login-card{background:var(--white);border-radius:var(--radius);padding:40px 36px;width:360px;box-shadow:0 8px 40px rgba(0,0,0,0.12);}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+.login-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);}
+.login-name{font-size:15px;font-weight:500;color:var(--green);}
+.login-sub{font-size:12px;color:var(--text-muted);}
+.login-card h2{font-size:20px;font-weight:500;margin-bottom:6px;}
+.login-card p{font-size:13px;color:var(--text-muted);margin-bottom:24px;}
+.login-label{font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block;}
+.login-input{width:100%;padding:10px 14px;border:1px solid var(--border-light);border-radius:var(--radius-sm);font-family:'Noto Sans TC',sans-serif;font-size:14px;color:var(--text);background:var(--cream);outline:none;margin-bottom:16px;}
+.login-input:focus{border-color:var(--green-light);background:var(--white);}
+.login-btn{width:100%;padding:11px;border:none;border-radius:99px;background:var(--green-mid);color:#fff;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;}
+.login-btn:hover{background:var(--green);}
+.login-error{color:#DC2626;font-size:12px;margin-top:-8px;margin-bottom:12px;display:none;}
 
-/* ── 後台佈局 ── */
-.admin-wrap {
-  display: none;
-}
-/* admin topbar 覆寫（logo / badge / 登出連結） */
-.topbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-}
-.topbar-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--gold);
-}
-.topbar-badge {
-  background: rgba(246, 224, 94, 0.2);
-  border: 1px solid rgba(246, 224, 94, 0.3);
-  color: var(--gold);
-  font-size: 11px;
-  padding: 2px 10px;
-  border-radius: 99px;
-}
-.topbar-link {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 13px;
-  text-decoration: none;
-  margin-left: auto;
-}
-.topbar-link:hover {
-  color: #fff;
-}
-.admin-page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 32px 32px 80px;
-}
-.admin-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 32px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.admin-header h2 {
-  font-size: 20px;
-  font-weight: 500;
-}
+/* ADMIN LAYOUT */
+.admin-wrap{display:none;}
+.topbar{background:var(--green);padding:14px 32px;display:flex;align-items:center;gap:16px;}
+.topbar-logo{display:flex;align-items:center;gap:8px;color:#fff;font-size:14px;font-weight:500;}
+.topbar-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);}
+.topbar-badge{background:rgba(246,224,94,0.2);border:1px solid rgba(246,224,94,0.3);color:var(--gold);font-size:11px;padding:2px 10px;border-radius:99px;}
+.topbar-link{color:rgba(255,255,255,0.6);font-size:13px;text-decoration:none;margin-left:auto;}
+.topbar-link:hover{color:#fff;}
 
-/* ── Tabs ── */
-.tabs {
-  display: flex;
-  gap: 4px;
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  padding: 4px;
-  margin-bottom: 28px;
-  width: fit-content;
-}
-.tab {
-  padding: 8px 18px;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  border: none;
-  background: none;
-  color: var(--text-muted);
-  transition: all .15s;
-}
-.tab.active {
-  background: var(--green-mid);
-  color: #fff;
-}
+.admin-page{max-width:1100px;margin:0 auto;padding:32px 32px 80px;}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;}
+.admin-header h2{font-size:20px;font-weight:500;}
 
-/* ── 預警卡片 ── */
-.alerts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 12px;
-  margin-bottom: 32px;
-}
-.alert-card {
-  padding: 16px 20px;
-  border-radius: var(--radius-sm);
-  border-left: 4px solid;
-  display: flex;
-  gap: 12px;
-}
-.alert-card.yellow { background: #FFFBEB; border-color: #F59E0B; }
-.alert-card.red    { background: #FEF2F2; border-color: #EF4444; }
-.alert-card.green  { background: #F0FDF4; border-color: #10B981; }
-.alert-icon  { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
-.alert-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
-.alert-desc  { font-size: 12px; color: var(--text-muted); }
+/* TABS */
+.tabs{display:flex;gap:4px;background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:4px;margin-bottom:28px;width:fit-content;}
+.tab{padding:8px 18px;border-radius:6px;font-size:13px;cursor:pointer;border:none;background:none;font-family:'Noto Sans TC',sans-serif;color:var(--text-muted);transition:all .15s;}
+.tab.active{background:var(--green-mid);color:#fff;}
 
-/* ── 教師表格 ── */
-.teachers-table {
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.table-head {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr 80px;
-  background: var(--cream);
-  padding: 10px 20px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border-light);
-}
-.teacher-row {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr 80px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border-light);
-  align-items: center;
-  font-size: 13px;
-  transition: background .1s;
-}
-.teacher-row:last-child { border-bottom: none; }
-.teacher-row:hover      { background: var(--cream); }
-.teacher-name {
-  font-weight: 500;
-}
-.teacher-grade {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 99px;
-  font-size: 11px;
-  background: var(--green-pale);
-  color: var(--green-mid);
-  border: 1px solid rgba(45, 106, 79, 0.2);
-}
-.progress-mini {
-  height: 5px;
-  background: var(--border-light);
-  border-radius: 99px;
-  margin-top: 4px;
-}
-.progress-mini-fill {
-  height: 100%;
-  border-radius: 99px;
-  background: var(--green-light);
-}
-.alert-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-.phase-tag {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 99px;
-}
-.phase-tag.entry    { background: #D1FAE5; color: #065F46; }
-.phase-tag.basic    { background: #DBEAFE; color: #1E40AF; }
-.phase-tag.advanced { background: #FEE2E2; color: #991B1B; }
-.phase-tag.done     { background: #F3F4F6; color: #374151; }
+/* ALERT CARDS */
+.alerts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:32px;}
+.alert-card{padding:16px 20px;border-radius:var(--radius-sm);border-left:4px solid;display:flex;gap:12px;}
+.alert-card.yellow{background:#FFFBEB;border-color:#F59E0B;}
+.alert-card.red{background:#FEF2F2;border-color:#EF4444;}
+.alert-card.green{background:#F0FDF4;border-color:#10B981;}
+.alert-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.alert-title{font-size:13px;font-weight:500;margin-bottom:2px;}
+.alert-desc{font-size:12px;color:var(--text-muted);}
 
-/* ── 問卷列表 ── */
-.q-list {
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.q-item {
-  padding: 18px 22px;
-  border-bottom: 1px solid var(--border-light);
-}
-.q-item:last-child { border-bottom: none; }
-.q-item-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
-}
-.q-name { font-size: 14px; font-weight: 500; }
-.q-date { font-size: 11px; color: var(--text-muted); }
-.q-scores {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-.q-score-badge    { font-size: 12px; }
-.q-score-badge strong { color: var(--green-mid); }
-.d-answers        { margin-top: 8px; }
-.d-answer {
-  background: var(--cream);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  margin-bottom: 6px;
-}
-.d-answer-q { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
-.d-answer-a { font-size: 13px; }
-.d-score-row { display: flex; gap: 6px; margin-top: 6px; }
-.d-score-btn {
-  padding: 3px 10px;
-  border-radius: 99px;
-  border: 1px solid var(--border-light);
-  background: var(--white);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all .1s;
-}
-.d-score-btn.sel {
-  background: var(--green-mid);
-  color: #fff;
-  border-color: var(--green-mid);
-}
+/* TEACHER TABLE */
+.teachers-table{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;}
+.table-head{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 80px;gap:0;background:var(--cream);padding:10px 20px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);border-bottom:1px solid var(--border-light);}
+.teacher-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 80px;gap:0;padding:14px 20px;border-bottom:1px solid var(--border-light);align-items:center;font-size:13px;transition:background .1s;}
+.teacher-row:last-child{border-bottom:none;}
+.teacher-row:hover{background:var(--cream);}
+.teacher-name{font-weight:500;}
+.teacher-grade{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;background:var(--green-pale);color:var(--green-mid);border:1px solid rgba(45,106,79,0.2);}
+.progress-mini{height:5px;background:var(--border-light);border-radius:99px;margin-top:4px;}
+.progress-mini-fill{height:100%;border-radius:99px;background:var(--green-light);}
+.alert-dot{width:8px;height:8px;border-radius:50%;}
+.phase-tag{font-size:11px;padding:2px 8px;border-radius:99px;}
+.phase-tag.entry{background:#D1FAE5;color:#065F46;}
+.phase-tag.basic{background:#DBEAFE;color:#1E40AF;}
+.phase-tag.advanced{background:#FEE2E2;color:#991B1B;}
+.phase-tag.done{background:#F3F4F6;color:#374151;}
 
-/* ── 認證卡片 ── */
-.cert-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 14px;
-}
-.cert-card {
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius);
-  padding: 20px 22px;
-}
-.cert-card-name  { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
-.cert-card-grade { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
-.cert-items      { display: flex; flex-direction: column; gap: 8px; }
-.cert-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
-  font-size: 13px;
-}
-.cert-item.granted { border-color: var(--green-light); background: var(--green-pale); }
-.cert-grant-btn {
-  font-size: 11px;
-  padding: 2px 10px;
-  border-radius: 99px;
-  border: none;
-  cursor: pointer;
-  background: var(--green-pale);
-  color: var(--green-mid);
-  transition: all .1s;
-}
-.cert-grant-btn:hover { background: var(--green-mid); color: #fff; }
-.cert-item.granted .cert-grant-btn {
-  background: var(--white);
-  color: var(--text-muted);
-  border: 1px solid var(--border-light);
-}
+/* QUESTIONNAIRE LIST */
+.q-list{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;}
+.q-item{padding:18px 22px;border-bottom:1px solid var(--border-light);}
+.q-item:last-child{border-bottom:none;}
+.q-item-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.q-name{font-size:14px;font-weight:500;}
+.q-date{font-size:11px;color:var(--text-muted);}
+.q-scores{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;}
+.q-score-badge{font-size:12px;}
+.q-score-badge strong{color:var(--green-mid);}
+.d-answers{margin-top:8px;}
+.d-answer{background:var(--cream);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:6px;}
+.d-answer-q{font-size:11px;color:var(--text-muted);margin-bottom:2px;}
+.d-answer-a{font-size:13px;}
+.d-score-row{display:flex;gap:6px;margin-top:6px;}
+.d-score-btn{padding:3px 10px;border-radius:99px;border:1px solid var(--border-light);background:var(--white);font-size:12px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .1s;}
+.d-score-btn.sel{background:var(--green-mid);color:#fff;border-color:var(--green-mid);}
 
-/* ── 空狀態 ── */
-.empty-state {
-  padding: 60px;
-  text-align: center;
-  color: var(--text-muted);
-}
-.empty-state i {
-  font-size: 40px;
-  display: block;
-  margin-bottom: 12px;
-  color: var(--text-light);
-}
+/* CERT */
+.cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.cert-card{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:20px 22px;}
+.cert-card-name{font-size:15px;font-weight:500;margin-bottom:6px;}
+.cert-card-grade{font-size:12px;color:var(--text-muted);margin-bottom:14px;}
+.cert-items{display:flex;flex-direction:column;gap:8px;}
+.cert-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--border-light);font-size:13px;}
+.cert-item.granted{border-color:var(--green-light);background:var(--green-pale);}
+.cert-grant-btn{font-size:11px;padding:2px 10px;border-radius:99px;border:none;cursor:pointer;font-family:'Noto Sans TC',sans-serif;background:var(--green-pale);color:var(--green-mid);transition:all .1s;}
+.cert-grant-btn:hover{background:var(--green-mid);color:#fff;}
+.cert-item.granted .cert-grant-btn{background:var(--white);color:var(--text-muted);border:1px solid var(--border-light);}
 
-/* ── 響應式 ── */
-@media (max-width: 768px) {
-  .admin-page { padding: 20px 16px 60px; }
-  .table-head, .teacher-row { grid-template-columns: 1fr 1fr 1fr; font-size: 12px; }
-  .topbar { padding: 12px 16px; }
+/* EMPTY */
+.empty-state{padding:60px;text-align:center;color:var(--text-muted);}
+.empty-state i{font-size:40px;display:block;margin-bottom:12px;color:var(--text-light);}
+
+@media(max-width:768px){
+  .admin-page{padding:20px 16px 60px;}
+  .table-head,.teacher-row{grid-template-columns:1fr 1fr 1fr;font-size:12px;}
+  .topbar{padding:12px 16px;}
 }
 </style>
 </head>
 <body>
 
-<!-- 登入畫面 -->
+<!-- LOGIN -->
 <div class="login-wrap" id="login-wrap">
   <div class="login-card">
     <div class="login-logo">
@@ -414,17 +127,14 @@
     </div>
     <h2>培訓官後台</h2>
     <p>請輸入密碼以進入管理介面</p>
-    <div class="login-lockout" id="login-lockout"></div>
     <label class="login-label">登入密碼</label>
-    <input type="password" class="login-input" id="pw-input"
-      placeholder="請輸入密碼"
-      onkeydown="if(event.key==='Enter') doLogin()">
+    <input type="password" class="login-input" id="pw-input" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
     <div class="login-error" id="login-error">密碼錯誤，請重新輸入</div>
-    <button class="login-btn" id="login-btn" onclick="doLogin()">進入後台</button>
+    <button class="login-btn" onclick="doLogin()">進入後台</button>
   </div>
 </div>
 
-<!-- 後台主畫面 -->
+<!-- ADMIN -->
 <div class="admin-wrap" id="admin-wrap">
   <div class="topbar">
     <div class="topbar-logo"><div class="topbar-dot"></div>A Plus 耶加</div>
@@ -435,55 +145,45 @@
   <div class="admin-page">
     <div class="admin-header">
       <h2>培訓管理後台</h2>
-      <button id="refresh-btn" onclick="refreshData()"
-        style="display:flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border-light);border-radius:99px;background:var(--white);cursor:pointer;font-size:13px;">
-        <i class="ti ti-refresh"></i> 重新整理
-      </button>
+      <button id="refresh-btn" onclick="refreshData()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border-light);border-radius:99px;background:var(--white);cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:13px;"><i class="ti ti-refresh"></i> 重新整理</button>
     </div>
 
-    <!-- Google Sheets 設定提示 -->
-    <div id="sheets-config-banner"
-      style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <!-- SHEETS CONFIG BANNER -->
+    <div id="sheets-config-banner" style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
       <i class="ti ti-table" style="font-size:20px;color:#B7791F;flex-shrink:0;"></i>
       <div style="flex:1;min-width:200px;">
         <div style="font-size:13px;font-weight:500;color:#92400E;margin-bottom:2px;">設定 Google Sheets 串接</div>
         <div style="font-size:12px;color:#B7791F;">貼入 Apps Script 部署 URL，啟用真實資料同步（目前顯示範例資料）</div>
       </div>
-      <input id="sheets-url-input" type="text"
-        placeholder="https://script.google.com/macros/s/.../exec"
-        style="flex:2;min-width:220px;padding:8px 12px;border:1px solid #FDE68A;border-radius:var(--radius-sm);font-size:13px;background:var(--white);outline:none;">
-      <button onclick="saveSheetsUrl()"
-        style="padding:8px 18px;border:none;border-radius:99px;background:#B7791F;color:#fff;cursor:pointer;font-size:13px;white-space:nowrap;">
-        儲存設定
-      </button>
+      <input id="sheets-url-input" type="text" placeholder="https://script.google.com/macros/s/.../exec" style="flex:2;min-width:220px;padding:8px 12px;border:1px solid #FDE68A;border-radius:var(--radius-sm);font-size:13px;background:var(--white);outline:none;font-family:'Noto Sans TC',sans-serif;">
+      <button onclick="saveSheetsUrl()" style="padding:8px 18px;border:none;border-radius:99px;background:#B7791F;color:#fff;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:13px;white-space:nowrap;">儲存設定</button>
     </div>
     <div id="sheets-status"></div>
     <div id="alerts-section"></div>
 
-    <!-- Tabs -->
+    <!-- TABS -->
     <div class="tabs">
-      <button class="tab active" onclick="showTab('overview', this)">教師總覽</button>
-      <button class="tab" onclick="showTab('questionnaire', this)">問卷管理</button>
-      <button class="tab" onclick="showTab('certs', this)">年段認證</button>
+      <button class="tab active" onclick="showTab('overview',this)">教師總覽</button>
+      <button class="tab" onclick="showTab('questionnaire',this)">問卷管理</button>
+      <button class="tab" onclick="showTab('certs',this)">年段認證</button>
     </div>
 
-    <!-- 教師總覽 -->
+    <!-- OVERVIEW TAB -->
     <div id="tab-overview">
       <div class="teachers-table">
         <div class="table-head">
-          <span>教師</span><span>年級段</span><span>當前階段</span>
-          <span>整體進度</span><span>預警狀態</span><span>操作</span>
+          <span>教師</span><span>年級段</span><span>當前階段</span><span>整體進度</span><span>預警狀態</span><span>操作</span>
         </div>
         <div id="teachers-list"></div>
       </div>
     </div>
 
-    <!-- 問卷管理 -->
+    <!-- QUESTIONNAIRE TAB -->
     <div id="tab-questionnaire" style="display:none;">
       <div class="q-list" id="q-list"></div>
     </div>
 
-    <!-- 年段認證 -->
+    <!-- CERTS TAB -->
     <div id="tab-certs" style="display:none;">
       <div class="cert-grid" id="cert-grid"></div>
     </div>
@@ -491,246 +191,147 @@
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-//  登入邏輯（SHA-256 hash 驗證 + 失敗鎖定）
-//  密碼: aplus2026 → 需更新時重新計算 hash
-// ══════════════════════════════════════════════
-const ADMIN_PW_HASH = '2254f72c5dafaecc4bed545745e1eb8ec7206ae8017250509e13c60ec37faef6';
-const MAX_ATTEMPTS  = 5;
-const LOCKOUT_MS    = 60000; // 1 分鐘
+const ADMIN_PW = 'aplus2026';
 
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function getLoginState() {
-  return loadJSON('adminLoginState', { attempts: 0, lockedUntil: 0 });
-}
-function saveLoginState(state) {
-  saveJSON('adminLoginState', state);
-}
-
-async function doLogin() {
-  const state = getLoginState();
-  const now = Date.now();
-
-  if (state.lockedUntil > now) {
-    const secs = Math.ceil((state.lockedUntil - now) / 1000);
-    showLockout(`密碼錯誤過多，請等待 ${secs} 秒後再試`);
-    return;
-  }
-
+function doLogin() {
   const pw = document.getElementById('pw-input').value;
-  const hash = await sha256(pw);
-
-  if (hash === ADMIN_PW_HASH) {
-    saveLoginState({ attempts: 0, lockedUntil: 0 });
+  if (pw === ADMIN_PW) {
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-wrap').style.display = 'block';
     loadSheetsConfig();
     initAdmin();
   } else {
-    state.attempts = (state.attempts || 0) + 1;
-    if (state.attempts >= MAX_ATTEMPTS) {
-      state.lockedUntil = now + LOCKOUT_MS;
-      state.attempts = 0;
-      saveLoginState(state);
-      showLockout('連續錯誤 5 次，鎖定 60 秒');
-      document.getElementById('login-error').style.display = 'none';
-    } else {
-      saveLoginState(state);
-      document.getElementById('login-error').style.display = 'block';
-      document.getElementById('login-error').textContent =
-        `密碼錯誤（剩餘 ${MAX_ATTEMPTS - state.attempts} 次）`;
-    }
-    document.getElementById('pw-input').value = '';
+    document.getElementById('login-error').style.display = 'block';
   }
 }
 
-function showLockout(msg) {
-  const el = document.getElementById('login-lockout');
-  el.textContent = msg;
-  el.style.display = 'block';
-  document.getElementById('login-btn').disabled = true;
-  setTimeout(() => {
-    el.style.display = 'none';
-    document.getElementById('login-btn').disabled = false;
-  }, LOCKOUT_MS);
-}
-
-// ══════════════════════════════════════════════
-//  Tabs
-// ══════════════════════════════════════════════
 function showTab(name, btn) {
-  ['overview', 'questionnaire', 'certs'].forEach(t => {
-    document.getElementById('tab-' + t).style.display = t === name ? 'block' : 'none';
+  ['overview','questionnaire','certs'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name?'block':'none';
   });
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
 }
 
-// ══════════════════════════════════════════════
-//  Google Sheets 設定
-// ══════════════════════════════════════════════
+// ── SHEETS CONFIG ──
 function saveSheetsUrl() {
   const val = document.getElementById('sheets-url-input').value.trim();
   if (!val.includes('script.google.com')) {
     alert('請貼入正確的 Apps Script 部署 URL');
     return;
   }
-  saveJSON('adminSheetsUrl', val);
+  localStorage.setItem('adminSheetsUrl', val);
   document.getElementById('sheets-config-banner').style.display = 'none';
-  document.getElementById('sheets-status').innerHTML =
-    '<div style="color:#10B981;font-size:12px;margin-bottom:12px;"><i class="ti ti-check"></i> Google Sheets URL 已儲存，正在重新載入資料...</div>';
+  document.getElementById('sheets-status').innerHTML = '<div style="color:#10B981;font-size:12px;margin-bottom:12px;"><i class="ti ti-check"></i> Google Sheets URL 已儲存，正在重新載入資料...</div>';
   initAdmin();
 }
-
 function loadSheetsConfig() {
-  const saved = loadJSON('adminSheetsUrl');
+  const saved = localStorage.getItem('adminSheetsUrl');
   if (saved) {
     document.getElementById('sheets-url-input').value = saved;
     document.getElementById('sheets-config-banner').style.display = 'none';
-    document.getElementById('sheets-status').innerHTML =
-      '<div style="color:#10B981;font-size:12px;margin-bottom:12px;"><i class="ti ti-check"></i> 已設定 Google Sheets 串接</div>';
+    document.getElementById('sheets-status').innerHTML = '<div style="color:#10B981;font-size:12px;margin-bottom:12px;"><i class="ti ti-check"></i> 已設定 Google Sheets 串接</div>';
   }
 }
 
-// ══════════════════════════════════════════════
-//  資料層（委派給 sheets.js）
-// ══════════════════════════════════════════════
+// ── SHEETS DATA LAYER ──
+function getSheetsUrl() {
+  return localStorage.getItem('adminSheetsUrl') || '';
+}
+
 async function getTeachersData() {
-  try {
-    const data = await fetchAllTeachers();
-    if (data && data.length) return data;
-  } catch (e) {}
+  const url = getSheetsUrl();
+  if (url) {
+    try {
+      const res = await fetch(url + '?sheet=Teachers&t=' + Date.now());
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) return data;
+      }
+    } catch(e) { console.warn('Sheets fetch failed:', e.message); }
+  }
   return _mockTeachers();
 }
 
 async function getQuestionnairesData() {
-  try {
-    const data = await fetchQuestionnaires();
-    if (data && data.length) return data;
-  } catch (e) {}
+  const url = getSheetsUrl();
+  if (url) {
+    try {
+      const res = await fetch(url + '?sheet=Questionnaire&t=' + Date.now());
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) return normalizeQuestionnaires(data);
+      }
+    } catch(e) { console.warn('Sheets fetch failed:', e.message); }
+  }
   return _mockQuestionnaires();
 }
 
-// ══════════════════════════════════════════════
-//  預警判斷
-// ══════════════════════════════════════════════
+// Google Sheets 欄位名稱轉換成前端格式
+function normalizeQuestionnaires(rows) {
+  return rows.map(r => ({
+    name: r['姓名'] || r.name || '—',
+    grade: r['年級段'] || r.grade || '—',
+    level: r['起始等級'] || r.level || '—',
+    bScore: r['B分數'] || r.bScore || 0,
+    submittedAt: r['填寫時間'] || r.submittedAt || '',
+    radarScores: {
+      '教學技巧': r['教學技巧'] || 0,
+      '學科知識': r['學科知識'] || 0,
+      '課堂管理': r['課堂管理'] || 0,
+      '行政了解': r['行政了解'] || 0,
+      '備課能力': r['備課能力'] || 0,
+    },
+    dAnswers: [r['D1答案']||'', r['D2答案']||'', r['D3答案']||'', r['D4答案']||'', r['D5答案']||''],
+  }));
+}
+
 function checkAlerts(teacher) {
   const alerts = [];
-  const ep = Number(teacher.entryPct || 0);
-  const bp = Number(teacher.basicPct || 0);
-  const phase = String(teacher.phase || '');
-  if (phase.includes('basic') && bp < 50)
-    alerts.push({ level: 'yellow', msg: `${teacher.name}：初階進度偏低（${bp}%）` });
-  if (phase.includes('entry') && ep < 80)
-    alerts.push({ level: 'red', msg: `${teacher.name}：入門進度嚴重落後（${ep}%）` });
+  const ep = Number(teacher.entryPct||0), bp = Number(teacher.basicPct||0);
+  if (bp < 50 && String(teacher.phase).includes('basic')) alerts.push({ level:'yellow', msg:teacher.name+'：初階進度偏低（'+bp+'%）' });
+  if (ep < 80 && String(teacher.phase).includes('entry')) alerts.push({ level:'red', msg:teacher.name+'：入門進度嚴重落後（'+ep+'%）' });
   return alerts;
 }
 
-// ══════════════════════════════════════════════
-//  初始化 & 重整
-// ══════════════════════════════════════════════
-let teachersData = [];
-let questionnairesData = [];
+let teachersData = [], questionnairesData = [];
 
 async function initAdmin() {
-  document.getElementById('teachers-list').innerHTML =
-    '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">載入中...</div>';
-  [teachersData, questionnairesData] = await Promise.all([
-    getTeachersData(),
-    getQuestionnairesData(),
-  ]);
-  renderAlerts();
-  renderTeachers();
-  renderQuestionnaires();
-  renderCerts();
+  document.getElementById('teachers-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">載入中...</div>';
+  [teachersData, questionnairesData] = await Promise.all([getTeachersData(), getQuestionnairesData()]);
+  renderAlerts(); renderTeachers(); renderQuestionnaires(); renderCerts();
 }
 
 async function refreshData() {
   const btn = document.getElementById('refresh-btn');
-  btn.disabled = true;
-  btn.textContent = '載入中...';
+  if (btn) { btn.disabled = true; btn.textContent = '載入中...'; }
   await initAdmin();
-  btn.disabled = false;
-  btn.innerHTML = '<i class="ti ti-refresh"></i> 重新整理';
+  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-refresh"></i> 重新整理'; }
 }
 
-// ══════════════════════════════════════════════
-//  渲染：預警
-// ══════════════════════════════════════════════
 function renderAlerts() {
   const allAlerts = teachersData.flatMap(t => checkAlerts(t));
-  teachersData.forEach(t => {
-    if (Number(t.advPct || 0) > 60)
-      allAlerts.push({ level: 'green', msg: `${t.name} 進階進度 ${t.advPct}%，即將達標！` });
-  });
-  if (!allAlerts.length)
-    allAlerts.push({ level: 'green', msg: '目前無預警事項，所有教師進度正常。' });
-
-  document.getElementById('alerts-section').innerHTML = `
-    <div class="alerts-grid">
-      ${allAlerts.map(a => `
-        <div class="alert-card ${a.level}">
-          <div class="alert-icon">${a.level === 'red' ? '🔴' : a.level === 'yellow' ? '🟡' : '🟢'}</div>
-          <div>
-            <div class="alert-title">${a.level === 'red' ? '紅色止損' : a.level === 'yellow' ? '黃色預警' : '達標通知'}</div>
-            <div class="alert-desc">${escapeHtml(a.msg)}</div>
-          </div>
-        </div>`).join('')}
-    </div>`;
+  teachersData.forEach(t => { if (Number(t.advPct||0) > 60) allAlerts.push({ level:'green', msg:t.name+' 進階進度 '+t.advPct+'%，即將達標！' }); });
+  if (!allAlerts.length) allAlerts.push({ level:'green', msg:'目前無預警事項，所有教師進度正常。' });
+  document.getElementById('alerts-section').innerHTML = '<div class="alerts-grid">' + allAlerts.map(a =>
+    '<div class="alert-card '+a.level+'">' +
+    '<div class="alert-icon">'+(a.level==='red'?'🔴':a.level==='yellow'?'🟡':'🟢')+'</div>' +
+    '<div><div class="alert-title">'+(a.level==='red'?'紅色止損':a.level==='yellow'?'黃色預警':'達標通知')+'</div><div class="alert-desc">'+a.msg+'</div></div>' +
+    '</div>').join('') + '</div>';
 }
 
-// ══════════════════════════════════════════════
-//  渲染：教師總覽
-// ══════════════════════════════════════════════
 function renderTeachers() {
-  if (!teachersData.length) {
-    document.getElementById('teachers-list').innerHTML =
-      '<div class="empty-state"><i class="ti ti-users"></i>尚無教師資料</div>';
-    return;
-  }
-
+  if (!teachersData.length) { document.getElementById('teachers-list').innerHTML = '<div class="empty-state"><i class="ti ti-users"></i>尚無教師資料</div>'; return; }
   document.getElementById('teachers-list').innerHTML = teachersData.map(t => {
-    const ep = Number(t.entryPct || 0);
-    const bp = Number(t.basicPct || 0);
-    const ap = Number(t.advPct   || 0);
-    const overall = Math.round((ep + bp + ap) / 3);
-
-    const alerts   = checkAlerts(t);
-    const hasRed   = alerts.some(a => a.level === 'red');
-    const hasYellow= alerts.some(a => a.level === 'yellow');
-    const dotColor = hasRed ? '#EF4444' : hasYellow ? '#F59E0B' : '#10B981';
-    const statusTxt= hasRed ? '止損' : hasYellow ? '預警' : '正常';
-
-    const ph = String(t.phase || '').toLowerCase();
-    const pc = ph.includes('entry') ? 'entry'
-             : ph.includes('basic') ? 'basic'
-             : ph.includes('advanced') ? 'advanced' : 'done';
-    const pl = { entry:'入門', basic:'初階', advanced:'進階', done:'完成' }[pc];
-
-    return `
-      <div class="teacher-row">
-        <div class="teacher-name">${escapeHtml(t.name)}</div>
-        <div><span class="teacher-grade">${escapeHtml(t.grade)}</span></div>
-        <div><span class="phase-tag ${pc}">${pl}</span></div>
-        <div>
-          <div style="font-size:12px;color:var(--text-muted);">${overall}%</div>
-          <div class="progress-mini"><div class="progress-mini-fill" style="width:${overall}%"></div></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span class="alert-dot" style="background:${dotColor};"></span>
-          <span style="font-size:12px;color:var(--text-muted);">${statusTxt}</span>
-        </div>
-        <div>
-          <button onclick="showTeacherDetail('${escapeHtml(t.name)}')"
-            style="font-size:11px;padding:4px 10px;border-radius:99px;border:1px solid var(--border-light);background:var(--white);cursor:pointer;">
-            詳細
-          </button>
-        </div>
-      </div>`;
+    const ep=Number(t.entryPct||0), bp=Number(t.basicPct||0), ap=Number(t.advPct||0);
+    const overall = Math.round((ep+bp+ap)/3);
+    const hasRed = checkAlerts(t).some(a=>a.level==='red');
+    const hasYellow = checkAlerts(t).some(a=>a.level==='yellow');
+    const dot = hasRed?'<span class="alert-dot" style="background:#EF4444;display:inline-block;"></span>':hasYellow?'<span class="alert-dot" style="background:#F59E0B;display:inline-block;"></span>':'<span class="alert-dot" style="background:#10B981;display:inline-block;"></span>';
+    const ph = String(t.phase||'').toLowerCase();
+    const pc = ph.includes('entry')||ph==='입문'?'entry':ph.includes('basic')||ph==='초급'?'basic':ph.includes('advanced')?'advanced':'done';
+    const pl = pc==='entry'?'入門':pc==='basic'?'初階':pc==='advanced'?'進階':'完成';
+    return '<div class="teacher-row"><div class="teacher-name">'+t.name+'</div><div><span class="teacher-grade">'+t.grade+'</span></div><div><span class="phase-tag '+pc+'">'+pl+'</span></div><div><div style="font-size:12px;color:var(--text-muted);">'+overall+'%</div><div class="progress-mini"><div class="progress-mini-fill" style="width:'+overall+'%"></div></div></div><div style="display:flex;align-items:center;gap:6px;">'+dot+'<span style="font-size:12px;color:var(--text-muted);">'+(hasRed?'止損':hasYellow?'預警':'正常')+'</span></div><div><button style="font-size:11px;padding:4px 10px;border-radius:99px;border:1px solid var(--border-light);background:var(--white);cursor:pointer;font-family:\'Noto Sans TC\',sans-serif;" onclick="showTeacherDetail(\''+t.name+'\')">詳細</button></div></div>';
   }).join('');
 }
 
@@ -738,126 +339,48 @@ function showTeacherDetail(name) {
   const t = teachersData.find(x => x.name === name);
   if (!t) return;
   let radar = {};
-  try { radar = JSON.parse(t.radarScores || '{}'); } catch (e) {}
-  const dims = ['教學技巧', '學科知識', '課堂管理', '行政了解', '備課能力'];
-  const radarStr = dims.map(d => `${d}: ${radar[d] || 0} 分`).join('\n');
-  alert(`【${t.name}】\n年級段：${t.grade}\n當前階段：${t.phase}\n入門：${t.entryPct}%  初階：${t.basicPct}%  進階：${t.advPct}%\n\n能力分數：\n${radarStr}\n\n更新時間：${t.updatedAt || '—'}`);
+  try { radar = JSON.parse(t.radarScores || '{}'); } catch(e) {}
+  const dims = ['教學技巧','學科知識','課堂管理','行政了解','備課能力'];
+  const radarStr = dims.map(d => d + ': ' + (radar[d] || '0') + ' 分').join('\n');
+  alert('【' + t.name + '】\n年級段：' + t.grade + '\n當前階段：' + t.phase + '\n入門：' + t.entryPct + '%  初階：' + t.basicPct + '%  進階：' + t.advPct + '%\n\n能力分數：\n' + radarStr + '\n\n更新時間：' + (t.updatedAt || '—'));
 }
 
-// ══════════════════════════════════════════════
-//  渲染：問卷管理
-// ══════════════════════════════════════════════
-const D_QS = [
-  '你為什麼選擇到 A Plus 耶加任職？',
-  '回想你最近一次遇到挫折，你如何面對？',
-  '三件緊急事項同時發生，你如何分配優先順序？',
-  '你認為好的教育機構文化最重要的核心是什麼？',
-  '請解釋如何教三年級學生理解分數概念。',
-];
+const D_QS = ['你為什麼選擇到 A Plus 耶加任職？','回想你最近一次遇到挫折，你如何面對？','三件緊急事項同時發生，你如何分配優先順序？','你認為好的教育機構文化最重要的核心是什麼？','請解釋如何教三年級學生理解分數概念。'];
 let dScores = {};
-
 function renderQuestionnaires() {
-  if (!questionnairesData.length) {
-    document.getElementById('q-list').innerHTML =
-      '<div class="empty-state"><i class="ti ti-inbox"></i>目前尚無問卷填寫記錄</div>';
-    return;
-  }
-
-  document.getElementById('q-list').innerHTML = questionnairesData.map((q, qi) => {
-    let da = [];
-    try {
-      da = typeof q.dAnswers === 'string' ? JSON.parse(q.dAnswers) : (q.dAnswers || []);
-    } catch (e) {}
-    if (!Array.isArray(da)) da = Object.values(da || {});
-
-    const answersHtml = da.map((a, di) => `
-      <div class="d-answer">
-        <div class="d-answer-q">D${di + 1}｜${escapeHtml(D_QS[di] || '')}</div>
-        <div class="d-answer-a">${escapeHtml(a) || '（未填寫）'}</div>
-        <div class="d-score-row">
-          評分：
-          ${[0, 1, 2].map(v => `
-            <button class="d-score-btn" id="dscore-${qi}-${di}-${v}"
-              onclick="setDScore(${qi}, ${di}, ${v})">${v} 分</button>
-          `).join('')}
-        </div>
-      </div>`).join('');
-
-    return `
-      <div class="q-item">
-        <div class="q-item-head">
-          <div>
-            <div class="q-name">${escapeHtml(q.name || '—')}</div>
-            <div class="q-date">填寫：${formatDate(q.submittedAt || q.date)}</div>
-          </div>
-        </div>
-        <div class="q-scores">
-          <span class="q-score-badge">B區塊：<strong>${q.bScore || '—'} / 70 分</strong></span>
-          <span class="q-score-badge">起始等級：<strong>${escapeHtml(q.level || '—')}</strong></span>
-          <span class="q-score-badge">D區塊：<strong id="d-total-${qi}">待評分 / 10</strong></span>
-        </div>
-        <div class="d-answers">
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:8px;">D 區塊問答 — 人工評分</div>
-          ${answersHtml}
-        </div>
-      </div>`;
+  if (!questionnairesData.length) { document.getElementById('q-list').innerHTML = '<div class="empty-state"><i class="ti ti-inbox"></i>目前尚無問卷填寫記錄</div>'; return; }
+  document.getElementById('q-list').innerHTML = questionnairesData.map((q,qi) => {
+    let da = []; try { da = typeof q.dAnswers==='string'?JSON.parse(q.dAnswers):(q.dAnswers||[]); } catch(e){}
+    if (!Array.isArray(da)) da = Object.values(da||{});
+    return '<div class="q-item"><div class="q-item-head"><div><div class="q-name">'+(q.name||'—')+'</div><div class="q-date">填寫：'+String(q.submittedAt||q.date||'').substring(0,10)+'</div></div></div><div class="q-scores"><span class="q-score-badge">B區塊：<strong>'+(q.bScore||'—')+' / 70 分</strong></span><span class="q-score-badge">起始等級：<strong>'+(q.level||'—')+'</strong></span><span class="q-score-badge">D區塊：<strong id="d-total-'+qi+'">待評分 / 10</strong></span></div><div class="d-answers"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:8px;">D 區塊問答 — 人工評分</div>'+da.map((a,di)=>'<div class="d-answer"><div class="d-answer-q">D'+(di+1)+'｜'+(D_QS[di]||'')+'</div><div class="d-answer-a">'+(a||'（未填寫）')+'</div><div class="d-score-row">評分：'+[0,1,2].map(v=>'<button class="d-score-btn" id="dscore-'+qi+'-'+di+'-'+v+'" onclick="setDScore('+qi+','+di+','+v+')">'+v+' 分</button>').join('')+'</div></div>').join('')+'</div></div>';
   }).join('');
 }
-
-function setDScore(qi, di, val) {
-  if (!dScores[qi]) dScores[qi] = {};
-  dScores[qi][di] = val;
-  [0, 1, 2].forEach(v => {
-    const b = document.getElementById(`dscore-${qi}-${di}-${v}`);
-    if (b) b.classList.toggle('sel', v === val);
-  });
-  const total = document.getElementById(`d-total-${qi}`);
-  if (total) total.textContent = Object.values(dScores[qi]).reduce((a, b) => a + b, 0) + ' / 10';
+function setDScore(qi,di,val) {
+  if (!dScores[qi]) dScores[qi]={};
+  dScores[qi][di]=val;
+  [0,1,2].forEach(v=>{const b=document.getElementById('dscore-'+qi+'-'+di+'-'+v);if(b)b.classList.toggle('sel',v===val);});
+  const t=document.getElementById('d-total-'+qi);
+  if(t)t.textContent=Object.values(dScores[qi]).reduce((a,b)=>a+b,0)+' / 10';
 }
 
-// ══════════════════════════════════════════════
-//  渲染：年段認證
-// ══════════════════════════════════════════════
-const CERTS = [
-  { id: 'primary',  label: '主年段認證 Primary' },
-  { id: 'sub',      label: '代班認證 Substitute' },
-  { id: 'expanded', label: '擴展主帶認證 Expanded' },
-];
-let certState = {};
-
+let certState={};
 function renderCerts() {
-  certState = loadJSON('adminCerts', {});
-  if (!teachersData.length) {
-    document.getElementById('cert-grid').innerHTML =
-      '<div class="empty-state"><i class="ti ti-award"></i>尚無教師資料</div>';
-    return;
-  }
-
-  document.getElementById('cert-grid').innerHTML = teachersData.map(t => `
-    <div class="cert-card">
-      <div class="cert-card-name">${escapeHtml(t.name)}</div>
-      <div class="cert-card-grade">${escapeHtml(t.grade)}</div>
-      <div class="cert-items">
-        ${CERTS.map(c => {
-          const granted = !!(certState[t.name] && certState[t.name][c.id]);
-          return `
-            <div class="cert-item ${granted ? 'granted' : ''}">
-              <span>${escapeHtml(c.label)}</span>
-              <button class="cert-grant-btn" onclick="toggleCert('${escapeHtml(t.name)}', '${c.id}')">
-                ${granted ? '✓ 已認證' : '授予認證'}
-              </button>
-            </div>`;
-        }).join('')}
-      </div>
-    </div>`).join('');
+  try{certState=JSON.parse(localStorage.getItem('adminCerts')||'{}');}catch(e){}
+  const CERTS=[{id:'primary',label:'主年段認證 Primary'},{id:'sub',label:'代班認證 Substitute'},{id:'expanded',label:'擴展主帶認證 Expanded'}];
+  if(!teachersData.length){document.getElementById('cert-grid').innerHTML='<div class="empty-state"><i class="ti ti-award"></i>尚無教師資料</div>';return;}
+  document.getElementById('cert-grid').innerHTML=teachersData.map(t=>{
+    const tk=t.name;
+    return '<div class="cert-card"><div class="cert-card-name">'+t.name+'</div><div class="cert-card-grade">'+t.grade+'</div><div class="cert-items">'+CERTS.map(c=>{const g=!!(certState[tk]&&certState[tk][c.id]);return '<div class="cert-item '+(g?'granted':'')+'"><span>'+c.label+'</span><button class="cert-grant-btn" onclick="toggleCert(\''+tk+'\',\''+c.id+'\')">'+(g?'✓ 已認證':'授予認證')+'</button></div>';}).join('')+'</div></div>';
+  }).join('');
 }
-
-function toggleCert(teacher, certId) {
-  if (!certState[teacher]) certState[teacher] = {};
-  certState[teacher][certId] = !certState[teacher][certId];
-  saveJSON('adminCerts', certState);
+function toggleCert(teacher,certId) {
+  if(!certState[teacher])certState[teacher]={};
+  certState[teacher][certId]=!certState[teacher][certId];
+  localStorage.setItem('adminCerts',JSON.stringify(certState));
   renderCerts();
 }
+function _mockTeachers(){return[{name:'林老師',grade:'低年級',phase:'basic',entryPct:100,basicPct:55,advPct:0},{name:'王老師',grade:'中年級',phase:'entry',entryPct:60,basicPct:0,advPct:0},{name:'陳老師',grade:'高年級',phase:'advanced',entryPct:100,basicPct:100,advPct:70},{name:'張老師',grade:'跨年級段',phase:'basic',entryPct:100,basicPct:30,advPct:0}];}
+function _mockQuestionnaires(){return[{name:'林老師',submittedAt:'2026-05-10',bScore:52,level:'初階起始',dAnswers:['教學是我的熱情所在。','上學期有位學生一直不配合，我課後與他單獨談話，了解困境後調整策略。','學生突發狀況最優先，然後是家長電話，文件下班前完成。','互相尊重與持續學習。','我會用蘋果示範1/2，請同學把蘋果對切。']}];}
 </script>
 </body>
 </html>

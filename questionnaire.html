@@ -6,10 +6,24 @@
 <title>入職評估問卷 · A Plus 耶加</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<link rel="stylesheet" href="css/shared.css">
-<script src="js/utils.js"></script>
 <script src="sheets.js"></script>
 <style>
+:root {
+  --green: #1B4332; --green-mid: #2D6A4F; --green-light: #52B788;
+  --green-pale: #D8F3DC; --gold: #F6E05E; --cream: #F9F6F0;
+  --white: #fff; --text: #1A1A1A; --text-muted: #6B6B6B;
+  --border-light: #E8E8E8; --radius: 14px; --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Noto Sans TC',sans-serif; background:var(--cream); color:var(--text); line-height:1.7; font-size:15px; }
+
+/* NAV */
+.topbar { background:var(--green); padding:14px 32px; display:flex; align-items:center; gap:12px; }
+.topbar a { color:rgba(255,255,255,0.6); text-decoration:none; font-size:13px; }
+.topbar a:hover { color:#fff; }
+.topbar-sep { color:rgba(255,255,255,0.3); }
+.topbar-title { color:#fff; font-size:14px; font-weight:500; }
 
 /* LAYOUT */
 .page-wrap { max-width: 720px; margin: 0 auto; padding: 40px 24px 80px; }
@@ -478,7 +492,7 @@
 
     <div class="q-nav">
       <button class="btn-back" onclick="goToBlock('c')">← 返回 C</button>
-      <button class="btn-next" onclick="handleSubmit()">送出問卷 ✓</button>
+      <button class="btn-next" onclick="submitQuestionnaire()">送出問卷 ✓</button>
     </div>
   </div>
 
@@ -492,6 +506,17 @@
       <div class="result-score">
         <div class="score-item"><div class="score-num" id="res-b-score">--</div><div class="score-label">B區塊分數（滿分70）</div></div>
         <div class="score-item"><div class="score-num" id="res-radar">--</div><div class="score-label">雷達圖平均初始值</div></div>
+      </div>
+      <div id="sheets-sync-result" style="margin-bottom:16px;font-size:13px;"></div>
+      <!-- Sheets URL 設定（若未設定才顯示）-->
+      <div id="sheets-url-wrap" style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:14px 16px;margin-bottom:20px;text-align:left;">
+        <div style="font-size:13px;font-weight:500;color:#92400E;margin-bottom:6px;">⚙ 設定 Google Sheets 連線（一次設定即可）</div>
+        <div style="font-size:12px;color:#B7791F;margin-bottom:10px;">貼入培訓官提供的 Apps Script URL，資料將自動送出至後台。</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input id="sheets-url-input-q" type="text" placeholder="https://script.google.com/macros/s/.../exec"
+            style="flex:1;min-width:200px;padding:8px 12px;border:1px solid #FDE68A;border-radius:8px;font-size:13px;outline:none;">
+          <button onclick="saveAndResync()" style="padding:8px 16px;border:none;border-radius:99px;background:#B7791F;color:#fff;cursor:pointer;font-size:13px;white-space:nowrap;">儲存並重新送出</button>
+        </div>
       </div>
       <a href="tasks.html" class="result-btn"><i class="ti ti-checklist"></i> 前往培訓任務清單</a>
     </div>
@@ -572,6 +597,26 @@ document.addEventListener('click', e => {
   }
 });
 
+// ── SHEETS URL（填入後自動記住）──
+function getSheetsUrl() {
+  return localStorage.getItem('sheetsUrl') || '';
+}
+
+async function pushToSheets(payload) {
+  const url = getSheetsUrl();
+  if (!url) return { status: 'no_url' };
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload),
+    });
+    return { status: 'ok' };
+  } catch(e) {
+    return { status: 'error', msg: e.message };
+  }
+}
+
 function calcBScore() {
   let score = 0;
   for (let i=1; i<=15; i++) {
@@ -589,59 +634,100 @@ function calcRadarAvg() {
   });
   const avgs = {};
   Object.keys(dims).forEach(d => {
-    avgs[d] = dims[d].length ? Math.round(dims[d].reduce((a,b)=>a+b,0)/dims[d].length) : 50;
+    avgs[d] = dims[d].length ? Math.round(dims[d].reduce((a,b)=>a+b,0)/dims[d].length) : 0;
   });
   return avgs;
 }
 
-async function handleSubmit() {
+async function submitQuestionnaire() {
   const bScore = calcBScore();
   const radarScores = calcRadarAvg();
-  const radarAvg = Math.round(Object.values(radarScores).reduce((a, b) => a + b, 0) / 5);
-
+  const radarAvg = Math.round(Object.values(radarScores).reduce((a,b)=>a+b,0)/5);
   let level, startPoint;
-  if      (bScore >= 60) { level = '進階起始 Advanced'; startPoint = '直接進入進階任務，仍需完成機構特定行政培訓。'; }
-  else if (bScore >= 40) { level = '初階起始 Basic';    startPoint = '入門任務以 Q&A 口頭確認（1天），直接進入初階。'; }
-  else                   { level = '入門起始 Entry';    startPoint = '從入門階段完整開始，培訓官將給予較高支持密度。'; }
+  if (bScore >= 60) { level = '進階起始 Advanced'; startPoint = '直接進入進階任務，仍需完成機構特定行政培訓。'; }
+  else if (bScore >= 40) { level = '初階起始 Basic'; startPoint = '入門任務以 Q&A 口頭確認（1天），直接進入初階。'; }
+  else { level = '入門起始 Entry'; startPoint = '從入門階段完整開始，培訓官將給予較高支持密度。'; }
 
   const dAnswers = {};
-  [1, 2, 3, 4, 5].forEach(i => {
-    dAnswers['d' + i] = (document.getElementById('d' + i) || {}).value || '';
+  [1,2,3,4,5].forEach(i => dAnswers['d'+i] = (document.getElementById('d'+i)||{}).value||'');
+
+  // 讀取個人資料
+  let profile = {};
+  try { profile = JSON.parse(localStorage.getItem('profile')||'{}'); } catch(e){}
+  const name  = profile.name  || '未填寫';
+  const grade = profile.grade || '未填寫';
+
+  const result = { bScore, level, radarScores, dAnswers, submittedAt: new Date().toISOString(), name, grade };
+  localStorage.setItem('qResult', JSON.stringify(result));
+  localStorage.setItem('radarScores', JSON.stringify(radarScores));
+
+  // 同步更新 profile 的起始等級
+  try {
+    profile.startLevel = level;
+    localStorage.setItem('profile', JSON.stringify(profile));
+  } catch(e){}
+
+  // 推送到 Google Sheets
+  const syncBtn = document.getElementById('sync-status');
+  if (syncBtn) syncBtn.textContent = '資料同步中...';
+  const sheetsResult = await pushToSheets({
+    type: 'questionnaire',
+    name, grade, level, bScore,
+    radarScores, dAnswers,
+    submittedAt: result.submittedAt,
   });
 
-  const profile = loadJSON('profile', {});
-
-  // 儲存至 localStorage
-  saveJSON('qResult',      { bScore, level, radarScores, dAnswers, submittedAt: new Date().toISOString() });
-  saveJSON('radarScores',  radarScores);
-  saveJSON('profile',      { ...profile, startLevel: level });
-
-  // 同步至 Google Sheets（sheets.js 的 submitQuestionnaire）
-  submitQuestionnaire({
-    name:      profile.name  || '未填寫',
-    email:     profile.email || '',
-    bScore,
-    level,
-    fitScore:  0,
-    cScores:   radarScores,
-    dAnswers,
-  }).catch(e => console.warn('[questionnaire] GAS 送出失敗：', e.message));
-
-  // 顯示結果
-  blockOrder.forEach(b => { document.getElementById('block-' + b).style.display = 'none'; });
+  // 顯示結果頁
+  blockOrder.forEach(b => document.getElementById('block-'+b).style.display = 'none');
   document.getElementById('block-result').style.display = 'block';
   document.getElementById('result-level-badge').textContent = level;
   document.getElementById('result-title').textContent = '問卷填寫完成！';
   document.getElementById('result-desc').textContent = `B區塊得分：${bScore}分。${startPoint}`;
   document.getElementById('res-b-score').textContent = bScore;
   document.getElementById('res-radar').textContent = radarAvg;
-  ['step-a', 'step-b', 'step-c', 'step-d'].forEach(s => {
-    document.getElementById(s).className = 'q-step done';
-  });
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Sheets 同步狀態
+  const statusEl = document.getElementById('sheets-sync-result');
+  if (statusEl) {
+    if (sheetsResult.status === 'ok') {
+      statusEl.innerHTML = '<span style="color:#10B981;">✓ 資料已同步至培訓官後台</span>';
+    } else if (sheetsResult.status === 'no_url') {
+      statusEl.innerHTML = '<span style="color:#F59E0B;">⚠ 尚未設定 Sheets 連線，資料已存本機</span>';
+    } else {
+      statusEl.innerHTML = '<span style="color:#EF4444;">✗ 同步失敗，請截圖告知培訓官</span>';
+    }
+  }
+
+  ['step-a','step-b','step-c','step-d'].forEach(s => { document.getElementById(s).className = 'q-step done'; });
+  window.scrollTo({ top: 0, behavior:'smooth' });
+}
+
+async function saveAndResync() {
+  const val = document.getElementById('sheets-url-input-q').value.trim();
+  if (!val.includes('script.google.com')) {
+    alert('請貼入正確的 Apps Script URL');
+    return;
+  }
+  localStorage.setItem('sheetsUrl', val);
+  const statusEl = document.getElementById('sheets-sync-result');
+  if (statusEl) statusEl.textContent = '重新送出中...';
+  try {
+    const result = JSON.parse(localStorage.getItem('qResult') || '{}');
+    await pushToSheets({ type: 'questionnaire', ...result });
+    if (statusEl) statusEl.innerHTML = '<span style="color:#10B981;">✓ 資料已成功同步至培訓官後台！</span>';
+    document.getElementById('sheets-url-wrap').style.display = 'none';
+  } catch(e) {
+    if (statusEl) statusEl.innerHTML = '<span style="color:#EF4444;">✗ 同步失敗，請確認 URL 是否正確</span>';
+  }
 }
 
 buildCQuestions();
+
+// 若已設定 Sheets URL，隱藏設定欄
+if (localStorage.getItem('sheetsUrl')) {
+  const wrap = document.getElementById('sheets-url-wrap');
+  if (wrap) wrap.style.display = 'none';
+}
 </script>
 </body>
 </html>
