@@ -184,6 +184,32 @@ body { font-family:'Noto Sans TC',sans-serif; background:var(--cream); color:var
       <span class="block-meta">5 題 · 不計分 · 約 5 分鐘</span>
     </div>
 
+    <!-- 姓名 / 年級段輸入 -->
+    <div class="q-card" style="border-left:4px solid var(--green-mid);">
+      <div class="q-num" style="color:var(--green-mid);font-weight:600;">基本資料（必填）</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;">
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:6px;">姓名 <span style="color:#EF4444;">*</span></label>
+          <input type="text" id="input-name-q" placeholder="請輸入你的姓名"
+            style="width:100%;padding:10px 12px;border:1px solid var(--border-light);border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-size:14px;outline:none;background:var(--cream);"
+            onfocus="this.style.borderColor='#52B788';this.style.background='#fff'"
+            onblur="this.style.borderColor='';this.style.background='var(--cream)'">
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:6px;">年級段 <span style="color:#EF4444;">*</span></label>
+          <select id="input-grade-q"
+            style="width:100%;padding:10px 12px;border:1px solid var(--border-light);border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-size:14px;outline:none;background:var(--cream);appearance:none;"
+            onfocus="this.style.borderColor='#52B788'" onblur="this.style.borderColor=''">
+            <option value="">請選擇年級段</option>
+            <option value="低年級">低年級（一、二年級）</option>
+            <option value="中年級">中年級（三、四年級）</option>
+            <option value="高年級">高年級（五、六年級）</option>
+            <option value="跨年級段">跨年級段（全覆蓋）</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <div class="q-card">
       <div class="q-num">A1</div>
       <div class="q-text">你的教學年資是？</div>
@@ -240,7 +266,7 @@ body { font-family:'Noto Sans TC',sans-serif; background:var(--cream); color:var
 
     <div class="q-nav">
       <span></span>
-      <button class="btn-next" onclick="goToBlock('b')">下一區塊 B →</button>
+      <button class="btn-next" onclick="validateAndGoB()">下一區塊 B →</button>
     </div>
   </div>
 
@@ -597,6 +623,27 @@ document.addEventListener('click', e => {
   }
 });
 
+function validateAndGoB() {
+  const name = document.getElementById('input-name-q').value.trim();
+  const grade = document.getElementById('input-grade-q').value;
+  if (!name) {
+    document.getElementById('input-name-q').style.borderColor = '#EF4444';
+    document.getElementById('input-name-q').focus();
+    return;
+  }
+  if (!grade) {
+    document.getElementById('input-grade-q').style.borderColor = '#EF4444';
+    return;
+  }
+  // 儲存到 profile
+  try {
+    const p = JSON.parse(localStorage.getItem('profile') || '{}');
+    p.name = name; p.grade = grade;
+    localStorage.setItem('profile', JSON.stringify(p));
+  } catch(e) {}
+  goToBlock('b');
+}
+
 // ── SHEETS URL（填入後自動記住）──
 function getSheetsUrl() {
   return localStorage.getItem('sheetsUrl') || '';
@@ -667,15 +714,32 @@ async function submitQuestionnaire() {
     localStorage.setItem('profile', JSON.stringify(profile));
   } catch(e){}
 
-  // 推送到 Google Sheets
+  // 推送到 Google Sheets — 同時寫入問卷結果 + 教師初始進度
   const syncBtn = document.getElementById('sync-status');
   if (syncBtn) syncBtn.textContent = '資料同步中...';
-  const sheetsResult = await pushToSheets({
-    type: 'questionnaire',
-    name, grade, level, bScore,
-    radarScores, dAnswers,
-    submittedAt: result.submittedAt,
-  });
+
+  // 決定起始階段
+  const startPhase = level.includes('進階') ? 'advanced' : level.includes('初階') ? 'basic' : 'entry';
+
+  const [sheetsResult] = await Promise.all([
+    pushToSheets({
+      type: 'questionnaire',
+      name, grade, level, bScore,
+      radarScores, dAnswers,
+      submittedAt: result.submittedAt,
+    }),
+    pushToSheets({
+      type: 'progress',
+      name, grade,
+      phase: startPhase,
+      entryPct: 0,
+      basicPct: 0,
+      advPct: 0,
+      taskCount: 0,
+      radarScores,
+      updatedAt: result.submittedAt,
+    }),
+  ]);
 
   // 顯示結果頁
   blockOrder.forEach(b => document.getElementById('block-'+b).style.display = 'none');
