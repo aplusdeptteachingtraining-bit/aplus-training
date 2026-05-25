@@ -118,8 +118,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
 <body>
 
 <!-- EMAIL 登入畫面 -->
-<div id="login-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--cream);display:flex;align-items:center;justify-content:center;">
-  <div style="background:var(--white);border-radius:var(--radius);padding:36px 32px;width:380px;box-shadow:0 8px 40px rgba(0,0,0,0.12);">
+<div id="login-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--cream);align-items:center;justify-content:center;">
+  <div style="background:var(--white);border-radius:var(--radius);padding:36px 32px;width:90%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,0.12);">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;">
       <div style="width:10px;height:10px;border-radius:50%;background:#F6E05E;"></div>
       <div>
@@ -130,7 +130,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
     <div style="font-size:18px;font-weight:500;margin-bottom:6px;">請輸入你的 Email</div>
     <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">填寫入職問卷時使用的 Email</div>
     <input type="email" id="login-email" placeholder="your@email.com"
-      style="width:100%;padding:10px 14px;border:1px solid var(--border-light);border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-size:14px;outline:none;background:var(--cream);margin-bottom:8px;"
+      style="width:100%;padding:10px 14px;border:1px solid var(--border-light);border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-size:14px;outline:none;background:var(--cream);margin-bottom:8px;box-sizing:border-box;"
       onfocus="this.style.borderColor='#52B788';this.style.background='#fff'"
       onblur="this.style.borderColor='';this.style.background='var(--cream)'"
       onkeydown="if(event.key==='Enter')doEmailLogin()">
@@ -141,6 +141,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
     </div>
   </div>
 </div>
+
+
 
 <div class="topbar">
   <a href="index.html"><i class="ti ti-arrow-left"></i> 返回首頁</a>
@@ -602,7 +604,84 @@ async function manualSyncFromSheets() {
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwZaAsaIAgc-RrnT-z_r1YQDHEVQnSLieL5KAzjFEm50316BF_4K0x5jzkkofFwMf4v/exec';
 localStorage.setItem('sheetsUrl', SHEETS_URL);
 
-// ── EMAIL 登入 ──
+function initTaskPage() {
+  taskState = {};
+  taskScores = {};
+  renderTasks();
+  renderRadar();
+  renderLevelBadge();
+  loadStateFromSheets();
+}
+
+// 加入 spin 動畫 CSS
+const spinStyle = document.createElement('style');
+spinStyle.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+document.head.appendChild(spinStyle);
+
+// ── 從 Google Sheets 讀取培訓官評分結果（Sheets 優先，完全覆蓋本機）──
+async function loadStateFromSheets() {
+  try {
+    const sheetsUrl = localStorage.getItem('sheetsUrl') || '';
+    if (!sheetsUrl) return;
+
+    const res = await fetch(sheetsUrl + '?sheet=Teachers&t=' + Date.now());
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (!Array.isArray(rows) || !rows.length) return;
+
+    // 取第一筆有任務狀態的資料（多教師時，取任務狀態最長的）
+    const profile = JSON.parse(localStorage.getItem('profile') || '{}');
+    const myName = (profile.name || '').trim();
+
+    let mine = null;
+    // 先用姓名比對
+    if (myName) mine = rows.find(r => String(r['姓名'] || r.name || '').trim() === myName);
+    // 找不到就取第一筆有任務狀態的
+    if (!mine) mine = rows.find(r => String(r['任務狀態'] || r.tasks || '').length > 5);
+    if (!mine) mine = rows[0]; // 最後兜底取第一筆
+    if (!mine) return;
+
+    taskState = {};
+    taskScores = {};
+    const taskJson = mine['任務狀態'] || mine.tasks || '';
+    if (taskJson && String(taskJson).length > 2) {
+      try {
+        const taskData = typeof taskJson === 'string' ? JSON.parse(taskJson) : taskJson;
+        Object.keys(taskData).forEach(id => {
+          if (taskData[id] && typeof taskData[id] === 'object') {
+            taskState[id]  = !!taskData[id].done;
+            taskScores[id] = String(taskData[id].score || '');
+          }
+        });
+      } catch(e) { console.warn('任務狀態解析失敗', e.message); }
+    }
+
+    saveState();
+    renderTasks();
+    renderRadar();
+  } catch(e) {
+    console.warn('Sheets 讀取失敗', e.message);
+  }
+}
+
+function loadStateFromAdmin() {
+  try {
+    const profile = JSON.parse(localStorage.getItem('profile') || '{}');
+    const name = profile.name || '';
+    const adminScoring = JSON.parse(localStorage.getItem('adminScoring') || '{}');
+    if (name && adminScoring[name]) {
+      const s = adminScoring[name];
+      taskState = {};
+      taskScores = {};
+      Object.keys(s).forEach(id => {
+        taskState[id]  = !!s[id].done;
+        taskScores[id] = s[id].score || '';
+      });
+    }
+  } catch(e) {}
+}
+
+// ── EMAIL 登入：同時查 Questionnaire 和 Teachers ──
 async function doEmailLogin() {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
   const errEl = document.getElementById('login-error');
@@ -614,17 +693,32 @@ async function doEmailLogin() {
     return;
   }
 
-  // 從 Sheets 驗證 email 是否存在
   try {
-    const res = await fetch(SHEETS_URL + '?sheet=Questionnaire&t=' + Date.now());
-    const rows = await res.json();
-    const found = rows.find(r => (r['Email'] || r.email || '').toLowerCase() === email);
+    // 同時查兩個工作表
+    const [qRes, tRes] = await Promise.all([
+      fetch(SHEETS_URL + '?sheet=Questionnaire&t=' + Date.now()),
+      fetch(SHEETS_URL + '?sheet=Teachers&t=' + Date.now()),
+    ]);
+    const qRows = qRes.ok ? await qRes.json() : [];
+    const tRows = tRes.ok ? await tRes.json() : [];
+
+    // 先查 Questionnaire
+    let found = Array.isArray(qRows) && qRows.find(r =>
+      (r['Email'] || r.email || '').toLowerCase().trim() === email
+    );
+    // 再查 Teachers
+    if (!found) {
+      found = Array.isArray(tRows) && tRows.find(r =>
+        (r['Email'] || r.email || '').toLowerCase().trim() === email
+      );
+    }
+
     if (!found) {
       errEl.textContent = '找不到此 Email，請確認填寫問卷時使用的地址';
       errEl.style.display = 'block';
       return;
     }
-    // 登入成功，存入 localStorage
+
     const profile = {
       name:  found['姓名']   || found.name  || '',
       grade: found['年級段'] || found.grade || '',
@@ -648,99 +742,6 @@ function checkLogin() {
     document.getElementById('login-overlay').style.display = 'none';
     initTaskPage();
   }
-}
-
-function initTaskPage() {
-  taskState = {};
-  taskScores = {};
-  renderTasks();
-  renderRadar();
-  renderLevelBadge();
-  loadStateFromSheets();
-}
-
-checkLogin();
-
-// 加入 spin 動畫 CSS
-const spinStyle = document.createElement('style');
-spinStyle.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
-document.head.appendChild(spinStyle);
-
-// ── 從 Google Sheets 讀取培訓官評分結果（Sheets 優先，完全覆蓋本機）──
-async function loadStateFromSheets() {
-  try {
-    const profile = JSON.parse(localStorage.getItem('profile') || '{}');
-    const myName = profile.name || '';
-    if (!myName) return;
-
-    const sheetsUrl = localStorage.getItem('sheetsUrl') || '';
-    if (!sheetsUrl) {
-      loadStateFromAdmin();
-      renderTasks();
-      renderRadar();
-      return;
-    }
-
-    const res = await fetch(sheetsUrl + '?sheet=Teachers&t=' + Date.now());
-    if (!res.ok) return;
-    const rows = await res.json();
-    if (!Array.isArray(rows)) return;
-
-    const myEmail = localStorage.getItem('userEmail') || '';
-    // Teachers 工作表 C 欄可能是 Email 或年級段，都嘗試比對
-    const mine = rows.find(r => {
-      const rowName  = String(r['姓名'] || r.name || '').trim();
-      const rowEmail = String(r['Email'] || r.email || r['年級段'] || r['C'] || '').toLowerCase();
-      return rowName === myName || (myEmail && rowEmail.includes(myEmail));
-    });
-    if (!mine) {
-      console.warn('[tasks] 找不到教師 myName:', myName, 'rows:', JSON.stringify(rows.slice(0,2)));
-      return;
-    }
-    console.log('[tasks] 找到:', mine['姓名']||mine.name, ' 任務狀態:', String(mine['任務狀態']||mine.tasks||'').substring(0,80));
-
-    // 完全清空本機任務狀態，以 Sheets 為準
-    taskState = {};
-    taskScores = {};
-
-    const taskJson = mine['任務狀態'] || mine.tasks || '';
-    if (taskJson && taskJson.length > 2) {
-      try {
-        const taskData = typeof taskJson === 'string' ? JSON.parse(taskJson) : taskJson;
-        Object.keys(taskData).forEach(id => {
-          if (taskData[id] && typeof taskData[id] === 'object') {
-            taskState[id]  = !!taskData[id].done;
-            taskScores[id] = String(taskData[id].score || '');
-          }
-        });
-      } catch(e) { console.warn('任務狀態 JSON 解析失敗', e.message); }
-    }
-
-    saveState();
-    renderTasks();
-    renderRadar();
-
-  } catch(e) {
-    // 讀取失敗，保留本機資料不動
-    console.warn('Sheets 讀取失敗，使用本機資料', e.message);
-  }
-}
-
-function loadStateFromAdmin() {
-  try {
-    const profile = JSON.parse(localStorage.getItem('profile') || '{}');
-    const name = profile.name || '';
-    const adminScoring = JSON.parse(localStorage.getItem('adminScoring') || '{}');
-    if (name && adminScoring[name]) {
-      const s = adminScoring[name];
-      taskState = {};
-      taskScores = {};
-      Object.keys(s).forEach(id => {
-        taskState[id]  = !!s[id].done;
-        taskScores[id] = s[id].score || '';
-      });
-    }
-  } catch(e) {}
 }
 
 // ── INIT：先驗證 Email 再載入任務 ──
