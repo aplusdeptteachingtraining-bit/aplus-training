@@ -687,11 +687,17 @@ async function loadStateFromSheets() {
     if (!Array.isArray(rows)) return;
 
     const myEmail = localStorage.getItem('userEmail') || '';
-    const mine = rows.find(r =>
-      (r['Email'] || r.email || '').toLowerCase() === myEmail ||
-      (r['姓名'] || r.name || '') === myName
-    );
-    if (!mine) return;
+    // Teachers 工作表 C 欄可能是 Email 或年級段，都嘗試比對
+    const mine = rows.find(r => {
+      const rowName  = String(r['姓名'] || r.name || '').trim();
+      const rowEmail = String(r['Email'] || r.email || r['年級段'] || r['C'] || '').toLowerCase();
+      return rowName === myName || (myEmail && rowEmail.includes(myEmail));
+    });
+    if (!mine) {
+      console.warn('[tasks] 找不到教師 myName:', myName, 'rows:', JSON.stringify(rows.slice(0,2)));
+      return;
+    }
+    console.log('[tasks] 找到:', mine['姓名']||mine.name, ' 任務狀態:', String(mine['任務狀態']||mine.tasks||'').substring(0,80));
 
     // 完全清空本機任務狀態，以 Sheets 為準
     taskState = {};
