@@ -574,6 +574,53 @@ async function loadStateFromSheets() {
   }
 }
 
+// ── 從 Google Sheets 讀取培訓官評分結果（Sheets 優先，完全覆蓋本機）──
+async function loadStateFromSheets() {
+  try {
+    const profile = JSON.parse(localStorage.getItem('profile') || '{}');
+    const myName = profile.name || '';
+    if (!myName) return;
+
+    const sheetsUrl = localStorage.getItem('sheetsUrl') || '';
+    if (!sheetsUrl) {
+      loadStateFromAdmin();
+      renderTasks();
+      renderRadar();
+      return;
+    }
+
+    const res = await fetch(sheetsUrl + '?sheet=Teachers&t=' + Date.now());
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (!Array.isArray(rows)) return;
+
+    const mine = rows.find(r => (r['姓名'] || r.name || '') === myName);
+    if (!mine) return;
+
+    // 完全清空本機任務狀態，以 Sheets 為準
+    taskState = {};
+    taskScores = {};
+
+    try {
+      const taskJson = mine['任務狀態'] || mine.tasks || '{}';
+      const taskData = typeof taskJson === 'string' ? JSON.parse(taskJson) : taskJson;
+      Object.keys(taskData).forEach(id => {
+        taskState[id]  = !!taskData[id].done;
+        taskScores[id] = taskData[id].score || '';
+      });
+    } catch(e) {}
+
+    // 存回本機確保一致
+    saveState();
+    renderTasks();
+    renderRadar();
+
+  } catch(e) {
+    // 讀取失敗，保留本機資料不動
+    console.warn('Sheets 讀取失敗，使用本機資料', e.message);
+  }
+}
+
 function loadStateFromAdmin() {
   try {
     const profile = JSON.parse(localStorage.getItem('profile') || '{}');
@@ -581,20 +628,23 @@ function loadStateFromAdmin() {
     const adminScoring = JSON.parse(localStorage.getItem('adminScoring') || '{}');
     if (name && adminScoring[name]) {
       const s = adminScoring[name];
+      taskState = {};
+      taskScores = {};
       Object.keys(s).forEach(id => {
-        taskState[id] = !!s[id].done;
-        if (s[id].score) taskScores[id] = s[id].score;
+        taskState[id]  = !!s[id].done;
+        taskScores[id] = s[id].score || '';
       });
     }
   } catch(e) {}
 }
 
-loadState();
-loadStateFromAdmin(); // 先顯示本機資料
+// 先清空，等 Sheets 資料回來才顯示
+taskState = {};
+taskScores = {};
 renderTasks();
 renderRadar();
 renderLevelBadge();
-loadStateFromSheets(); // 非同步從 Sheets 更新（完成後自動 re-render）
+loadStateFromSheets(); // 從 Sheets 讀取（會覆蓋並 re-render）
 
 // Scroll to hash
 if (location.hash) {
