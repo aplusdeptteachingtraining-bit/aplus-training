@@ -13,13 +13,16 @@ function doPost(e) {
         'D1答案','D2答案','D3答案','D4答案','D5答案'
       ]);
       const r = data.radarScores || {};
-      const d = data.dAnswers   || {};
+      const d = data.dAnswers || {};
+      const email = (data.email || '').toLowerCase().trim();
+      
+      // 用 Email 比對（C欄，index 2）
       const rows = sheet.getDataRange().getValues();
       let found = false;
       for (let i = 1; i < rows.length; i++) {
-        if ((rows[i][2]||'').toLowerCase() === (data.email||'').toLowerCase()) {
+        if (String(rows[i][2]||'').toLowerCase().trim() === email && email) {
           sheet.getRange(i+1,1,1,17).setValues([[
-            data.submittedAt, data.name, data.email, data.grade, data.level, data.bScore, data.fitScore||0,
+            data.submittedAt, data.name, email, data.grade, data.level, data.bScore, data.fitScore||0,
             r['教學技巧']||0, r['學科知識']||0, r['課堂管理']||0, r['行政了解']||0, r['備課能力']||0,
             d.d1||'', d.d2||'', d.d3||'', d.d4||'', d.d5||''
           ]]);
@@ -27,7 +30,7 @@ function doPost(e) {
         }
       }
       if (!found) sheet.appendRow([
-        data.submittedAt, data.name, data.email, data.grade, data.level, data.bScore, data.fitScore||0,
+        data.submittedAt, data.name, email, data.grade, data.level, data.bScore, data.fitScore||0,
         r['教學技巧']||0, r['學科知識']||0, r['課堂管理']||0, r['行政了解']||0, r['備課能力']||0,
         d.d1||'', d.d2||'', d.d3||'', d.d4||'', d.d5||''
       ]);
@@ -39,19 +42,23 @@ function doPost(e) {
         '教學技巧','學科知識','課堂管理','行政了解','備課能力','任務完成數','任務狀態'
       ]);
       const r = data.radarScores || {};
+      const email = (data.email || '').toLowerCase().trim();
       const newRow = [
-        data.updatedAt, data.name, data.email||'', data.grade, data.phase,
+        data.updatedAt, data.name, email, data.grade, data.phase,
         data.entryPct||0, data.basicPct||0, data.advPct||0,
         r['教學技巧']||0, r['學科知識']||0, r['課堂管理']||0, r['行政了解']||0, r['備課能力']||0,
         data.taskCount||0,
         data.tasks || '{}'
       ];
+
       const rows = sheet.getDataRange().getValues();
       let found = false;
       for (let i = 1; i < rows.length; i++) {
-        const rowEmail = (rows[i][2]||'').toLowerCase();
-        const rowName  = rows[i][1]||'';
-        if (rowEmail === (data.email||'').toLowerCase() || rowName === data.name) {
+        const rowEmail = String(rows[i][2]||'').toLowerCase().trim();
+        const rowName  = String(rows[i][1]||'').trim();
+        // 嚴格用 Email 比對，Email 不存在時才用姓名
+        const match = (email && rowEmail === email) || (!email && rowName === data.name);
+        if (match) {
           sheet.getRange(i+1, 1, 1, newRow.length).setValues([newRow]);
           found = true; break;
         }
