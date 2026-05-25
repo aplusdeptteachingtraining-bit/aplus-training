@@ -296,7 +296,19 @@ async function getTeachersData() {
       const res = await fetch(url + '?sheet=Teachers&t=' + Date.now());
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data) && data.length) return data;
+        if (Array.isArray(data) && data.length) {
+          // 將中文欄位名稱轉成前端用的 key
+          return data.map(r => ({
+            name:     r['姓名']    || r.name    || '',
+            grade:    r['年級段']  || r.grade   || '',
+            phase:    r['當前階段']|| r.phase   || 'entry',
+            entryPct: Number(r['入門%']  || r.entryPct || 0),
+            basicPct: Number(r['初階%']  || r.basicPct || 0),
+            advPct:   Number(r['進階%']  || r.advPct   || 0),
+            updatedAt: r['更新時間'] || r.updatedAt || '',
+            radarScores: r['radarScores'] || '{}',
+          })).filter(t => t.name && t.name !== 'undefined');
+        }
       }
     } catch(e) { console.warn('Sheets fetch failed:', e.message); }
   }
@@ -320,20 +332,23 @@ async function getQuestionnairesData() {
 // Google Sheets 欄位名稱轉換成前端格式
 function normalizeQuestionnaires(rows) {
   return rows.map(r => ({
-    name: r['姓名'] || r.name || '—',
-    grade: r['年級段'] || r.grade || '—',
-    level: r['起始等級'] || r.level || '—',
-    bScore: r['B分數'] || r.bScore || 0,
-    submittedAt: r['填寫時間'] || r.submittedAt || '',
+    name:       r['姓名']    || r.name       || '—',
+    grade:      r['年級段']  || r.grade      || '—',
+    level:      r['起始等級']|| r.level      || '—',
+    bScore:     r['B分數']   || r.bScore     || 0,
+    submittedAt: r['填寫時間']|| r.submittedAt|| '',
     radarScores: {
-      '教學技巧': r['教學技巧'] || 0,
-      '學科知識': r['學科知識'] || 0,
-      '課堂管理': r['課堂管理'] || 0,
-      '行政了解': r['行政了解'] || 0,
-      '備課能力': r['備課能力'] || 0,
+      '教學技巧': Number(r['教學技巧'] || 0),
+      '學科知識': Number(r['學科知識'] || 0),
+      '課堂管理': Number(r['課堂管理'] || 0),
+      '行政了解': Number(r['行政了解'] || 0),
+      '備課能力': Number(r['備課能力'] || 0),
     },
-    dAnswers: [r['D1答案']||'', r['D2答案']||'', r['D3答案']||'', r['D4答案']||'', r['D5答案']||''],
-  }));
+    dAnswers: [
+      r['D1答案']||'', r['D2答案']||'',
+      r['D3答案']||'', r['D4答案']||'', r['D5答案']||''
+    ],
+  })).filter(r => r.name && r.name !== '—');
 }
 
 function checkAlerts(teacher) {
