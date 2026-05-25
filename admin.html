@@ -293,23 +293,43 @@ async function getTeachersData() {
   const url = getSheetsUrl();
   if (url) {
     try {
-      const res = await fetch(url + '?sheet=Teachers&t=' + Date.now());
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length) {
-          // 將中文欄位名稱轉成前端用的 key
-          return data.map(r => ({
-            name:     r['姓名']    || r.name    || '',
-            grade:    r['年級段']  || r.grade   || '',
-            phase:    r['當前階段']|| r.phase   || 'entry',
-            entryPct: Number(r['入門%']  || r.entryPct || 0),
-            basicPct: Number(r['初階%']  || r.basicPct || 0),
-            advPct:   Number(r['進階%']  || r.advPct   || 0),
-            updatedAt: r['更新時間'] || r.updatedAt || '',
-            radarScores: r['radarScores'] || '{}',
-          })).filter(t => t.name && t.name !== 'undefined');
-        }
-      }
+      // 同時讀取問卷表（姓名來源）和進度表（進度數字）
+      const [qRes, tRes] = await Promise.all([
+        fetch(url + '?sheet=Questionnaire&t=' + Date.now()),
+        fetch(url + '?sheet=Teachers&t=' + Date.now()),
+      ]);
+
+      let qData = [], tData = [];
+      if (qRes.ok) { try { qData = await qRes.json(); } catch(e){} }
+      if (tRes.ok) { try { tData = await tRes.json(); } catch(e){} }
+
+      if (!Array.isArray(qData) || !qData.length) return _mockTeachers();
+
+      // 以問卷表為主，合併進度表的數字
+      const progressMap = {};
+      tData.forEach(r => {
+        const name = r['姓名'] || r.name || '';
+        if (name) progressMap[name] = r;
+      });
+
+      return qData
+        .filter(r => (r['姓名'] || r.name || '').trim())
+        .map(r => {
+          const name  = r['姓名'] || r.name  || '';
+          const grade = r['年級段']|| r.grade || '—';
+          const prog  = progressMap[name] || {};
+          return {
+            name,
+            grade,
+            phase:    prog['當前階段'] || prog.phase    || 'entry',
+            entryPct: Number(prog['入門%']  || prog.entryPct || 0),
+            basicPct: Number(prog['初階%']  || prog.basicPct || 0),
+            advPct:   Number(prog['進階%']  || prog.advPct   || 0),
+            updatedAt: prog['更新時間'] || '',
+            radarScores: prog.radarScores || '{}',
+          };
+        });
+
     } catch(e) { console.warn('Sheets fetch failed:', e.message); }
   }
   return _mockTeachers();
