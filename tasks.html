@@ -281,7 +281,7 @@ function renderTasks() {
       html += `
         <div class="task-card ${done?'completed':''}" id="card-${t.id}">
           <div class="task-head" onclick="toggleCard('${t.id}')">
-            <div class="task-check" onclick="event.stopPropagation();toggleDone('${t.id}')">
+            <div class="task-check" style="cursor:default;${done?'background:var(--green-mid);border-color:var(--green-mid);color:#fff;':'opacity:0.4;'}">
               ${done ? '<i class="ti ti-check" style="font-size:12px;"></i>' : ''}
             </div>
             <div class="task-info">
@@ -293,20 +293,22 @@ function renderTasks() {
                 ${t.grades.filter(g=>g!=='通用').map(g=>`<span class="task-dim" style="background:#EDE9FE;color:#5B21B6;border-color:#C4B5FD;">${g}</span>`).join('')}
               </div>
             </div>
-            <i class="ti ti-chevron-down task-expand-btn"></i>
+            <div style="display:flex;align-items:center;gap:8px;">
+              ${score ? `<span style="font-size:13px;font-weight:600;color:var(--green-mid);">${score} 分</span>` : ''}
+              <span style="font-size:11px;color:var(--text-light);background:var(--cream);border:1px solid var(--border-light);border-radius:99px;padding:2px 8px;white-space:nowrap;">培訓官評分</span>
+              <i class="ti ti-chevron-down task-expand-btn"></i>
+            </div>
           </div>
           <div class="task-detail">
             <div class="task-detail-grid">
-              <div class="detail-item"><label>文件來源</label><span>${t.doc}</span></div>
+              <div class="detail-item"><label>文件來源</label><span>${t.doc||'—'}</span></div>
               <div class="detail-item"><label>考核方式</label><span>${t.assess}</span></div>
               <div class="detail-item"><label>培訓重點</label><span>${t.detail}</span></div>
               <div class="detail-item"><label>建議時程</label><span>${t.time}</span></div>
             </div>
-            <div class="task-score-row">
-              <input type="number" class="score-input" id="score-${t.id}" min="0" max="100" placeholder="分數" value="${score}"
-                onchange="saveScore('${t.id}',this.value)" onclick="event.stopPropagation()">
-              <span style="font-size:12px;color:var(--text-muted);">/ 100 分</span>
-              <button class="complete-btn" onclick="toggleDone('${t.id}')">${done?'取消完成':'標記完成 ✓'}</button>
+            <div style="padding:10px 14px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;font-size:12px;color:#065F46;display:flex;align-items:center;gap:8px;">
+              <i class="ti ti-lock" style="font-size:14px;"></i>
+              此任務由培訓官在後台評分，完成後狀態會自動更新。
             </div>
           </div>
         </div>`;
@@ -538,7 +540,24 @@ function renderLevelBadge() {
 }
 
 // ── INIT ──
+// 讀取培訓官評分結果（從 adminScoring 同步）
+function loadStateFromAdmin() {
+  try {
+    const profile = JSON.parse(localStorage.getItem('profile') || '{}');
+    const name = profile.name || '';
+    const adminScoring = JSON.parse(localStorage.getItem('adminScoring') || '{}');
+    if (name && adminScoring[name]) {
+      const s = adminScoring[name];
+      Object.keys(s).forEach(id => {
+        taskState[id] = !!s[id].done;
+        if (s[id].score) taskScores[id] = s[id].score;
+      });
+    }
+  } catch(e) {}
+}
+
 loadState();
+loadStateFromAdmin();
 renderTasks();
 renderRadar();
 renderLevelBadge();
