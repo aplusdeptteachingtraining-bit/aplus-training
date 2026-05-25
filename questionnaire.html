@@ -184,7 +184,7 @@ body { font-family:'Noto Sans TC',sans-serif; background:var(--cream); color:var
       <span class="block-meta">5 題 · 不計分 · 約 5 分鐘</span>
     </div>
 
-    <!-- 姓名 / 年級段輸入 -->
+    <!-- 姓名 / 年級段 / Email 輸入 -->
     <div class="q-card" style="border-left:4px solid var(--green-mid);">
       <div class="q-num" style="color:var(--green-mid);font-weight:600;">基本資料（必填）</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;">
@@ -207,7 +207,22 @@ body { font-family:'Noto Sans TC',sans-serif; background:var(--cream); color:var
             <option value="跨年級段">跨年級段（全覆蓋）</option>
           </select>
         </div>
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:6px;">Email（作為登入帳號）<span style="color:#EF4444;">*</span></label>
+          <input type="email" id="input-email-q" placeholder="請輸入你的 Email"
+            style="width:100%;padding:10px 12px;border:1px solid var(--border-light);border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-size:14px;outline:none;background:var(--cream);"
+            onfocus="this.style.borderColor='#52B788';this.style.background='#fff'"
+            onblur="this.style.borderColor='';this.style.background='var(--cream)'">
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:6px;">再次確認 Email <span style="color:#EF4444;">*</span></label>
+          <input type="email" id="input-email-confirm-q" placeholder="請再輸入一次 Email"
+            style="width:100%;padding:10px 12px;border:1px solid var(--border-light);border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-size:14px;outline:none;background:var(--cream);"
+            onfocus="this.style.borderColor='#52B788';this.style.background='#fff'"
+            onblur="this.style.borderColor='';this.style.background='var(--cream)'">
+        </div>
       </div>
+      <div id="email-error" style="display:none;color:#EF4444;font-size:12px;margin-top:8px;"></div>
     </div>
 
     <div class="q-card">
@@ -614,8 +629,13 @@ document.addEventListener('click', e => {
 });
 
 function validateAndGoB() {
-  const name = document.getElementById('input-name-q').value.trim();
+  const name  = document.getElementById('input-name-q').value.trim();
   const grade = document.getElementById('input-grade-q').value;
+  const email = document.getElementById('input-email-q').value.trim().toLowerCase();
+  const emailConfirm = document.getElementById('input-email-confirm-q').value.trim().toLowerCase();
+  const errEl = document.getElementById('email-error');
+  errEl.style.display = 'none';
+
   if (!name) {
     document.getElementById('input-name-q').style.borderColor = '#EF4444';
     document.getElementById('input-name-q').focus();
@@ -625,11 +645,27 @@ function validateAndGoB() {
     document.getElementById('input-grade-q').style.borderColor = '#EF4444';
     return;
   }
-  // 儲存到 profile
+  if (!email || !email.includes('@')) {
+    document.getElementById('input-email-q').style.borderColor = '#EF4444';
+    errEl.textContent = '請輸入有效的 Email 地址';
+    errEl.style.display = 'block';
+    document.getElementById('input-email-q').focus();
+    return;
+  }
+  if (email !== emailConfirm) {
+    document.getElementById('input-email-confirm-q').style.borderColor = '#EF4444';
+    errEl.textContent = '兩次輸入的 Email 不一致，請重新確認';
+    errEl.style.display = 'block';
+    document.getElementById('input-email-confirm-q').focus();
+    return;
+  }
+
+  // 儲存到 profile（email 作為唯一識別）
   try {
     const p = JSON.parse(localStorage.getItem('profile') || '{}');
-    p.name = name; p.grade = grade;
+    p.name = name; p.grade = grade; p.email = email;
     localStorage.setItem('profile', JSON.stringify(p));
+    localStorage.setItem('userEmail', email); // 單獨存方便讀取
   } catch(e) {}
   goToBlock('b');
 }
@@ -696,6 +732,7 @@ async function submitQuestionnaire() {
   try { profile = JSON.parse(localStorage.getItem('profile')||'{}'); } catch(e){}
   const name  = profile.name  || '未填寫';
   const grade = profile.grade || '未填寫';
+  const email = profile.email || localStorage.getItem('userEmail') || '';
 
   const result = { bScore, level, radarScores, dAnswers, submittedAt: new Date().toISOString(), name, grade };
   localStorage.setItem('qResult', JSON.stringify(result));
@@ -717,17 +754,15 @@ async function submitQuestionnaire() {
   const [sheetsResult] = await Promise.all([
     pushToSheets({
       type: 'questionnaire',
-      name, grade, level, bScore,
+      name, grade, email, level, bScore,
       radarScores, dAnswers,
       submittedAt: result.submittedAt,
     }),
     pushToSheets({
       type: 'progress',
-      name, grade,
+      name, grade, email,
       phase: startPhase,
-      entryPct: 0,
-      basicPct: 0,
-      advPct: 0,
+      entryPct: 0, basicPct: 0, advPct: 0,
       taskCount: 0,
       radarScores,
       updatedAt: result.submittedAt,

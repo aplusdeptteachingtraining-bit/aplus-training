@@ -117,6 +117,31 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
 </head>
 <body>
 
+<!-- EMAIL 登入畫面 -->
+<div id="login-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--cream);display:flex;align-items:center;justify-content:center;">
+  <div style="background:var(--white);border-radius:var(--radius);padding:36px 32px;width:380px;box-shadow:0 8px 40px rgba(0,0,0,0.12);">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;">
+      <div style="width:10px;height:10px;border-radius:50%;background:#F6E05E;"></div>
+      <div>
+        <div style="font-size:15px;font-weight:500;color:#1B4332;">A Plus 耶加</div>
+        <div style="font-size:12px;color:var(--text-muted);">培訓任務清單</div>
+      </div>
+    </div>
+    <div style="font-size:18px;font-weight:500;margin-bottom:6px;">請輸入你的 Email</div>
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">填寫入職問卷時使用的 Email</div>
+    <input type="email" id="login-email" placeholder="your@email.com"
+      style="width:100%;padding:10px 14px;border:1px solid var(--border-light);border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-size:14px;outline:none;background:var(--cream);margin-bottom:8px;"
+      onfocus="this.style.borderColor='#52B788';this.style.background='#fff'"
+      onblur="this.style.borderColor='';this.style.background='var(--cream)'"
+      onkeydown="if(event.key==='Enter')doEmailLogin()">
+    <div id="login-error" style="color:#EF4444;font-size:12px;margin-bottom:12px;display:none;"></div>
+    <button onclick="doEmailLogin()" style="width:100%;padding:11px;border:none;border-radius:99px;background:#2D6A4F;color:#fff;font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:500;cursor:pointer;">進入培訓清單</button>
+    <div style="margin-top:16px;text-align:center;font-size:12px;color:var(--text-muted);">
+      還沒填寫入職問卷？<a href="questionnaire.html" style="color:#2D6A4F;">點此填寫</a>
+    </div>
+  </div>
+</div>
+
 <div class="topbar">
   <a href="index.html"><i class="ti ti-arrow-left"></i> 返回首頁</a>
   <span class="topbar-sep">›</span>
@@ -573,9 +598,68 @@ async function manualSyncFromSheets() {
   }
 }
 
-// ── Google Sheets URL（由培訓官設定，教師無需操作）──
+// ── Google Sheets URL（內建）──
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwZaAsaIAgc-RrnT-z_r1YQDHEVQnSLieL5KAzjFEm50316BF_4K0x5jzkkofFwMf4v/exec';
 localStorage.setItem('sheetsUrl', SHEETS_URL);
+
+// ── EMAIL 登入 ──
+async function doEmailLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+
+  if (!email || !email.includes('@')) {
+    errEl.textContent = '請輸入有效的 Email';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // 從 Sheets 驗證 email 是否存在
+  try {
+    const res = await fetch(SHEETS_URL + '?sheet=Questionnaire&t=' + Date.now());
+    const rows = await res.json();
+    const found = rows.find(r => (r['Email'] || r.email || '').toLowerCase() === email);
+    if (!found) {
+      errEl.textContent = '找不到此 Email，請確認填寫問卷時使用的地址';
+      errEl.style.display = 'block';
+      return;
+    }
+    // 登入成功，存入 localStorage
+    const profile = {
+      name:  found['姓名']   || found.name  || '',
+      grade: found['年級段'] || found.grade || '',
+      email: email,
+    };
+    localStorage.setItem('profile', JSON.stringify(profile));
+    localStorage.setItem('userEmail', email);
+    document.getElementById('login-overlay').style.display = 'none';
+    initTaskPage();
+  } catch(e) {
+    errEl.textContent = '驗證失敗，請稍後再試';
+    errEl.style.display = 'block';
+  }
+}
+
+function checkLogin() {
+  const email = localStorage.getItem('userEmail') || '';
+  if (!email) {
+    document.getElementById('login-overlay').style.display = 'flex';
+  } else {
+    document.getElementById('login-overlay').style.display = 'none';
+    initTaskPage();
+  }
+}
+
+function initTaskPage() {
+  taskState = {};
+  taskScores = {};
+  renderTasks();
+  renderRadar();
+  renderLevelBadge();
+  loadStateFromSheets();
+}
+
+checkLogin();
 
 // 加入 spin 動畫 CSS
 const spinStyle = document.createElement('style');
@@ -602,7 +686,11 @@ async function loadStateFromSheets() {
     const rows = await res.json();
     if (!Array.isArray(rows)) return;
 
-    const mine = rows.find(r => (r['姓名'] || r.name || '') === myName);
+    const myEmail = localStorage.getItem('userEmail') || '';
+    const mine = rows.find(r =>
+      (r['Email'] || r.email || '').toLowerCase() === myEmail ||
+      (r['姓名'] || r.name || '') === myName
+    );
     if (!mine) return;
 
     // 完全清空本機任務狀態，以 Sheets 為準
@@ -649,13 +737,8 @@ function loadStateFromAdmin() {
   } catch(e) {}
 }
 
-// 先清空，等 Sheets 資料回來才顯示
-taskState = {};
-taskScores = {};
-renderTasks();
-renderRadar();
-renderLevelBadge();
-loadStateFromSheets(); // 從 Sheets 讀取（會覆蓋並 re-render）
+// ── INIT：先驗證 Email 再載入任務 ──
+checkLogin();
 
 // Scroll to hash
 if (location.hash) {
