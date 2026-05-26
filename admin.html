@@ -180,16 +180,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
       <button id="refresh-btn" onclick="refreshData()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border-light);border-radius:99px;background:var(--white);cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:13px;"><i class="ti ti-refresh"></i> 重新整理</button>
     </div>
 
-    <!-- SHEETS CONFIG BANNER -->
-    <div id="sheets-config-banner" style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-      <i class="ti ti-table" style="font-size:20px;color:#B7791F;flex-shrink:0;"></i>
-      <div style="flex:1;min-width:200px;">
-        <div style="font-size:13px;font-weight:500;color:#92400E;margin-bottom:2px;">設定 Google Sheets 串接</div>
-        <div style="font-size:12px;color:#B7791F;">貼入 Apps Script 部署 URL，啟用真實資料同步（目前顯示範例資料）</div>
-      </div>
-      <input id="sheets-url-input" type="text" placeholder="https://script.google.com/macros/s/.../exec" style="flex:2;min-width:220px;padding:8px 12px;border:1px solid #FDE68A;border-radius:var(--radius-sm);font-size:13px;background:var(--white);outline:none;font-family:'Noto Sans TC',sans-serif;">
-      <button onclick="saveSheetsUrl()" style="padding:8px 18px;border:none;border-radius:99px;background:#B7791F;color:#fff;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:13px;white-space:nowrap;">儲存設定</button>
-    </div>
     <div id="sheets-status"></div>
     <div id="alerts-section"></div>
 
@@ -246,7 +236,6 @@ function doLogin() {
   if (pw === ADMIN_PW) {
     document.getElementById('login-wrap').style.display = 'none';
     document.getElementById('admin-wrap').style.display = 'block';
-    loadSheetsConfig();
     initAdmin();
   } else {
     document.getElementById('login-error').style.display = 'block';
@@ -263,26 +252,9 @@ function showTab(name, btn) {
   if (name === 'scoring') initScoring();
 }
 
-// ── SHEETS CONFIG ──
-function saveSheetsUrl() {
-  const val = document.getElementById('sheets-url-input').value.trim();
-  if (!val.includes('script.google.com')) {
-    alert('請貼入正確的 Apps Script 部署 URL');
-    return;
-  }
-  localStorage.setItem('adminSheetsUrl', val);
-  document.getElementById('sheets-config-banner').style.display = 'none';
-  document.getElementById('sheets-status').innerHTML = '<div style="color:#10B981;font-size:12px;margin-bottom:12px;"><i class="ti ti-check"></i> Google Sheets URL 已儲存，正在重新載入資料...</div>';
-  initAdmin();
-}
-function loadSheetsConfig() {
-  const saved = localStorage.getItem('adminSheetsUrl');
-  if (saved) {
-    document.getElementById('sheets-url-input').value = saved;
-    document.getElementById('sheets-config-banner').style.display = 'none';
-    document.getElementById('sheets-status').innerHTML = '<div style="color:#10B981;font-size:12px;margin-bottom:12px;"><i class="ti ti-check"></i> 已設定 Google Sheets 串接</div>';
-  }
-}
+// ── Google Sheets URL 內建，無需手動設定 ──
+const ADMIN_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwZaAsaIAgc-RrnT-z_r1YQDHEVQnSLieL5KAzjFEm50316BF_4K0x5jzkkofFwMf4v/exec';
+localStorage.setItem('adminSheetsUrl', ADMIN_SHEETS_URL);
 
 // ── SHEETS DATA LAYER ──
 function getSheetsUrl() {
@@ -321,6 +293,7 @@ async function getTeachersData() {
           return {
             name,
             grade,
+            email:    r['Email']    || r.email    || '',
             phase:    prog['當前階段'] || prog.phase    || 'entry',
             entryPct: Number(prog['入門%']  || prog.entryPct || 0),
             basicPct: Number(prog['初階%']  || prog.basicPct || 0),
@@ -520,11 +493,39 @@ function saveScoringState() {
   localStorage.setItem('adminScoring', JSON.stringify(scoringState));
 }
 
-function initScoring() {
+async function initScoring() {
   loadScoringState();
-  // 用已載入的真實資料，沒有才用 mock
+  // 從 Sheets 載入最新評分狀態
+  await loadScoringFromSheets();
   const list = (teachersData && teachersData.length) ? teachersData : _mockTeachers();
   renderScoringTeacherList(list);
+}
+
+async function loadScoringFromSheets() {
+  const url = getSheetsUrl();
+  if (!url) return;
+  try {
+    const res = await fetch(url + '?sheet=Teachers&t=' + Date.now());
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (!Array.isArray(rows)) return;
+    rows.forEach(r => {
+      const name = r['姓名'] || r.name || '';
+      const taskJson = r['任務狀態'] || r.tasks || '';
+      if (name && taskJson && taskJson.length > 2) {
+        try {
+          const taskData = typeof taskJson === 'string' ? JSON.parse(taskJson) : taskJson;
+          // 只有 Sheets 有資料時才覆蓋本機（避免清空已評但未同步的資料）
+          if (Object.keys(taskData).length > 0) {
+            scoringState[name] = taskData;
+          }
+        } catch(e) {}
+      }
+    });
+    saveScoringState();
+  } catch(e) {
+    console.warn('載入評分狀態失敗', e.message);
+  }
 }
 
 function renderScoringTeacherList(list) {
@@ -543,9 +544,11 @@ function renderScoringTeacherList(list) {
   }).join('');
 }
 
-function selectScoringTeacher(name, grade) {
+async function selectScoringTeacher(name, grade) {
   currentScoringTeacher = name;
   if (!scoringState[name]) scoringState[name] = {};
+  // 先從 Sheets 刷新此教師的最新評分
+  await loadScoringFromSheets();
   renderScoringTeacherList();
   renderScoringTasks(name, grade);
 }
@@ -637,6 +640,7 @@ async function saveAllScores(teacherName) {
 
   const teacher = (teachersData.length ? teachersData : _mockTeachers()).find(x => x.name === teacherName) || {};
   const phase = advDone > 0 ? 'advanced' : basicDone > 0 ? 'basic' : 'entry';
+  const teacherEmail = teacher.email || teacher['Email'] || '';
 
   const url = getSheetsUrl();
   if (url) {
@@ -647,13 +651,14 @@ async function saveAllScores(teacherName) {
         body: JSON.stringify({
           type: 'progress',
           name: teacherName,
+          email: teacherEmail,
           grade: teacher.grade || '',
           phase,
           entryPct: Math.round(entryDone/entryTotal*100),
           basicPct: Math.round(basicDone/basicTotal*100),
           advPct:   Math.round(advDone/advTotal*100),
           taskCount: doneTasks.length,
-          tasks: JSON.stringify(state),  // ← 任務狀態寫入 Sheets
+          tasks: JSON.stringify(state),
           radarScores: {},
           updatedAt: new Date().toISOString(),
         }),
