@@ -749,7 +749,8 @@ async function submitQuestionnaire() {
   if (syncBtn) syncBtn.textContent = '資料同步中...';
 
   // 決定起始階段
-  const startPhase = level.includes('進階') ? 'advanced' : level.includes('初階') ? 'basic' : 'entry';
+  // 新教師一律從入門階段開始，不管問卷分數
+  const startPhase = 'entry';
 
   const [sheetsResult] = await Promise.all([
     pushToSheets({
