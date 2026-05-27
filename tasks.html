@@ -261,6 +261,30 @@ const PHASE_INFO = {
   advanced: { name:'進階階段', en:'Advanced Phase', color:'a', badge:'advanced' },
 };
 
+// ── 章節雲端連結 ──
+const CH_LINKS = {
+  'Ch.1': 'https://drive.google.com/drive/folders/1WTCIw9KQ7R2j3rr4CEpobxI8D2PD78rY',
+  'Ch.2': 'https://drive.google.com/drive/folders/1WhcwQYZyDciYYU3rXHXGkw3UJ7p_Aj7Q',
+  'Ch.3': 'https://drive.google.com/drive/folders/1yg_EG5Z4U0ynPUGc5l1o8aEb13tVs9x0',
+  'Ch.4': 'https://drive.google.com/drive/folders/1LGXf4CBm_C2IEGUMaf00exfu1U5UB-wd',
+  'Ch.5': 'https://drive.google.com/drive/folders/1QX8Sr2FuOTosQqa6Be1lWRvnJR6sBmER',
+  'Ch.6': 'https://drive.google.com/drive/folders/1opw7PPxz5LCHuJyUyVO5r_0y-Rlw7xoz',
+  'Ch.7': 'https://drive.google.com/drive/folders/1lcj7W9tRZcOqruAS8auXJEPgeDULM8X4',
+};
+
+// 把 doc 字串轉成可點擊連結 HTML
+function renderDocLink(doc) {
+  if (!doc) return '—';
+  // 找出所有 (Ch.X) 標記，轉成連結
+  return doc.replace(/\(Ch\.(\d)\)/g, (match, num) => {
+    const key = 'Ch.' + num;
+    const url = CH_LINKS[key];
+    return url
+      ? `（<a href="${url}" target="_blank" style="color:var(--green-mid);text-decoration:underline;">Ch.${num} 開啟資料夾</a>）`
+      : match;
+  });
+}
+
 let currentGrade = 'all';
 let taskState = {};
 let taskScores = {};
@@ -328,7 +352,7 @@ function renderTasks() {
           </div>
           <div class="task-detail">
             <div class="task-detail-grid">
-              <div class="detail-item"><label>文件來源</label><span>${t.doc||'—'}</span></div>
+              <div class="detail-item"><label>文件來源</label><span>${renderDocLink(t.doc)}</span></div>
               <div class="detail-item"><label>考核方式</label><span>${t.assess}</span></div>
               <div class="detail-item"><label>培訓重點</label><span>${t.detail}</span></div>
               <div class="detail-item"><label>建議時程</label><span>${t.time}</span></div>
