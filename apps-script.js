@@ -1,6 +1,30 @@
 const SHEET_QUESTIONNAIRE = 'Questionnaire';
 const SHEET_TEACHERS      = 'Teachers';
 
+// ══ 執行這個函數一次來修正所有欄位標題 ══
+function fixHeaders() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  const tSheet = ss.getSheetByName(SHEET_TEACHERS);
+  if (tSheet) {
+    const correctHeaders = ['更新時間','姓名','Email','年級段','當前階段','入門%','初階%','進階%',
+      '教學技巧','學科知識','課堂管理','行政了解','備課能力','任務完成數','任務狀態'];
+    tSheet.getRange(1, 1, 1, correctHeaders.length).setValues([correctHeaders]);
+    tSheet.getRange(1, 1, 1, correctHeaders.length).setFontWeight('bold');
+  }
+  
+  const qSheet = ss.getSheetByName(SHEET_QUESTIONNAIRE);
+  if (qSheet) {
+    const correctHeaders = ['填寫時間','姓名','Email','年級段','起始等級','B分數','D適配分',
+      '教學技巧','學科知識','課堂管理','行政了解','備課能力',
+      'D1答案','D2答案','D3答案','D4答案','D5答案'];
+    qSheet.getRange(1, 1, 1, correctHeaders.length).setValues([correctHeaders]);
+    qSheet.getRange(1, 1, 1, correctHeaders.length).setFontWeight('bold');
+  }
+  
+  SpreadsheetApp.getUi().alert('欄位標題已修正完成！');
+}
+
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);

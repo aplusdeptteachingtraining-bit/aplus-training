@@ -278,22 +278,37 @@ async function getTeachersData() {
       if (!Array.isArray(qData) || !qData.length) return _mockTeachers();
 
       // 以問卷表為主，合併進度表的數字
+      // progressMap 同時用 email 和 姓名 作 key
       const progressMap = {};
       tData.forEach(r => {
-        const name = r['姓名'] || r.name || '';
-        if (name) progressMap[name] = r;
+        const name  = r['姓名'] || r.name  || '';
+        const email = (r['Email'] || r.email || '').toLowerCase().trim();
+        if (email) progressMap[email] = r;
+        if (name)  progressMap[name]  = r;
+      });
+
+      // 也把沒有填問卷的教師（只在 Teachers 表）也加進來
+      const qEmails = new Set(qData.map(r => (r['Email']||r.email||'').toLowerCase()));
+      const qNames  = new Set(qData.map(r => (r['姓名']||r.name||'')));
+      tData.forEach(r => {
+        const email = (r['Email']||r.email||'').toLowerCase().trim();
+        const name  = r['姓名']||r.name||'';
+        if (!qEmails.has(email) && !qNames.has(name) && name) {
+          // 這位教師沒有填問卷，直接從 Teachers 表加入
+          qData.push({ '姓名': name, 'Email': email, '年級段': r['年級段']||r.grade||'—' });
+        }
       });
 
       return qData
         .filter(r => (r['姓名'] || r.name || '').trim())
         .map(r => {
           const name  = r['姓名'] || r.name  || '';
-          const grade = r['年級段']|| r.grade || '—';
-          const prog  = progressMap[name] || {};
+          const email = (r['Email'] || r.email || '').toLowerCase().trim();
+          const prog  = progressMap[email] || progressMap[name] || {};
           return {
             name,
-            grade,
-            email:    r['Email']    || r.email    || '',
+            grade:    r['年級段'] || r.grade || prog['年級段'] || '—',
+            email,   // ← 永遠從 Questionnaire 取 email，確保正確
             phase:    prog['當前階段'] || prog.phase    || 'entry',
             entryPct: Number(prog['入門%']  || prog.entryPct || 0),
             basicPct: Number(prog['初階%']  || prog.basicPct || 0),
