@@ -275,12 +275,12 @@ const CH_LINKS = {
 // 把 doc 字串轉成可點擊連結 HTML
 function renderDocLink(doc) {
   if (!doc) return '—';
-  // 找出所有 (Ch.X) 標記，轉成連結
-  return doc.replace(/\(Ch\.(\d)\)/g, (match, num) => {
+  // 支援全形（Ch.X）和半形(Ch.X)括號
+  return doc.replace(/[（(]Ch\.(\d)[）)]/g, (match, num) => {
     const key = 'Ch.' + num;
     const url = CH_LINKS[key];
     return url
-      ? `（<a href="${url}" target="_blank" style="color:var(--green-mid);text-decoration:underline;">Ch.${num} 開啟資料夾</a>）`
+      ? `（<a href="${url}" target="_blank" style="color:var(--green-mid);font-weight:500;text-decoration:underline;">開啟 Ch.${num} 資料夾 ↗</a>）`
       : match;
   });
 }
