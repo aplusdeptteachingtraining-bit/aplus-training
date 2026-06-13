@@ -576,7 +576,12 @@ function renderCerts() {
     const tk=t.name;
     const isTerminated=!!terminatedState[tk]?.terminated;
     const cardClass='cert-card'+(isTerminated?' terminated':'');
-    return '<div class="'+cardClass+'"><div class="cert-card-name">'+t.name+'</div><div class="cert-card-grade">'+t.grade+'</div><div class="cert-items">'+CERTS.map(c=>{const g=!!(certState[tk]&&certState[tk][c.id]);return '<div class="cert-item '+(g?'granted':'')+'">'+'<span>'+c.label+'</span><button class="cert-grant-btn" onclick="toggleCert(''+tk+'',''+c.id+'')">'+(g?'✓ 已認證':'授予認證')+'</button></div>';}).join('')+'</div></div>';
+    const items=CERTS.map(c=>{
+      const g=!!(certState[tk]&&certState[tk][c.id]);
+      const onclick=`onclick="toggleCert('${tk}','${c.id}')"`;
+      return `<div class="cert-item ${g?'granted':''}"><span>${c.label}</span><button class="cert-grant-btn" ${onclick}>${g?'✓ 已認證':'授予認證'}</button></div>`;
+    }).join('');
+    return `<div class="${cardClass}"><div class="cert-card-name">${t.name}</div><div class="cert-card-grade">${t.grade}</div><div class="cert-items">${items}</div></div>`;
   }).join('');
 }
 function toggleCert(teacher,certId) {
