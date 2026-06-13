@@ -109,6 +109,10 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
 /* CERT */
 .cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
 .cert-card{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:20px 22px;}
+.cert-card.terminated{opacity:.4;pointer-events:none;filter:grayscale(0.6);}
+.cert-card.terminated .cert-card-name::after{content:'已終止';display:inline-block;margin-left:8px;font-size:10px;padding:1px 7px;border-radius:99px;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;font-weight:400;vertical-align:middle;}
+.teacher-list-item.terminated{opacity:.38;pointer-events:none;filter:grayscale(0.5);}
+.teacher-list-item.terminated .teacher-list-avatar{background:#E5E7EB;color:#9CA3AF;border-color:#D1D5DB;}
 .cert-card-name{font-size:15px;font-weight:500;margin-bottom:6px;}
 .cert-card-grade{font-size:12px;color:var(--text-muted);margin-bottom:14px;}
 .cert-items{display:flex;flex-direction:column;gap:8px;}
@@ -469,6 +473,13 @@ async function executeTerminate(name, doTerminate) {
   saveTerminatedStateLocal();
   renderTeachers();
   renderAlerts();
+  renderCerts();
+  renderScoringTeacherList();
+  // 若目前任務評分正顯示已終止的教師，清空面板
+  if (doTerminate && currentScoringTeacher === name) {
+    currentScoringTeacher = null;
+    document.getElementById('scoring-content').innerHTML = '<div class="empty-state"><i class="ti ti-user-off"></i>此教師培訓已終止</div>';
+  }
   syncTerminatedToSheets(name, doTerminate);
 }
 
@@ -563,7 +574,9 @@ function renderCerts() {
   if(!teachersData.length){document.getElementById('cert-grid').innerHTML='<div class="empty-state"><i class="ti ti-award"></i>尚無教師資料</div>';return;}
   document.getElementById('cert-grid').innerHTML=teachersData.map(t=>{
     const tk=t.name;
-    return '<div class="cert-card"><div class="cert-card-name">'+t.name+'</div><div class="cert-card-grade">'+t.grade+'</div><div class="cert-items">'+CERTS.map(c=>{const g=!!(certState[tk]&&certState[tk][c.id]);return '<div class="cert-item '+(g?'granted':'')+'"><span>'+c.label+'</span><button class="cert-grant-btn" onclick="toggleCert(\''+tk+'\',\''+c.id+'\')">'+(g?'✓ 已認證':'授予認證')+'</button></div>';}).join('')+'</div></div>';
+    const isTerminated=!!terminatedState[tk]?.terminated;
+    const cardClass='cert-card'+(isTerminated?' terminated':'');
+    return '<div class="'+cardClass+'"><div class="cert-card-name">'+t.name+'</div><div class="cert-card-grade">'+t.grade+'</div><div class="cert-items">'+CERTS.map(c=>{const g=!!(certState[tk]&&certState[tk][c.id]);return '<div class="cert-item '+(g?'granted':'')+'">'+'<span>'+c.label+'</span><button class="cert-grant-btn" onclick="toggleCert(''+tk+'',''+c.id+'')">'+(g?'✓ 已認證':'授予認證')+'</button></div>';}).join('')+'</div></div>';
   }).join('');
 }
 function toggleCert(teacher,certId) {
@@ -665,10 +678,14 @@ function renderScoringTeacherList(list) {
     const state = scoringState[t.name] || {};
     const doneCnt = Object.values(state).filter(s => s.done).length;
     const isActive = currentScoringTeacher === t.name;
-    return `<div class="teacher-list-item ${isActive?'active':''}" onclick="selectScoringTeacher('${t.name}','${t.grade||''}')">
+    const isTerminated = !!terminatedState[t.name]?.terminated;
+    const terminatedStyle = isTerminated ? ' terminated' : '';
+    const clickHandler = isTerminated ? '' : `onclick="selectScoringTeacher('${t.name}','${t.grade||''}')"`;
+    const terminatedTag = isTerminated ? '<span style="font-size:10px;padding:1px 6px;border-radius:99px;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;margin-left:4px;">已終止</span>' : '';
+    return `<div class="teacher-list-item${terminatedStyle} ${isActive?'active':''}" ${clickHandler}>
       <div class="teacher-list-avatar">${(t.name||'?')[0]}</div>
       <div>
-        <div style="font-size:13px;">${t.name}</div>
+        <div style="font-size:13px;">${t.name}${terminatedTag}</div>
         <div style="font-size:11px;color:var(--text-muted);">${t.grade||'—'} · ${doneCnt}/${ALL_TASKS.length} 完成</div>
       </div>
     </div>`;
@@ -676,6 +693,7 @@ function renderScoringTeacherList(list) {
 }
 
 async function selectScoringTeacher(name, grade) {
+  if (terminatedState[name]?.terminated) return; // 已終止，禁止選取
   currentScoringTeacher = name;
   if (!scoringState[name]) scoringState[name] = {};
   // 先從 Sheets 刷新此教師的最新評分
