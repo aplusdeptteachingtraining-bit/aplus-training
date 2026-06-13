@@ -8,7 +8,7 @@ function fixHeaders() {
   const tSheet = ss.getSheetByName(SHEET_TEACHERS);
   if (tSheet) {
     const correctHeaders = ['更新時間','姓名','Email','年級段','當前階段','入門%','初階%','進階%',
-      '教學技巧','學科知識','課堂管理','行政了解','備課能力','任務完成數','任務狀態'];
+      '教學技巧','學科知識','課堂管理','行政了解','備課能力','任務完成數','任務狀態','終止培訓'];
     tSheet.getRange(1, 1, 1, correctHeaders.length).setValues([correctHeaders]);
     tSheet.getRange(1, 1, 1, correctHeaders.length).setFontWeight('bold');
   }
@@ -58,6 +58,42 @@ function doPost(e) {
         r['教學技巧']||0, r['學科知識']||0, r['課堂管理']||0, r['行政了解']||0, r['備課能力']||0,
         d.d1||'', d.d2||'', d.d3||'', d.d4||'', d.d5||''
       ]);
+    }
+
+    if (data.type === 'terminated') {
+      const sheet = getOrCreateSheet(ss, SHEET_TEACHERS, [
+        '更新時間','姓名','Email','年級段','當前階段','入門%','初階%','進階%',
+        '教學技巧','學科知識','課堂管理','行政了解','備課能力','任務完成數','任務狀態','終止培訓'
+      ]);
+      const email = (data.email || '').toLowerCase().trim();
+      const rows = sheet.getDataRange().getValues();
+      const headers = rows[0];
+      const terminatedCol = headers.indexOf('終止培訓');
+      // 動態新增欄位（若舊版 sheet 沒有此欄）
+      const effectiveTermCol = terminatedCol >= 0 ? terminatedCol : headers.length;
+      if (terminatedCol < 0) {
+        sheet.getRange(1, effectiveTermCol + 1).setValue('終止培訓').setFontWeight('bold');
+      }
+      let found = false;
+      for (let i = 1; i < rows.length; i++) {
+        const rowEmail = String(rows[i][2]||'').toLowerCase().trim();
+        const rowName  = String(rows[i][1]||'').trim();
+        const match = (email && rowEmail === email) || (!email && rowName === data.name);
+        if (match) {
+          sheet.getRange(i+1, effectiveTermCol + 1).setValue(data.terminated ? 'true' : 'false');
+          sheet.getRange(i+1, 1).setValue(data.updatedAt);
+          found = true; break;
+        }
+      }
+      if (!found) {
+        // 教師不存在，建立新列只記錄終止狀態
+        const newRow = new Array(Math.max(effectiveTermCol + 1, 15)).fill('');
+        newRow[0] = data.updatedAt;
+        newRow[1] = data.name;
+        newRow[2] = email;
+        newRow[effectiveTermCol] = data.terminated ? 'true' : 'false';
+        sheet.appendRow(newRow);
+      }
     }
 
     if (data.type === 'progress') {

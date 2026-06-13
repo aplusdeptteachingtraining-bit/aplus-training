@@ -57,8 +57,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
 
 /* TEACHER TABLE */
 .teachers-table{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;}
-.table-head{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 80px;gap:0;background:var(--cream);padding:10px 20px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);border-bottom:1px solid var(--border-light);}
-.teacher-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 80px;gap:0;padding:14px 20px;border-bottom:1px solid var(--border-light);align-items:center;font-size:13px;transition:background .1s;}
+.table-head{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 160px;gap:0;background:var(--cream);padding:10px 20px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);border-bottom:1px solid var(--border-light);}
+.teacher-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 160px;gap:0;padding:14px 20px;border-bottom:1px solid var(--border-light);align-items:center;font-size:13px;transition:background .1s;}
 .teacher-row:last-child{border-bottom:none;}
 .teacher-row:hover{background:var(--cream);}
 .teacher-name{font-weight:500;}
@@ -71,6 +71,22 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--t
 .phase-tag.basic{background:#DBEAFE;color:#1E40AF;}
 .phase-tag.advanced{background:#FEE2E2;color:#991B1B;}
 .phase-tag.done{background:#F3F4F6;color:#374151;}
+
+/* TERMINATED */
+.teacher-row.terminated{opacity:.45;background:#F9FAFB;}
+.teacher-row.terminated .teacher-name::after{content:'已終止';display:inline-block;margin-left:8px;font-size:10px;padding:1px 7px;border-radius:99px;background:#FEE2E2;color:#991B1B;border:1px solid #FCA5A5;font-weight:400;vertical-align:middle;}
+.terminate-btn{font-size:11px;padding:4px 10px;border-radius:99px;border:1px solid #FCA5A5;background:#FFF5F5;color:#C53030;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;white-space:nowrap;}
+.terminate-btn:hover{background:#C53030;color:#fff;border-color:#C53030;}
+.terminate-btn.restore{border-color:var(--green-light);background:var(--green-pale);color:var(--green-mid);}
+.terminate-btn.restore:hover{background:var(--green-mid);color:#fff;border-color:var(--green-mid);}
+.terminate-confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;display:flex;align-items:center;justify-content:center;}
+.terminate-confirm-box{background:#fff;border-radius:var(--radius);padding:28px 32px;width:340px;box-shadow:0 12px 48px rgba(0,0,0,0.18);}
+.terminate-confirm-box h3{font-size:16px;font-weight:500;margin-bottom:8px;}
+.terminate-confirm-box p{font-size:13px;color:var(--text-muted);margin-bottom:24px;line-height:1.6;}
+.terminate-confirm-actions{display:flex;gap:10px;justify-content:flex-end;}
+.terminate-cancel-btn{padding:8px 18px;border:1px solid var(--border-light);border-radius:99px;background:var(--white);font-family:'Noto Sans TC',sans-serif;font-size:13px;cursor:pointer;}
+.terminate-ok-btn{padding:8px 18px;border:none;border-radius:99px;background:#C53030;color:#fff;font-family:'Noto Sans TC',sans-serif;font-size:13px;cursor:pointer;}
+.terminate-ok-btn:hover{background:#9B1C1C;}
 
 /* QUESTIONNAIRE LIST */
 .q-list{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;}
@@ -369,9 +385,98 @@ function checkAlerts(teacher) {
 
 let teachersData = [], questionnairesData = [];
 
+// ── 終止培訓狀態 ──
+let terminatedState = {};
+
+function loadTerminatedState() {
+  try { terminatedState = JSON.parse(localStorage.getItem('adminTerminated') || '{}'); } catch(e) { terminatedState = {}; }
+}
+
+function saveTerminatedStateLocal() {
+  localStorage.setItem('adminTerminated', JSON.stringify(terminatedState));
+}
+
+async function loadTerminatedFromSheets() {
+  const url = getSheetsUrl();
+  if (!url) return;
+  try {
+    const res = await fetch(url + '?sheet=Teachers&t=' + Date.now());
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (!Array.isArray(rows)) return;
+    rows.forEach(r => {
+      const name = r['姓名'] || r.name || '';
+      const flag = String(r['終止培訓'] || r.terminated || '').toLowerCase();
+      if (name) {
+        if (flag === 'true' || flag === '1' || flag === 'yes') {
+          if (!terminatedState[name]) terminatedState[name] = {};
+          terminatedState[name].terminated = true;
+        } else if (flag === 'false' || flag === '0' || flag === 'no') {
+          if (terminatedState[name]) terminatedState[name].terminated = false;
+        }
+      }
+    });
+    saveTerminatedStateLocal();
+  } catch(e) { console.warn('載入終止狀態失敗', e.message); }
+}
+
+async function syncTerminatedToSheets(name, terminated) {
+  const url = getSheetsUrl();
+  if (!url) return;
+  const teacher = teachersData.find(x => x.name === name) || {};
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        type: 'terminated',
+        name,
+        email: teacher.email || '',
+        terminated: terminated,
+        updatedAt: new Date().toISOString(),
+      }),
+    });
+  } catch(e) { console.warn('同步終止狀態失敗，已儲存本機', e.message); }
+}
+
+function confirmTerminate(name, doTerminate) {
+  const existing = document.getElementById('terminate-overlay');
+  if (existing) existing.remove();
+  const action = doTerminate ? '終止' : '恢復';
+  const overlay = document.createElement('div');
+  overlay.className = 'terminate-confirm-overlay';
+  overlay.id = 'terminate-overlay';
+  overlay.innerHTML = `
+    <div class="terminate-confirm-box">
+      <h3>${doTerminate ? '⚠️ 確認終止培訓' : '↩ 確認恢復培訓'}</h3>
+      <p>確定要${action}【${name}】的培訓資格嗎？<br>此操作將同步至 Google Sheets，所有培訓官都能看到。</p>
+      <div class="terminate-confirm-actions">
+        <button class="terminate-cancel-btn" onclick="document.getElementById('terminate-overlay').remove()">取消</button>
+        <button class="terminate-ok-btn" style="${doTerminate ? '' : 'background:#2D6A4F;'}" onclick="executeTerminate('${name.replace("'", "\'")}',${doTerminate})">確認${action}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+
+async function executeTerminate(name, doTerminate) {
+  document.getElementById('terminate-overlay')?.remove();
+  if (doTerminate) {
+    terminatedState[name] = { terminated: true, at: new Date().toISOString() };
+  } else {
+    if (terminatedState[name]) terminatedState[name].terminated = false;
+  }
+  saveTerminatedStateLocal();
+  renderTeachers();
+  renderAlerts();
+  syncTerminatedToSheets(name, doTerminate);
+}
+
 async function initAdmin() {
   document.getElementById('teachers-list').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">載入中...</div>';
+  loadTerminatedState();
   [teachersData, questionnairesData] = await Promise.all([getTeachersData(), getQuestionnairesData()]);
+  await loadTerminatedFromSheets();
   renderAlerts(); renderTeachers(); renderQuestionnaires(); renderCerts();
   // 若任務評分分頁已開啟，一併刷新教師列表
   if (document.getElementById('tab-scoring').style.display !== 'none') {
@@ -387,8 +492,9 @@ async function refreshData() {
 }
 
 function renderAlerts() {
-  const allAlerts = teachersData.flatMap(t => checkAlerts(t));
-  teachersData.forEach(t => { if (Number(t.advPct||0) > 60) allAlerts.push({ level:'green', msg:t.name+' 進階進度 '+t.advPct+'%，即將達標！' }); });
+  const activeTeachers = teachersData.filter(t => !terminatedState[t.name]?.terminated);
+  const allAlerts = activeTeachers.flatMap(t => checkAlerts(t));
+  activeTeachers.forEach(t => { if (Number(t.advPct||0) > 60) allAlerts.push({ level:'green', msg:t.name+' 進階進度 '+t.advPct+'%，即將達標！' }); });
   if (!allAlerts.length) allAlerts.push({ level:'green', msg:'目前無預警事項，所有教師進度正常。' });
   document.getElementById('alerts-section').innerHTML = '<div class="alerts-grid">' + allAlerts.map(a =>
     '<div class="alert-card '+a.level+'">' +
@@ -402,13 +508,23 @@ function renderTeachers() {
   document.getElementById('teachers-list').innerHTML = teachersData.map(t => {
     const ep=Number(t.entryPct||0), bp=Number(t.basicPct||0), ap=Number(t.advPct||0);
     const overall = Math.round((ep+bp+ap)/3);
-    const hasRed = checkAlerts(t).some(a=>a.level==='red');
-    const hasYellow = checkAlerts(t).some(a=>a.level==='yellow');
-    const dot = hasRed?'<span class="alert-dot" style="background:#EF4444;display:inline-block;"></span>':hasYellow?'<span class="alert-dot" style="background:#F59E0B;display:inline-block;"></span>':'<span class="alert-dot" style="background:#10B981;display:inline-block;"></span>';
+    const isTerminated = !!terminatedState[t.name];
+    const hasRed = !isTerminated && checkAlerts(t).some(a=>a.level==='red');
+    const hasYellow = !isTerminated && checkAlerts(t).some(a=>a.level==='yellow');
+    const dot = isTerminated
+      ? '<span class="alert-dot" style="background:#9CA3AF;display:inline-block;"></span>'
+      : hasRed ? '<span class="alert-dot" style="background:#EF4444;display:inline-block;"></span>'
+      : hasYellow ? '<span class="alert-dot" style="background:#F59E0B;display:inline-block;"></span>'
+      : '<span class="alert-dot" style="background:#10B981;display:inline-block;"></span>';
     const ph = String(t.phase||'').toLowerCase();
-    const pc = ph.includes('entry')||ph==='입문'?'entry':ph.includes('basic')||ph==='초급'?'basic':ph.includes('advanced')?'advanced':'done';
+    const pc = ph.includes('entry') ? 'entry' : ph.includes('basic') ? 'basic' : ph.includes('advanced') ? 'advanced' : 'done';
     const pl = pc==='entry'?'入門':pc==='basic'?'初階':pc==='advanced'?'進階':'完成';
-    return '<div class="teacher-row"><div class="teacher-name">'+t.name+'</div><div><span class="teacher-grade">'+t.grade+'</span></div><div><span class="phase-tag '+pc+'">'+pl+'</span></div><div><div style="font-size:12px;color:var(--text-muted);">'+overall+'%</div><div class="progress-mini"><div class="progress-mini-fill" style="width:'+overall+'%"></div></div></div><div style="display:flex;align-items:center;gap:6px;">'+dot+'<span style="font-size:12px;color:var(--text-muted);">'+(hasRed?'止損':hasYellow?'預警':'正常')+'</span></div><div><button style="font-size:11px;padding:4px 10px;border-radius:99px;border:1px solid var(--border-light);background:var(--white);cursor:pointer;font-family:\'Noto Sans TC\',sans-serif;" onclick="showTeacherDetail(\''+t.name+'\')">詳細</button></div></div>';
+    const statusLabel = isTerminated ? '已終止' : hasRed ? '止損' : hasYellow ? '預警' : '正常';
+    const nameEsc = t.name.replace(/'/g,"\\'");
+    const actionBtns = isTerminated
+      ? `<button class="terminate-btn restore" onclick="confirmTerminate('${nameEsc}',false)"><i class="ti ti-refresh" style="font-size:10px;"></i> 恢復培訓</button>`
+      : `<button style="font-size:11px;padding:4px 10px;border-radius:99px;border:1px solid var(--border-light);background:var(--white);cursor:pointer;font-family:'Noto Sans TC',sans-serif;margin-right:6px;" onclick="showTeacherDetail('${nameEsc}')">詳細</button><button class="terminate-btn" onclick="confirmTerminate('${nameEsc}',true)">終止培訓</button>`;
+    return `<div class="teacher-row${isTerminated?' terminated':''}"><div class="teacher-name">${t.name}</div><div><span class="teacher-grade">${t.grade}</span></div><div><span class="phase-tag ${pc}">${pl}</span></div><div><div style="font-size:12px;color:var(--text-muted);">${overall}%</div><div class="progress-mini"><div class="progress-mini-fill" style="width:${overall}%;${isTerminated?'background:#9CA3AF;':''}"></div></div></div><div style="display:flex;align-items:center;gap:6px;">${dot}<span style="font-size:12px;color:var(--text-muted);">${statusLabel}</span></div><div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${actionBtns}</div></div>`;
   }).join('');
 }
 
